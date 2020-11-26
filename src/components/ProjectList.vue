@@ -8,6 +8,11 @@
         whitespace sensitive syntax like python.
       </ProjectCard>
 
+      <ProjectCard title="FoxVM" link="https://github.com/srijan-paul/FoxVM">
+        A fast and straightforward register based virtual machine written in
+        C++.
+      </ProjectCard>
+
       <ProjectCard
         title="Mad Carbon"
         link="https://github.com/srijan-paul/bullet_hell"
@@ -25,11 +30,6 @@
         A fast and simple JSON parser written in C. JSONC makes it extremely
         simple to load JSON data from files and strings into your C and C++
         projects.
-      </ProjectCard>
-
-      <ProjectCard title="FoxVM" link="https://github.com/srijan-paul/FoxVM">
-        A fast and straightforward register based virtual machine written in
-        C++.
       </ProjectCard>
     </div>
   </div>

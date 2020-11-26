@@ -32,6 +32,8 @@ export default {
 }
 
 body {
+  margin: 0;
+  padding: 0;
   font-family: "Montserrat", sans-serif;
   color: var(--fgColor);
   background-color: var(--bgColor);
@@ -52,7 +54,7 @@ h6 {
 }
 
 #app {
-  margin-top: 5%;
+  margin: 5% auto 8%;
 }
 
 .wrapper {

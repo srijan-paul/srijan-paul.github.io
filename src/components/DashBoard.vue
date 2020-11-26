@@ -6,9 +6,9 @@
     <MediaIcons />
 
     <p class="about">
-      2nd year college undergrad, a programmer and sometimes a hobbyist gamedev.
-      I like compiler design and development and occassionally tinker with web
-      stuff.
+      Hi, I'm a 2nd year college undergrad studying Computer Science. Also a
+      programmer and a hobbyist gamedev. I like compiler design and
+      occassionally tinker with web stuff.
     </p>
 
     <div class="button-list">
@@ -60,5 +60,10 @@ h1 {
 
 .button-list > .button {
   margin: 2%;
+}
+
+.about {
+  text-align: justify;
+  font-size: 2rem;
 }
 </style>
