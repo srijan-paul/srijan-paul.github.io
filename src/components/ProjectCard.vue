@@ -2,7 +2,7 @@
   <div class="project-card">
     <span class="card-title">{{ title }}</span>
     <p><slot>Project description missing</slot></p>
-    <Button name="Github" />
+    <Button name="Github" :url="link" />
   </div>
 </template>
 
@@ -15,10 +15,7 @@ export default {
       type: String,
       required: true,
     },
-    link: {
-      type: String,
-      required: true,
-    },
+    link: String,
   },
   components: {
     Button,

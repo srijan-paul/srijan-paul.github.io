@@ -3,6 +3,8 @@
     <img src="@/assets/me.png" alt="Me.. not really." class="rounded-img" />
     <h1>Srijan Paul</h1>
 
+    <MediaIcons />
+
     <p class="about">
       2nd year college undergrad, a programmer and sometimes a hobbyist gamedev.
       I like compiler design and development and occassionally tinker with web
@@ -11,17 +13,18 @@
 
     <div class="button-list">
       <Button name="Resume" />
-      <Button name="Blog" />
+      <Button name="Blog" url="https://srijan-paul.github.io/blog" />
     </div>
   </div>
 </template>
 
 <script>
 import Button from "@/components/Button.vue";
+import MediaIcons from "@/components/MediaIcons.vue";
 
 export default {
   name: "DashBoard",
-  components: { Button },
+  components: { Button, MediaIcons },
 };
 </script>
 

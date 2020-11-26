@@ -1,5 +1,5 @@
 <template>
-  <div class="button">
+  <div class="button" @click="handleClick">
     {{ name }}
   </div>
 </template>
@@ -11,6 +11,13 @@ export default {
     name: {
       type: String,
       required: true,
+    },
+    url: String,
+  },
+
+  methods: {
+    handleClick() {
+      if (this.url) window.open(this.url, "_blank");
     },
   },
 };
