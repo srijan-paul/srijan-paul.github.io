@@ -63,7 +63,14 @@ h1 {
 }
 
 .about {
-  text-align: justify;
+  margin-top: 4%;
+  text-align: center;
   font-size: 2rem;
+}
+
+@media only screen and (max-width: 600px) {
+  .about {
+    font-size: 1.5rem;
+  }
 }
 </style>

@@ -37,4 +37,11 @@ export default {
   font-weight: 700;
   font-size: 2.5rem;
 }
+
+@media only screen and (max-width: 600px) {
+  .project-card {
+    font-size: 1.5rem;
+    padding: 5%;
+  }
+}
 </style>

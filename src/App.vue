@@ -63,4 +63,10 @@ h6 {
   font-size: 1.7rem;
   text-align: center;
 }
+
+@media only screen and (max-width: 600px) {
+  .wrapper {
+    width: 90%;
+  }
+}
 </style>
