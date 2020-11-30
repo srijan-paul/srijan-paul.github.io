@@ -6,8 +6,9 @@
         My favorite CS subject. I've written several toy programming languages
         over the course of my learning. More recently, I've been developing a
         more "serious" programming language project that you can find below, or
-        on my github. My tools for this are C/C++ for the implementation and
-        some high level language like Python for prototyping the ideas.
+        on my github. My favorite tools for this are C/C++. I used to be a
+        stickler for C but lately I've come to find C++'s improvements
+        worthwhile, safe and time saving
       </Card>
 
       <Card title="Web" icon="web">
@@ -19,7 +20,7 @@
       </Card>
 
       <Card title="Gamedev" icon="game">
-        I love seeing the kind of creating Indie games that studios and
+        I love seeing the kind of creative Indie games that studios and
         individuals come up with. And following from there, I also enjoy game
         development as a hobby. I've tried a bit of several toolchains and
         engines, but my favorite will always be <b>LOVE2D</b>. The fact that it
