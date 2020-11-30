@@ -1,6 +1,6 @@
 <template>
   <div class="projects">
-    <h2 class="section-title">Projects</h2>
+    <h2>Projects</h2>
     <div class="project-list">
       <ProjectCard title="Ave" link="https://github.com/srijan-paul/AveTS">
         A statically type checked programming language that compiles to

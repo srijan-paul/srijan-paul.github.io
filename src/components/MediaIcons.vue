@@ -4,6 +4,7 @@
       ><img height="24" width="24" src="@/assets/github.svg"
     /></a>
 
+    <!-- credit: https://freeicons.io/lifestyle-icons/twitter-icon-11333 -->
     <a href="https://twitter.com/_injuly" class="social-icon" target="_blank"
       ><img height="24" width="24" src="@/assets/twitter.svg"
     /></a>

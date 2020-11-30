@@ -2,7 +2,11 @@
   <section id="app">
     <div class="wrapper">
       <DashBoard />
-      <br />
+      <hr />
+      <CardList />
+      <hr />
+      <Tools />
+      <hr />
       <ProjectList />
     </div>
   </section>
@@ -10,13 +14,17 @@
 
 <script>
 import DashBoard from "@/components/DashBoard";
-import ProjectList from "./components/ProjectList.vue";
+import ProjectList from "./components/ProjectList";
+import CardList from "@/components/CardList";
+import Tools from "@/components/Tools";
 
 export default {
   name: "App",
   components: {
     DashBoard,
     ProjectList,
+    CardList,
+    Tools,
   },
 };
 </script>
@@ -24,6 +32,7 @@ export default {
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fira+Code&display=swap");
 
 :root {
   --hlColor: #2e86de;
@@ -45,7 +54,8 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Roboto", sans-serif;
+  font-family: "Fira Code", sans-serif;
+  /* text-decoration: underline #2980b9; */
 }
 
 .section-title {
