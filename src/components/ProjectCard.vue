@@ -35,6 +35,7 @@ export default {
 
 .card-title {
   font-weight: 700;
+  text-decoration: underline var(--hlColor);
   font-size: 2.5rem;
 }
 

@@ -27,8 +27,12 @@ export default {
   box-shadow: -1px 3px 23px -11px rgba(179, 168, 175, 1);
   margin-bottom: 5%;
   background-color: #ffffff;
-  font-size: 15px;
+  font-size: 90%;
   padding: 4%;
+}
+
+.card-title {
+  font-size: 120%;
 }
 
 .card-text {

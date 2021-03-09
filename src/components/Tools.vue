@@ -14,10 +14,10 @@
 
     <div class="tool-title">Frameworks / Services</div>
     <div class="tool-icons">
-      <Icon name="vue.svg" size="54" text="Vue" />
+      <Icon name="love2d.png" size="54" text="Love2D" />
+      <Icon name="react.svg" size="54" text="React" />
       <Icon name="nodejs.svg" size="54" text="NodeJS" />
       <Icon name="express.svg" size="54" text="Express" />
-      <Icon name="love2d.png" size="54" text="Love2D" />
       <!-- credit: https://freeicons.io/vector-and-svg-logos-icons-17/sass-icon-9036 -->
       <Icon name="sass.svg" size="54" text="Sass" />
       <!-- credit: https://freeicons.io/vector-and-svg-logos-icons-08/firebase-icon-icon -->

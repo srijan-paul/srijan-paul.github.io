@@ -9,6 +9,7 @@
       <hr />
       <ProjectList />
     </div>
+    <Footer />
   </section>
 </template>
 
@@ -17,6 +18,7 @@ import DashBoard from "@/components/DashBoard";
 import ProjectList from "./components/ProjectList";
 import CardList from "@/components/CardList";
 import Tools from "@/components/Tools";
+import Footer from "@/components/Footer";
 
 export default {
   name: "App",
@@ -25,17 +27,18 @@ export default {
     ProjectList,
     CardList,
     Tools,
+    Footer,
   },
 };
 </script>
 
 <style>
-@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Fira+Code&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inconsolata&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
 
 :root {
-  --hlColor: #2e86de;
+  --hlColor: #ee5253;
   --bgColor: #ffffff;
   --fgColor: #333333;
 }
@@ -43,7 +46,7 @@ export default {
 body {
   margin: 0;
   padding: 0;
-  font-family: "Montserrat", sans-serif;
+  font-family: "Roboto Mono", sans-serif;
   color: var(--fgColor);
   background-color: var(--bgColor);
 }
@@ -55,7 +58,6 @@ h4,
 h5,
 h6 {
   font-family: "Fira Code", sans-serif;
-  /* text-decoration: underline #2980b9; */
 }
 
 .section-title {
@@ -65,6 +67,7 @@ h6 {
 
 #app {
   margin: 5% auto 8%;
+  margin-bottom: 3%;
 }
 
 .wrapper {

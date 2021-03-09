@@ -1,7 +1,7 @@
 <template>
   <div id="dashboard" class="container">
-    <img src="@/assets/me.png" alt="Me.. not really." class="rounded-img" />
-    <h1>Srijan Paul</h1>
+    <img src="@/assets/me.png" alt="Me..." class="rounded-img" />
+    <h1 class="title">Srijan Paul</h1>
 
     <MediaIcons />
 
@@ -29,9 +29,17 @@ export default {
 </script>
 
 <style scoped>
+
+.title {
+  font-family: 'Inconsolata';
+  text-decoration: underline var(--hlColor);
+  text-decoration-thickness: 8%;
+}
+
 .rounded-img {
   border-radius: 50%;
   width: 30%;
+  height: auto;
 }
 
 .rounded-img img {
