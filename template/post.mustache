@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../css/common.css">
+  <link rel="stylesheet" href="../css/post.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.3.1/build/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"
+    integrity="sha512-Pbb8o120v5/hN/a6LjF4N4Lxou+xYZ0QcVF8J6TWhBbHmctQWd8O6xTDmHpE/91OjPzCk4JRoiJsexHYg4SotQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <title>{{ meta.title }}</title>
+</head>
+
+<body>
+  <div class="main">
+    <div class="leader">
+      <h2> {{meta.title}} </h2>
+      <div class="post-date">{{meta.date}}</div>
+      <ul class="post-tags" id="tags">
+      </ul>
+    </div>
+    {{&content}}
+  </div>
+  <script>
+    hljs.highlightAll();
+    const tagsDiv = document.getElementById("tags")
+    const tags = {{&meta.tags}}
+    tags.forEach(tag => {
+      const li = document.createElement('li')
+      li.innerHTML = tag
+      tagsDiv.appendChild(li)
+    })
+  </script>
+</body>
+
+</html>

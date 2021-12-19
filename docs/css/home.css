@@ -1,0 +1,65 @@
+.container {
+  width: 45%;
+  margin: auto;
+  margin-bottom: 5rem;
+}
+
+a:visited,
+a:focus,
+a {
+  color: var(--clr-highlight);
+}
+
+a:hover {
+  color: var(--clr-highlight-dark);
+}
+
+.leader {
+  text-align: center;
+  margin-top: 65px;
+  margin-bottom: 0px;
+}
+
+.leader-image > img {
+  width: 200px;
+  border-radius: 50%;
+}
+
+.leader-name {
+  margin-top: 15px;
+}
+
+.leader-name {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.w {
+  width: 65%;
+  margin: auto;
+}
+
+ul {
+  font-size: 16px;
+  list-style-type: disc;
+}
+
+.heading {
+  font-size: 19px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+@media screen and (max-width: 890px) {
+  .w,
+  .container {
+    width: 85%;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .w,
+  .container {
+    width: 95%;
+  }
+}

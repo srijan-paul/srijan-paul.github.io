@@ -1,0 +1,5 @@
+{
+  template: "post" 
+  tags: ["ave" "programming-languages" "type-system" "post"]
+  title: "Ave - Adding elegance and types to Javascript"
+}

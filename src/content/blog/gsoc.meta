@@ -1,0 +1,6 @@
+{
+  template: "post"
+  tags: ["lua" "programming-languages" "gsoc" "post"]
+  title: "GSoC'21- Lifting lambdas Pallene and Lua's sisters (1/2)"
+  date: "July 23, 2021"
+}
