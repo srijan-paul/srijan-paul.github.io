@@ -15,6 +15,11 @@
 <body>
     <div class="main">
         {{&content}}
+        <ul>
+        {{#posts}}
+            <li><a>{{data.title}}</a></li>
+        {{/posts}}
+        </ul>
     </div>
 </body>
 

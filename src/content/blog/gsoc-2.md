@@ -215,8 +215,8 @@ static int closure_0_lua(lua_State* L) {
 
 
 // Lua entry point for `make_counter`. In real compiled code, it would
-// defer execution to it's own C entry point, but to keep this snippet short, I've
-// omitted it.
+// defer execution to it's own C entry point, but to keep this snippet short, 
+// I've omitted it.
 static int make_counter(lua_State* L) {
 	// 1. get the arguments and cast them down to C
 	// data types.

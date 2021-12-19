@@ -5,9 +5,9 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/base16/solarized-light.min.css" integrity="sha512-ZW2g6Pn2pMbKSyjcA+r4Lc58kcfvOdcsTuCCTl3qz8NqVJwUtAuiN61pDoW3EEfrjwH2CPtkFWMdkzMY1idilA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="../css/common.css">
   <link rel="stylesheet" href="../css/post.css">
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.3.1/build/styles/default.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"
     integrity="sha512-Pbb8o120v5/hN/a6LjF4N4Lxou+xYZ0QcVF8J6TWhBbHmctQWd8O6xTDmHpE/91OjPzCk4JRoiJsexHYg4SotQ=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -19,7 +19,8 @@
     <div class="leader">
       <h2> {{meta.title}} </h2>
       <div class="post-date">{{meta.date}}</div>
-      <ul class="post-tags" id="tags">
+      <ul class="tags" id="tags">
+        {{! filled in by script }}
       </ul>
     </div>
     {{&content}}
@@ -30,6 +31,7 @@
     const tags = {{&meta.tags}}
     tags.forEach(tag => {
       const li = document.createElement('li')
+      li.classList.add('tag')
       li.innerHTML = tag
       tagsDiv.appendChild(li)
     })
