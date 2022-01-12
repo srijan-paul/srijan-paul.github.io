@@ -22,19 +22,13 @@
 
 			<div class="nav-right">
 				<a href="https://injuly.in" class="nav-link">home</a>
-				<a href="https://injuly.in/blog" class="active-nav-link nav-link">blog</a>
-				<a href="https://injuly.in/current" class="nav-link">current</a>
+				<a href="https://injuly.in/blog" class="nav-link">blog</a>
+				<a href="https://injuly.in/current" class="nav-link active-nav-link">current</a>
 			</div>
 		</div>
 		<hr>
 
 		{{&content}}
-		<ul>
-		{{#posts}}
-		{{#data.title}}
-			<li><a href="/blog/{{name}}">{{data.title}}</a></li>
-		{{/data.title}}
-		{{/posts}}
 		</ul>
 	</div>
 </body>

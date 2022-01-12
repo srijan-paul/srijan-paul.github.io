@@ -4,16 +4,6 @@
   margin-bottom: 5rem;
 }
 
-a:visited,
-a:focus,
-a {
-  color: var(--clr-highlight);
-}
-
-a:hover {
-  color: var(--clr-highlight-dark);
-}
-
 .leader {
   text-align: center;
   margin-top: 65px;
