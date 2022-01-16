@@ -15,6 +15,7 @@ body {
 .main {
   width: 55%;
   margin: auto;
+  margin-bottom: 5rem;
   font-size: 17px;
 }
 
@@ -29,13 +30,14 @@ a:hover,
 a:visited,
 a:link,
 a:active {
-  text-decoration: underline;
+  text-decoration: none;
   color: var(--link-color);
+  font-weight: bold;
 }
 
 a:hover {
   text-decoration: underline;
-  filter: brightness(0.6);
+  filter: brightness(0.8);
   color: var(--link-color);
 }
 
@@ -46,12 +48,11 @@ a:hover {
   margin: 0;
   padding: 0;
   display: flex;
-  gap: 1rem;
 }
 
-.tags > li {
+.tags > a {
   display: inline-block;
-  margin-left: 0px;
+  padding-right: 0.8rem;
 }
 
 /* lists */
@@ -168,7 +169,7 @@ code {
   overflow: auto;
 }
 
-h1, h2, h3, h4 {
+h1, h2, h3, h4, h5 {
   font-weight: bolder;
 }
 

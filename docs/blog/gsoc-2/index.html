@@ -18,7 +18,7 @@
   <div class="main">
 		<div class="nav">
 			<div class="nav-left">
-				<a id="home-link" href="https://injuly.in">injuly.in</a>
+				<a id="home-link" href="/">injuly.in</a>
 			</div>
 
 			<div class="nav-right">
@@ -32,7 +32,7 @@
 
     <div class="leader">
       <h2> GSoC&#39;21- Lifting lambdas Pallene and Lua&#39;s sisters (2/2) </h2>
-      <div class="post-date">August 16, 2021</div>
+      <div class="post-date">2021-08-16</div>
       <ul class="tags" id="tags">
       </ul>
     </div>
@@ -72,86 +72,9 @@ In this one, I'll briefly go over our approach to the problem, and some relevant
 </table>
 </div>
 <h2 id="get-the-code">Get The Code.</h2>
-<p>Let's get the obvious parts out of the way first.<br>
+<p>Let's get the obvious out of the way first.<br>
 A list of all the PRs I made over the summer can be found on
 <a href="https://github.com/pallene-lang/pallene/pulls?q=is%3Apr+is%3Aclosed+author%3Asrijan-paul+created%3A%3E2021-04-27+merged%3A%3C2021-08-23">this</a> link.</p>
-<p>Nevertheless, here is a summary:</p>
-<div style="font-size:90%;">
-<table>
-<thead>
-<tr>
-<th>PR</th>
-<th>Purpose</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="https://github.com/pallene-lang/pallene/pull/373">373</a></td>
-<td>Adding support for closures to the pallene parser.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/pallene-lang/pallene/pull/386">386</a></td>
-<td>HOFs that cannot reference variables declared outside them.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/pallene-lang/pallene/pull/389">389</a></td>
-<td>Closures can read but not write to captured variables.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/pallene-lang/pallene/pull/399">399</a></td>
-<td>Closures can read <strong>and</strong> write to captured variables.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/pallene-lang/pallene/pull/402">402</a></td>
-<td>Closures can capture and mutate parameters from outer functions.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/pallene-lang/pallene/pull/404">404</a></td>
-<td>Implement upvalues that aren't initialized upon declaration.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/pallene-lang/pallene/pull/405">405</a></td>
-<td>Remove metatables for records that are used to capture upvalues.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/pallene-lang/pallene/pull/423">423</a></td>
-<td>Limit the maximum number of function parameters / arguments.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/pallene-lang/pallene/pull/438">438</a></td>
-<td>Avoid creating closures for lambdas in luaopen.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/pallene-lang/pallene/pull/440">440</a></td>
-<td>First change to calling convention. Pass a single parameter in generated code representing the upvalue list</td>
-</tr>
-<tr>
-<td><a href="https://github.com/pallene-lang/pallene/pull/445">445</a></td>
-<td>(Bugfix) Limit upvalue count to 200</td>
-</tr>
-<tr>
-<td><a href="https://github.com/pallene-lang/pallene/pull/450">450</a></td>
-<td>(Bugfix) Fixed some generated C code that would crash because of missing parameters.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/pallene-lang/pallene/pull/452">452</a></td>
-<td>Introduce a new <code>SetUpvalue</code> instruction in the IR.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/pallene-lang/pallene/pull/457">457</a></td>
-<td>Second change to call convention. Capturing non-toplevel FuncStats as upvalues.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/pallene-lang/pallene/pull/462">462</a></td>
-<td>Split <code>G</code> into <code>K</code> and <code>U</code>. Global variables now treated as upvalues</td>
-</tr>
-<tr>
-<td><a href="https://github.com/pallene-lang/pallene/pull/467">467</a></td>
-<td>Changes to <code>SetUpvalue</code> IR instruction. Upvalues now set in batches</td>
-</tr>
-</tbody>
-</table>
-</div>
 <h2 id="first-contact-">First contact. <a name="first-contact"></a></h2>
 <p>(Flashback to how I came across Pallene, skip if not interested in misc. background stories).</p>
 <p>I used Pallene for the first time around September (I think?) of 2020.

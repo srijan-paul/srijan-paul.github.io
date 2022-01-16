@@ -8,7 +8,7 @@
 	<link rel="stylesheet" href="../css/common.css">
 	<link rel="stylesheet" href="../css/post.css">
 	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/default.min.css">
-	<title>{{ title }}</title>
+	<title>injuly - blog</title>
 </head>
 
 <body>
@@ -17,7 +17,7 @@
 		{{! The navbar }}
 		<div class="nav">
 			<div class="nav-left">
-				<a id="home-link" href="https://injuly.in">injuly.in</a>
+				<a id="home-link" href="/">injuly.in</a>
 			</div>
 
 			<div class="nav-right">
@@ -29,14 +29,53 @@
 		<hr>
 
 		{{&content}}
-		<ul>
-		{{#posts}}
-		{{#data.title}}
-			<li><a href="/blog/{{name}}">{{data.title}}</a></li>
-		{{/data.title}}
-		{{/posts}}
+		<ul id="post-list" class="post-list">
 		</ul>
 	</div>
+
+	<script>
+		const posts =  [
+			{{#posts}}
+				{{#data.title}}
+		 		 	{
+						tags: {{&data.tags}},
+						date: new Date("{{&data.date}}"),
+						name: "{{name}}",
+						title: `{{&data.title}}`
+					} ,
+				{{/data.title}}
+			{{/posts}}
+		];
+
+		posts.sort((a, b) => b.date - a.date)
+
+		function dateToString(date) {
+			const monthNames = ["January", "February", "March", "April", "May", "June",
+				"July", "August", "September", "October", "November", "December"
+			];
+			return `${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`
+		}
+
+		const postsNode = document.getElementById("post-list");
+		for (const post of posts) {
+			const li = document.createElement("li");
+			li.id = post.name;
+			
+			const a = document.createElement("a");
+			a.innerText = post.title
+			a.href = `/blog/${post.name}`
+			li.appendChild(a);
+
+			const date = document.createElement("span")
+			date.innerHTML = ` ${dateToString(post.date)}`
+			date.classList.add("post-list-date")
+			li.appendChild(date)
+
+			postsNode.appendChild(li)
+		}
+
+	</script>
+
 </body>
 
 </html>

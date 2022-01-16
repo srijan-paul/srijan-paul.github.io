@@ -9,13 +9,15 @@ You can some amateur pixel art on <a href="https://twitter.com/_injuly" target="
 
 ## This site
 
-This website is made with <a href="https://github.com/srijan-paul/bark" target="_blank">bark</a> - a static site generator written in Haskell by yours truly. That includes the attached <a href="/blog" target="_blank">blog</a> too.
+This website is made with <a href="https://github.com/srijan-paul/bark" target="_blank">bark</a> -
+a bespoke static site generator written in Haskell by yours truly.
+It is used to generate the attached <a href="/blog" target="_blank">blog</a> too.
 
 ## Projects
 
 - <a href="https://github.com/srijan-paul/snap" target="_blank">Vyse</a>: A dynamically typed and interpreted programming language for embedding in applications like web-servers and game engines.
 
-- <a href="https://github.com/srijan-paul/snap" target="_blank">Bonkyon</a>: A small puzzler game written in LOVE. play <a href="https://injuly.itch.io/bonkyon" target="_blank">here</a>.
+- <a href="https://github.com/srijan-paul/snap" target="_blank">Bonkyon</a>: A small puzzler game written in LOVE. Play <a href="https://injuly.itch.io/bonkyon" target="_blank">here</a>.
 
 - <a href="https://github.com/srijan-paul/bark" target="_blank">Bark</a>: A static site generator like Hugo/11ty/Jekyll written in Haskell.
 
@@ -26,4 +28,4 @@ This website is made with <a href="https://github.com/srijan-paul/bark" target="
 And many more on my GitHub :)
 
 ## Contact
-The best way to reach me is on discord - **injuly#6820**, or by shooting a mail at [srijannr1@gmail.com](mailto:srijannr1@gmail.com).
+The best way to reach me is a `"hi"` on discord - `injuly#6820`, or an e-mail at [srijannr1@gmail.com](mailto:srijannr1@gmail.com).

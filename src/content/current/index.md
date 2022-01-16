@@ -1,19 +1,24 @@
 ## Jan. 2022
-I'm CS undergraduate, and a software engineer by profession.
-Non-professional interests are game development, pixel art and fiction.
+Whiling away my 5th semester in home isolation with a laptop and a couple of books.
 As of January 2021, these are my going ons :^)
 
 ### Reading
-Current readings are [Dune - Messiah](https://en.wikipedia.org/wiki/Dune_Messiah) and [Hercule Poirot's Christmas](https://en.wikipedia.org/wiki/Hercule_Poirot%27s_Christmas).
-I plan on finishing the dune saga in the first half of this year, before I begin Mistborn.
+Current readings are [Dune - Messiah](https://en.wikipedia.org/wiki/Dune_Messiah) and [The Martian](https://www.goodreads.com/book/show/18007564-the-martian).
+I plan on finishing the dune saga in the first half of this year, before I begin some of Sanderson's books.
 
-I also wish to read  [The Martian](https://www.goodreads.com/book/show/18007564-the-martian) and [Category theory for programmers](https://www.goodreads.com/en/book/show/33618151-category-theory-for-programmers) in the very near future. The former might be on my desk before the end of this month.
+I also wish to read  [Thinking with Types](https://thinkingwithtypes.com/) and
+[Category theory for programmers](https://www.goodreads.com/en/book/show/33618151-category-theory-for-programmers)
+in the very near future. The former might be on my desk before the end of this month.
 
 ### Projects
-Currently building my static site generator - [Bark](https://injuly.in/bark/).
+I am currently building my static site generator - [Bark](https://injuly.in/bark/). <br/>
+I've recently ported this website to the said SSG, and have added support for tags.
 This month I plan on updating the frontmatter parser to a monadic one, adding directory watching and serving files on localhost.
 
-Two of my older projects have been dormant for a while - [Vyse](https://injuly.in/vyse) and [Wex](https://github.com/cpp-gamedev/wex).
-It's about time I revive them as well.
+Two of my older projects have been dormant for a while - [Vyse](https://injuly.in/vyse) and [Wex](https://github.com/cpp-gamedev/wex). <br/>
+It's about time I revive them.
 For Vyse, I plan to add support for custom objects and module loading.
 A clearer roadmap for wex is yet to come.
+
+### Plans 
+This year I plan on doing more game jams on itch, learning more Russian, playing the Piano and writing at least once every month on the blog.
