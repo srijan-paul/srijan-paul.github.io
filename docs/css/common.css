@@ -106,13 +106,16 @@ pre, code {
 }
 
 .post-list > li {
+  box-sizing: border-box;
+  padding: 0;
   list-style-type: none;
   list-style-position: outside;
   margin-left: 0;
 }
 
-.post-list > li > a {
+.post-list > li > span {
   text-decoration: none;
+  vertical-align: baseline;
 }
 
 .post-list-date {
@@ -126,7 +129,21 @@ pre, code {
   margin-bottom: 5rem;
 }
 
+@media screen and (max-width: 730px) {
+  .post-list > li {
+    padding: 1rem 0rem;
+  }
+}
+
 @media screen and (max-width: 400px) {
+  .post-list {
+    font-size: 15px;
+  }
+
+  .post-list > li > a {
+    float: none;
+  }
+
   .nav {
     display: inline-block;
     text-align: left;

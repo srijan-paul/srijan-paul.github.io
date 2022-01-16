@@ -1,6 +1,6 @@
 {
   template: "post" 
   tags: ["ave" "programming-languages" "type-system" "post"]
-  title: "Ave - Adding elegance and types to Javascript"
+  title: "Ave - JS with static types"
   date: "2020-10-01"
 }
