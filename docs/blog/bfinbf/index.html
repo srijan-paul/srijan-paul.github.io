@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/base16/solarized-light.min.css" integrity="sha512-ZW2g6Pn2pMbKSyjcA+r4Lc58kcfvOdcsTuCCTl3qz8NqVJwUtAuiN61pDoW3EEfrjwH2CPtkFWMdkzMY1idilA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="../../css/common.css">
+  <link rel="stylesheet" href="../../css/post.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"
+    integrity="sha512-Pbb8o120v5/hN/a6LjF4N4Lxou+xYZ0QcVF8J6TWhBbHmctQWd8O6xTDmHpE/91OjPzCk4JRoiJsexHYg4SotQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <title>Compiling to Brainf#ck - Meep.</title>
+</head>
+
+<body>
+  <div class="main">
+		<div class="nav">
+			<div class="nav-left">
+				<a id="home-link" href="https://injuly.in">injuly.in</a>
+			</div>
+
+			<div class="nav-right">
+				<a href="/" class="nav-link">home</a>
+				<a href="/blog" class="nav-link">blog</a>
+				<a href="/current" class="nav-link">current</a>
+			</div>
+		</div>
+
+    <hr style="height:1px;border:none;color:#333;background-color:#333;">
+
+    <div class="leader">
+      <h2> Compiling to Brainf#ck - Meep. </h2>
+      <div class="post-date">22 October, 2020</div>
+      <ul class="tags" id="tags">
+      </ul>
+    </div>
+    <h2 id="alternate-title-writing-a-brainfuck-interpreter-in-brainfuck-the-stupid-way">Alternate Title: Writing a brainfuck interpreter in brainfuck, the stupid way.</h2>
+<p>Brainfuck is one of the most popular esoteric programming languages.
+Esoteric languages are &quot;for fun only&quot; and not for serious use (but that didn't stop a lot of people).
+Most esoteric programming languages are simple, have a very limited instruction-set/syntax and most
+importantly, they all are very, very different from your conventional programming language.</p>
+<p>In this post, I attempt to write a programming language that compiles to brainfuck, and then write an
+interepreter for brainfuck in our new language, compile it and have a brainfuck interpreter in brainfuck!
+(Not the brightest means to the end, I know. But it's a good way of testing our implementation).</p>
+<h2 id="the-what---brainfuck">The What - Brainfuck</h2>
+<p>If you're already familiar with brainfuck, you'll probably be better off skipping over
+this part.</p>
+<p>The Brainfuck programming language's syntax contains a total of 8 characters (yes, 8).
+Brainfuck models an imaginary machine, with an infinitely long memory tape.</p>
+<img src="\assets\img\brainfuck\1.png"/>
+<p>Each cell in this tape is a byte long and initially set to zero.
+We also have a data pointer, which I drew as an arrow below the tape. It points to the current data cell under inspection.
+The programmer moves this data pointer around in the tape, incrementing and decrementing the values in the cells.</p>
+<p>The 8 instructions we talked about earlier are the following:</p>
+<p><code>+</code> - increment the value at the current data pointer by one.</p>
+<p><code>-</code> - decrement the value at the current data pointer by one.</p>
+<p><code>&gt;</code> - move the data pointer one cell to the right.</p>
+<p><code>&lt;</code> - move the data pointer one cell to the left.</p>
+<p><code>.</code> - print the value at the current data pointer as an ascii character.</p>
+<p><code>,</code> - take one byte of input from the user and put it in the current cell.</p>
+<p><code>[</code> - if the value at the current data pointer is 0, skip the corresponding <code>]</code>, else continue from the next instruction.</p>
+<p><code>]</code> - if the value at the current data pointer is non-zero, jump back to the correspondong <code>[</code>, else continue on to the next instruction</p>
+<p>And that's all. This might seem like a very limited instruction set, and it is, but brainfuck is a turing-complete programming language.
+Meaning, if a solution exists to a computational problem, It is theoretically possible find it with brainfuck. To know more about brainfuck,
+I'd advise you to skim over <a href="https://esolangs.org/wiki/Brainfuck">this</a> page.</p>
+<p>Creating an interpreter for brainfuck is trivial, and you can finish one in a couple of hours. Brainfuck is easy to compile, but hard to <em>compile to</em>. And so I spend a weekend challenging myself to attempt the latter.</p>
+<h2 id="the-why">The Why</h2>
+<p>Because we can, really. Brainfuck <strong>is</strong> turing complete, so it <em>could</em> serve as a good compilation target.
+One weekend I found myself going through some brainfuck-derived languages, all of which added some spice to the language,
+like having a 2D grid serve as a memory instead of the tape, and what not. Now programming in brainfuck is not my thing at all, I don't find
+the idea of solving problems with a tape of unsigned bytes fun, nor would I be good at it. However, it could work as an interesting thought experiment to see if one can compile a programming language down to such a limited instruction set, and to top it all off,
+We could write a brainfuck interpreter in the language we invent, because why not?</p>
+<p>Now I had exams coming up, and a couple of other things to work on. So I wanted this to be done <em>fast</em>, meaning no kanban boards,
+no to-dos and wishlists. Just a simple, single pass compiler cobbled up in a weekend as a little prototype.</p>
+<h2 id="the-how---meep">The How - Meep</h2>
+<p>Here is the weekend-long implementation plan I came up with:</p>
+<ol>
+<li>Single pass, no AST involved, compile tokens to IR and IR to Brainfuck.</li> 
+<li>Emulate a stack on brainfuck's memory tape, helps model a stack based VM-like architechture.</li> 
+<li>Write a brainfuck interpreter in our language to test the implementation. </li> 
+<li>Profit</li> 
+</ol>
+<p>Now this is something I wanted to be done with in about 2-3 days at the longest, so I also put down some design goals for the language
+that we're about to build.</p>
+<ul>
+<li><strong>As normal looking as possible</strong> - It should look familiar to existing languages.
+</li>
+<li><strong>Minimal feature set</strong> - It should support arrays, numbers, strings, if-else, looping. Just about what we need to
+write a brainfuck interpreter, it's a prototype after all.
+</li>
+<li><strong>Single pass</strong> - The compiler <em>must</em> be single pass. That poses some difficulties, and some restrictions. But we'll get over those.
+</li>
+</ul>
+<p>As I came to know later, such projects already exist. If you're looking for similar stuff for whatever reason, the
+esolangs wiki is a good place to look :)</p>
+<h2 id="a-tour-of-meep">A Tour of meep</h2>
+<p>Like I mentioned earlier, it has byte sized numbers, arrays, strings, if-elses and while loops.
+To an experienced brainfuck programmer, all this is probably very easy to get by.</p>
+<pre><code class="language-js">var message = &quot;Hello!&quot;;
+print(message); // Hello!
+set message[2] = 'y';
+print(message); // Heylo!
+
+print('0' + len(message)) // 6
+
+var char = 'a';
+print(char);
+set char = 'b';
+print(char);
+
+var bool = input == 'a';
+
+if bool
+    print &quot;you entered the letter 'a'&quot;;
+else
+    print &quot;idk what you entered&quot;;
+
+var i = 0;
+while i &lt; 10 {
+    print 'a' + i;
+    set i = i + 1;
+}
+
+</code></pre>
+<p>No, it doesn't have functions, <code>print</code> is actually a statement, and <code>len</code> is a language feature.
+Though I might write another version of this with an additional pass, <em>with</em> functions and a simulated heap some day.
+This particular language still remains rushed and largely prototypical.</p>
+<h2 id="how-does-it-work">How does it work?</h2>
+<p>The path that a user written program takes in meep goes,</p>
+<p>source code -&gt; <strong>Tokenizer</strong> -&gt; tokens -&gt; <strong>IRCompiler</strong> -&gt; IR -&gt; <strong>Generator</strong> -&gt; Brainfuck</p>
+<p>The IR stands for intermediate representation, it's kind of like assembly but instead of targeting a
+processor, it targets a compiler back end. It's dumbed down in complexity in comparison to an AST, and is more
+lightweight. Usually, real programming language implementations first construct a syntax tree and then break it
+down into IR code (Exceptions exist, like Lua). For a small language though, we should be fine.</p>
+<p>Now here are all the IR instructions at a glance:</p>
+<pre><code class="language-c">  POP PUSH
+  ADD SUB EQUALS
+  SET_VAR GET_VAR
+  FALSE_ TRUE_
+  LOAD_BYTE PRINT START_IF CLOSE_IF_BODY
+  END_IF START_ELSE END_ELSE START_LOOP END_LOOP
+  POPN CMP_LESS CMP_GREATER LOAD_STRING MAKE_BUS
+  INDEX_VAR NOT MAKE_SIZED_BUS SET_AT_INDEX INPUT
+  LEN
+</code></pre>
+<p>Let's walk through a little program here and see the transformations it goes through :</p>
+<pre><code class="language-js">var bool = false;
+if bool print 'a' else print 'b';
+</code></pre>
+<p>first it tokenizes to:</p>
+<pre><code class="language-js">[
+  'var',
+  'bool',
+  '=',
+  'false',
+  ';',
+  'if',
+  'bool',
+  'print',
+  &quot;'a'&quot;,
+  'else',
+  'print',
+  &quot;'b'&quot;,
+  ';',
+];
+</code></pre>
+<p>The tokens are then picked up by the IRCompiler which does the parsing and spits out
+the following IR:</p>
+<pre><code class="language-c">// First, we push a `false` onto the stack,
+// this is the local variable `'bool'`.
+// stack state: [0]
+FALSE_
+// Then we read from the variable, meaning we take the value at index 0
+// in the stack and push it again to the top [0, 0]
+GET_VAR 0
+// marks the beginning of an if-block,
+// the part after this is executed if
+// the value on top of the stack is
+// true (non-zero)
+START_IF
+// push an 'a' onto the stack
+LOAD_BYTE 97
+// print the value at the top of the
+// stack and pop it.
+PRINT
+CLOSE_IF_BODY
+// the else block
+// excutes of the if block didn't
+// I'll get to how I did this down later.
+START_ELSE
+// push 'b'
+LOAD_BYTE 98
+// print value at
+// stack top
+PRINT
+END_ELSE
+END_IF
+</code></pre>
+<p>And that finally turns into a bloated brainfuck file:</p>
+<pre><code class="language-js">&gt;&gt;&lt;[&gt;+&gt;+&lt;&lt;-]&gt;&gt;[&lt;&lt;+&gt;&gt;-]&lt;&gt;+&lt;[&gt;&gt;+++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++.[-]&lt;-&lt;[-]]&gt;[&gt;++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.[
+-]&lt;[-]][-]&lt;[-]&lt;
+</code></pre>
+<p>The idea is to get the brainfuck memory tape to act like a stack that we can push to and pop from,
+then it's possible to get it to act like a stack based VM.</p>
+<p>I'll explain some of the challenges I came across and ones that you may have to fight
+if you ever choose to try something similar for whatever reason.</p>
+<h2 id="under-the-hood">Under the hood.</h2>
+<p>Lets get a few things established before moving on to the implementation.</p>
+<ol>
+<li>
+<p>The data pointer is used to point to the top of the stack, it is what you would call a &quot;stack pointer&quot;.
+It points to the top most value in the stack.</p>
+</li>
+<li>
+<p>All the cells are initially zeroed out, so we have an empty stack which is about 30k bytes long in most
+implementations.</p>
+</li>
+<li>
+<p>All statemnents must have a stack-effect of 0, meaning they shouldn't leave any unpopped values on the
+stack after they finish execution.</p>
+</li>
+<li>
+<p>All expressions must have a stack effect of +1, meaning they must leave the stack one value (not 1 byte or cell)
+larger than it was before the expression was evaluated.</p>
+</li>
+</ol>
+<p>That's really just the basics of how a stack based VM works.</p>
+<h3 id="variables">Variables.</h3>
+<p>This is fairly easy, just push a value onto the stack (write <code>&quot;&gt;&quot; * n</code> where n is the value of the variable).
+All statements <em>must</em> always leave the stack as big as it was before the statement was evaluated.
+This allows us to just use the <code>&lt;</code> and <code>&gt;</code> instructions to look up variable values. The number of variables
+is always known at compile time, as is the order they appear in, so we can substitute every variable look-up
+as just copying byte from a certain depth in the stack to the top.</p>
+<pre><code class="language-js">var c = 'a';      // 1
+print(c + 1);     // 2
+set c = 'b';      // 3
+print(c + 1 - 2); // 4
+</code></pre>
+<p>Line 1 - First, <code>'a'</code> is pushed to the stack (<code>[97]</code>). Since this value is never popped, it's a byte sized variable.</p>
+<p>Line 2 - Then, we get the variable at index <code>0</code> and push it to the top (<code>[97, 97]</code>).
+Push a <code>1</code> to the top of the stack (<code>[97, 97, 1]</code>), then pop the top two values, add them and push the result back (<code>[97, 98]</code>).
+Now we print the value at the top of the stack, and pop it right after (<code>[97]</code>)</p>
+<p>See how we executed an entire statement, and yet the stack is exactly as long as it was on line 1?
+Try going through the next 2 statements and you'll see the effect is exactly the same. This is true for
+all statements except variable declarations, which have a stack effect of +1, as they push one value onto it that just
+stays there until the program terminates.</p>
+<p>So how exactly do we push values on top of the stack, when the stack is really the brainfuck memory tape?
+Simple, we use <code>&gt;</code>, to move one step forward and then <code>+</code> to increment from 0 to the value of the variable.
+So pushing a <code>5</code> is as simple as <code>&quot;&gt;+++++&quot;</code>.</p>
+<p>Popping a byte however, can't just be done with <code>&quot;&lt;&quot;</code> because when a new stack slot is occupied, it's assumed to be 0.
+So we zero out all values before popping off. Henceforth, our instruction for popping a byte becomes <code>&quot;[-]&lt;&quot;</code>.
+Basically, decrement the value at stack pointer until it is 0, then move the stack pointer on step back.</p>
+<h3 id="strings-and-arrays">Strings and arrays.</h3>
+<p>Strings and arrays behave mostly identically in Meep, they're both just streams of bytes.
+I didn't bother adding 2D arrays, though they'd be trivial given most of the scaffolding needed is already
+present. The trickiest part was to support indexing arrays.</p>
+<p>Arrays can be indexed with values that aren't known at compile time.</p>
+<pre><code class="language-js">var array = {'a', 'b', 'c'};
+var index = input();
+if index &gt; len(array) {
+  print &quot;Index out of bounds&quot;;
+} else {
+  print array[index];
+}
+</code></pre>
+<p>I googled around a bit to find what brainfuck programmers usually do, one solution involved
+having a flag next to every single array element, doubling the size of arrays, it was also tough
+to work with. Another one I found was to pad an array with 2 zeros in the beginning and one at the end,
+but this required that no elements in the array be 0, which is a bit inconvinient.</p>
+<p>I however had the advantage of getting the memory tape to follow stack semantics, so I came up with a solution
+which works pretty well at the moment. Let's first see how we would get an element from an array.
+The information we have at compile time is:</p>
+<ul>
+<li>The index we need to visit is currently present at the top of the stack.
+</li>
+<li>We know the size of the stack.
+</li>
+<li>We know the index of the array and it's depth from the stack top.
+</li>
+</ul>
+<p>What we need to do is:</p>
+<ul>
+<li>Pop the index from the stack's top, then fetch the value at that index, and push
+the value to the stack's top.
+</li>
+</ul>
+<p>So if <code>array</code> is <code>{1, 2, 3, 4}</code> at depth <strong>D</strong>, and the index <strong>i</strong> is <code>2</code>, the memory tape looks like this:</p>
+<img src="\assets\img\brainfuck\2.png"/>
+<p>The idea is:</p>
+<ol>
+<li>Move the pointer to the right by one cell and leave behind a <code>0</code> to mark the current stack top.
+</li>
+<li>Move the pointer to the right again by <strong>D</strong> cells, leaving behind a trail of <code>1</code>s in the process.
+</li>
+<li>Now, if we copy a value which is at a depth of <strong>D</strong> cells from the current position, we have succesfully copied
+the value at index <strong>i</strong> to the current stack pointer.
+</li>
+<li>Keep moving the value back as long as we see a <code>1</code> in the cell to the left.
+</li>
+<li>Once a <code>0</code> is seen on the left, shift the value to that cell.
+</li>
+<li>Done.
+</li>
+</ol>
+<p>Here is a very artistic potrayal of the steps to explain it better:</p>
+<img src="\assets\img\brainfuck\3.png"/>
+<p>Modifying the value at an array's index is similar, using the index move the value <strong>i</strong> cells to the
+right, then copy the value at the stack's top to the value at depth <strong>D</strong> from here. Move the stack pointer
+back just like we did before and we're done.</p>
+<p>The actual code for moving a value <strong>v</strong> to the right by <strong>v</strong> steps after planting a marker is:</p>
+<pre><code class="language-js">[-  &gt;+&lt;]&gt; // place a marker 0 by moving index one cell to the right.
+[    // until the index is 0
+  [- &gt;+&lt;]+&gt; - // move it one step to the right, place a 1 at
+              // it's previous location, and decrement it's value by 1.
+]
+</code></pre>
+<p>After copying the value, moving it back to the left is similary achieved with <code>&lt;[-&gt;[-&lt;+&gt;]&lt;&lt;]&gt;[-&lt;+&gt;]&lt;</code>.</p>
+<h3 id="if-statements">If statements.</h3>
+<p>If statements behave as one would expect. We first push a condition onto the stack.
+If the condition is non-zero, we execute the if body and skip over the else block, if not
+then we skip over the consequent block and execute the else. At first glance, it would appear
+that a conditional jump can be easily implemented in brainfuck using <code>[]</code>, however we also
+have to skip over the else-block if the condition does turn out to be false (zero).</p>
+<p>The solution I came up with, again invovled leveraging the stack semantics of our bloated runtime code a
+slight bit. This time around, we use a flag placed right after the condition's value on the memory tape,
+the flag tells us whether or not to execute the <code>else</code> block.</p>
+<ol>
+<li>Push a 1 bit flag right next to the condition on the memory tape, this indicates whether
+the else block will be executed. Intially, set it's value to <code>1</code>.
+</li>
+<li>Move the data pointer one cell left and go back to the condition.
+</li>
+<li>Use <code>[ if_block ]</code> to conditionally evaluate the if-block, inside the <code>[]</code>,
+place some code that flips the flag to <code>0</code> to indicate the if block has been executed and the
+<code>else</code> block no longer needs to run.
+</li>
+<li>After exiting the if-block the data pointer returns back to the flag automatically, since the
+body of an if-statement is a block statement, which has a stack effect of 0.
+</li>
+<li>Use <code>[ else_block ]</code> again to conditionally evaluate the if-block depending on the flag.
+</li>
+<li>Pop both the flag and the condition off the stack.
+</li>
+</ol>
+<p>So right after pushing the condition, this is what the memory tape looks like:</p>
+<img src="\assets\img\brainfuck\4.png"/>
+<p>And the generated brainfuck code looks somewhat like this:</p>
+<pre><code class="language-py">#code to put the condition on stack goes here
+&gt; + &lt;  #put a 1 bit flag on the stack and go back to the condition
+[  #if the condition is true
+  &gt; - # set the flag to false, no need to run the else block.
+      # then-block's body goes here
+  &lt;   # move the pointer back to the condition.
+  [-] # zero the condition so we can exit.
+] &gt; # move the pointer to the flag
+[     # if the flag is true
+      # else-block's code goes here
+    - # zero out the flag now so we can exit.
+] # exit else-block
+[-]&lt; # pop the flag off.
+[-]&lt; # pop the condition off.
+</code></pre>
+<p>It's kind of a pain because there is no notion of <em>&quot;skip n instructions&quot;</em> or <em>&quot;jump to instruction n&quot;</em>
+in brainfuck, and we always have to act relative to the data pointer's current location. This one took
+me a couple of hours.</p>
+<h3 id="while-loops">While loops</h3>
+<p>This was the most straight forward and easy control flow to implement.
+Brainfuck's native <code>[]</code> does exactly what we want a while loop to do, the
+only difference is we want to evaluate the condition every time we are done
+executing the body. Pretty simple:</p>
+<pre><code class="language-py"># condition expression
+[
+  [-]&lt; # pop the condition
+  # code to loop over.
+  # the same condition expression again.
+]
+
+</code></pre>
+<p>If you're wondering how it's parsed and compiled, honestly my approach
+was a pretty stupid and &quot;hacky&quot; one, but it get's the job done so what gives.
+Basically, I have a class called <code>IRCompiler</code>
+which has a data member <code>this.ir</code>, an array of IR codes. <code>this.emit(o)</code>, pushes
+<code>o</code> to the IR array.</p>
+<pre><code class="language-js">class IRCompiler {
+  constructor() {
+    this.ir = [];
+  }
+
+  // other code
+
+  whileStmt() {
+    // store the length of the IR before
+    // the condition is compiled
+    let before = this.ir.length - 1;
+    this.expression(); // compile condition.
+    // length after the condition is compiled.
+    let after = this.ir.length;
+    this.emit(IR.start_loop);
+    this.statement();
+    // emit the bytes for the condition again
+    // since it needs to be re-evaluated.
+    // To do this, we take the code for the
+    // condition, and re-insert it again.
+    for (let i = before + 1; i &lt; after; i++) {
+      this.emit(this.ir[i]);
+    }
+    this.emit(IR.end_loop);
+  }
+
+  // other code
+}
+</code></pre>
+<p>That's about it for all the challenging parts.
+This section would have been a <strong>lot</strong> longer had someone tried this as a more featured language.
+Meep still leaves many features to be desired:</p>
+<ul>
+<li>Support for numbers larger than 1 byte.
+</li>
+<li>N-d arrays (this is an easy one to implement).
+</li>
+<li>Functions, more flow control.
+</li>
+<li>Heap allocation and passing/copying strings and arrays by reference.
+</li>
+</ul>
+<p>But this is still a fine little experiment to make use of brainfuck's turing completeness,
+and show that it can be used as a compilation target. One could even make use of meep
+on of those crazy computers that run brainfuck natively ! Which reminds me...</p>
+<h2 id="bfinbf">BFinBF</h2>
+<p>There are many bootstrapping brainfuck interpreters, one of the reasons I made
+meep was to write one of those myself. So here it is:</p>
+<pre><code class="language-js">var memory = bus 250; // the memory tape
+var mptr = 0;         // data pointer
+var code = bus 250;   // the user's code
+
+var i = 0; // current position in the source code.
+
+// this is a very unusual and wonky way of getting
+// user input but since we can only get one byte of input
+// at a time so...
+while i != len(code) {
+    set code[i] = input;
+    set i = i + 1;
+    if (code[i] == 'x') set i = len(code);
+}
+
+
+set i = 0; // reset position
+var c = 0; // current code character.
+var bctr = 0;
+while i != len(code) {
+    set c = code[i]
+
+    if      c == '+' set memory[mptr] = memory[mptr] + 1;
+    else if c == '.' print memory[mptr];
+    else if c == '-' set memory[mptr] = memory[mptr] - 1;
+    else if c == '&lt;' set mptr = mptr - 1;
+    else if c == '&gt;' set mptr = mptr + 1;
+    else if c == ',' set memory[mptr] = input;
+    else if c == '[' { // skip to corresponding ']' if current cell is 0
+        if memory[mptr] == 0 {
+            set i = i + 1;
+            while ((bctr != 0) + (code[i] != ']')) != 0 {
+                if      code[i] == '[' set bctr = bctr - 1;
+                else if code[i] == ']' set bctr = bctr + 1;
+                set i = i + 1;
+            }
+        }
+    // jump back to the opening '[' if current cell is nonzero
+    } else if c == ']' {
+        if (memory[mptr] != 0) {
+            set i = i - 1;
+            while ((bctr != 0) + (code[i] != '[')) != 0 {
+                if      code[i] == ']' set bctr = bctr + 1;
+                else if code[i] == '[' set bctr = bctr - 1;
+                set i = i - 1;
+            }
+            set i = i - 1;
+        }
+    }
+    set i = i + 1;
+}
+</code></pre>
+<p>Hmm, It honestly doesn't look too bad!</p>
+<p>Until... you compile it and it generates a
+<a href="https://github.com/srijan-paul/BFinBF/blob/main/bf_interpreter.bf">850 line file</a> with thousands
+of characters.For reference, the <a href="https://esolangs.org/wiki/Dbfi">shortest known BF interpreter</a> is slightly
+over 400 characters.
+Time for some hindsight:</p>
+<ul>
+<li>Is Meep efficient? <strong>No</strong>. It doesn't optimize, single pass.
+</li>
+<li>Does the brainfuck interpreter work? <strong>Yes</strong>.
+</li>
+<li>Can it interpret itself? <strong>No</strong>. That's a bit sad.
+</li>
+<li>Was it worth it? <strong>Absolutely</strong>. I still think this is cool :)
+</li>
+</ul>
+<h2 id="acknowledgement">Acknowledgement.</h2>
+<p>A very odd placement for a something you'd expect in the beginning. Regardless,
+while tinkering on this monstrosity, I found out that I was by no means the first
+one to try compiling to brainfuck. On the esolangs wiki, I happened to come across
+<a href="https://github.com/benjojo/c2bf">C2BF</a>, a C compiler targeting brainfuck. It's
+a lot more capable than Meep is at the moment.
+There are also some projects attempting to compile asm
+to brainfuck, and one even compiles Python, but both only support a very small subset
+of the languages and are a lot more primitive.</p>
+<h2 id="come-take-a-look-">Come take a look !</h2>
+<p>Interested in the code? As usual, it lives <a href="https://github.com/srijan-paul/meep">here</a> on github.
+Having been botched together in a weekend, the code isn't the prettiest but you'll most likely find
+your way around since I commented a lot of stuff for myself.</p>
+<p>Adios.</p>
+
+  </div>
+  <script>
+    hljs.highlightAll();
+    const tagsDiv = document.getElementById("tags")
+    const tags = ["brainfuck","programming-languages","post"]
+    tags.forEach(tag => {
+      const li = document.createElement('a')
+      li.classList.add('tag')
+      li.href = `/posts/index.html?tag=${tag}`
+      li.innerHTML = tag
+      tagsDiv.appendChild(li)
+    })
+  </script>
+</body>
+
+</html>

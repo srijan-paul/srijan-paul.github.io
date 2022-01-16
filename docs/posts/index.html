@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/post.css">
+	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/default.min.css">
+	<title>injuly - posts</title>
+</head>
+
+<body>
+	<div class="main">
+
+		<div class="nav">
+			<div class="nav-left">
+				<a id="home-link" href="https://injuly.in">injuly.in</a>
+			</div>
+
+			<div class="nav-right">
+				<a href="/" class="nav-link">home</a>
+				<a href="/blog" class="active-nav-link nav-link">blog</a>
+				<a href="/current" class="nav-link">current</a>
+			</div>
+		</div>
+		<hr>
+
+		<ul id="post-list">
+			<li id="gsoc-2"><a href="/blog/gsoc-2">GSoC&#39;21- Lifting lambdas Pallene and Lua&#39;s sisters (2/2)</a></li>
+			<li id="bfinbf"><a href="/blog/bfinbf">Compiling to Brainf#ck - Meep.</a></li>
+			<li id="gsoc"><a href="/blog/gsoc">GSoC&#39;21- Lifting lambdas Pallene and Lua&#39;s sisters (1/2)</a></li>
+			<li id="ave_intro"><a href="/blog/ave_intro">Ave - Adding elegance and types to Javascript</a></li>
+			<li id="boohoo-js"><a href="/blog/boohoo-js">BoOHoO JaVaScRiPT!!</a></li>
+			<li id="digital-garden"><a href="/blog/digital-garden">On digital gardens books and trying a new style of learning.</a></li>
+		</ul>
+	</div>
+
+	<script>
+		function getTagFromURL() {
+			const url = window.location.href;
+			const captured = /tag=([^&]+)/.exec(url)[1];
+			return captured || null;
+		}
+
+		const queryTag = getTagFromURL();
+    const tagsDiv = document.getElementById("tags");
+		console.log(queryTag);
+
+		// Mustache isn't *that* bad huuuuuuuuuuhhhh.
+		// Though it can get wild sometimes.
+		const tagsOfPost =  {
+		 			"gsoc-2" : 	["lua","programming-languages","gsoc","post"] ,
+		 			"bfinbf" : 	["brainfuck","programming-languages","post"] ,
+		 			"gsoc" : 	["lua","programming-languages","gsoc","post"] ,
+		 			"ave_intro" : 	["ave","programming-languages","type-system","post"] ,
+		 			"boohoo-js" : 	["javascript","programming-languages","post"] ,
+		 			"digital-garden" : 	["post","programming-languages"] ,
+		};
+
+	const postsNode = document.getElementById("post-list");
+	for (const li of postsNode.children) {
+		const tags = tagsOfPost[li.id];
+		if(!tags.includes(queryTag)) {
+			li.setAttribute('hidden', true);
+		}
+	}
+	</script>
+</body>
+</html>

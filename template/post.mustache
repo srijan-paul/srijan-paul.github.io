@@ -22,9 +22,9 @@
 			</div>
 
 			<div class="nav-right">
-				<a href="https://injuly.in" class="nav-link">home</a>
-				<a href="https://injuly.in/blog" class="nav-link">blog</a>
-				<a href="https://injuly.in/current" class="nav-link">current</a>
+				<a href="/" class="nav-link">home</a>
+				<a href="/blog" class="nav-link">blog</a>
+				<a href="/current" class="nav-link">current</a>
 			</div>
 		</div>
 
@@ -44,8 +44,9 @@
     const tagsDiv = document.getElementById("tags")
     const tags = {{&meta.tags}}
     tags.forEach(tag => {
-      const li = document.createElement('li')
+      const li = document.createElement('a')
       li.classList.add('tag')
+      li.href = `/posts/index.html?tag=${tag}`
       li.innerHTML = tag
       tagsDiv.appendChild(li)
     })

@@ -8,7 +8,7 @@
 	<link rel="stylesheet" href="../css/common.css">
 	<link rel="stylesheet" href="../css/post.css">
 	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/default.min.css">
-	<title>{{ title }}</title>
+	<title>injuly - posts</title>
 </head>
 
 <body>
@@ -28,15 +28,43 @@
 		</div>
 		<hr>
 
-		{{&content}}
-		<ul>
+		<ul id="post-list">
 		{{#posts}}
 		{{#data.title}}
-			<li><a href="/blog/{{name}}">{{data.title}}</a></li>
+			<li id="{{name}}"><a href="/blog/{{name}}">{{data.title}}</a></li>
 		{{/data.title}}
 		{{/posts}}
 		</ul>
 	</div>
-</body>
 
+	<script>
+		function getTagFromURL() {
+			const url = window.location.href;
+			const captured = /tag=([^&]+)/.exec(url)[1];
+			return captured || null;
+		}
+
+		const queryTag = getTagFromURL();
+    const tagsDiv = document.getElementById("tags");
+		console.log(queryTag);
+
+		// Mustache isn't *that* bad huuuuuuuuuuhhhh.
+		// Though it can get wild sometimes.
+		const tagsOfPost =  {
+			{{#posts}}
+				{{#data.title}}
+		 			"{{name}}" : 	{{&data.tags}} ,
+				{{/data.title}}
+			{{/posts}}
+		};
+
+	const postsNode = document.getElementById("post-list");
+	for (const li of postsNode.children) {
+		const tags = tagsOfPost[li.id];
+		if(!tags.includes(queryTag)) {
+			li.setAttribute('hidden', true);
+		}
+	}
+	</script>
+</body>
 </html>

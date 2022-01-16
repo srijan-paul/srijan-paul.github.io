@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/base16/solarized-light.min.css" integrity="sha512-ZW2g6Pn2pMbKSyjcA+r4Lc58kcfvOdcsTuCCTl3qz8NqVJwUtAuiN61pDoW3EEfrjwH2CPtkFWMdkzMY1idilA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="../../css/common.css">
+  <link rel="stylesheet" href="../../css/post.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"
+    integrity="sha512-Pbb8o120v5/hN/a6LjF4N4Lxou+xYZ0QcVF8J6TWhBbHmctQWd8O6xTDmHpE/91OjPzCk4JRoiJsexHYg4SotQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <title>GSoC&#39;21- Lifting lambdas Pallene and Lua&#39;s sisters (1/2)</title>
+</head>
+
+<body>
+  <div class="main">
+		<div class="nav">
+			<div class="nav-left">
+				<a id="home-link" href="https://injuly.in">injuly.in</a>
+			</div>
+
+			<div class="nav-right">
+				<a href="/" class="nav-link">home</a>
+				<a href="/blog" class="nav-link">blog</a>
+				<a href="/current" class="nav-link">current</a>
+			</div>
+		</div>
+
+    <hr style="height:1px;border:none;color:#333;background-color:#333;">
+
+    <div class="leader">
+      <h2> GSoC&#39;21- Lifting lambdas Pallene and Lua&#39;s sisters (1/2) </h2>
+      <div class="post-date">July 23, 2021</div>
+      <ul class="tags" id="tags">
+      </ul>
+    </div>
+    <p>This post is part 1 of a brief 2-part series summarizing the things I learned as a part of the <a href="https://summerofcode.withgoogle.com/">Google Summer of Code</a> event.</p>
+<p>I was able to work on the <a href="https://github.com/pallene-lang/pallene">Pallene</a> programming language's compiler, under the organization <a href="www.lua.inf.puc-rio.br">LabLua</a>. The event isn't exactly over at the time of me writing this, but I'll try and summarize the meat of the matter.</p>
+<p>I want to keep a low entry-barrier to the problem we tackled this summer, so I'll defer the actual GSoC coding period to the next post, by going over some of the preliminaries and covering the current state of the Pallene compiler.</p>
+<div class="toc">
+<table>
+<thead>
+<tr>
+<th>Table of Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#lambdas_and_closures">Lambdas and Closures</a></td>
+</tr>
+<tr>
+<td><a href="#luas_sister_languages">Lua's Sister Languages</a></td>
+</tr>
+<tr>
+<td><a href="#pallene">Pallene</a></td>
+</tr>
+<tr>
+<td><a href="#closures_in_pallene">Closures in Pallene</a></td>
+</tr>
+<tr>
+<td><a href="#up_next">Up next</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="lambdas-and-closures">Lambdas and Closures<a name="lambdas_and_closures"></a></h2>
+<p>(If you're already familiar with what closures and lambda functions are, consider skipping over this part)</p>
+<p>The term &quot;lambda&quot; generally refers to anonymous functions in programming languages. You're probably already used to them. For example, in the snippet below we are creating a name-less function that returns <code>10</code> and calling it immediately.</p>
+<pre><code class="language-lua">print((function() return 10 end)() + 10) -- 20
+</code></pre>
+<p>The term &quot;closure&quot; refers to a function that can capture variables from outside it's scope and retain references to them even after the surrounding scope has been exited.</p>
+<pre><code class="language-lua">local function make_adder()
+    local num = 100
+	return function (y)
+        return x + num
+    end
+end
+
+local adder = make_adder()
+print(adder(10)) -- 110
+</code></pre>
+<p>Notice how on the last line, when <code>adder</code> is called, it's able to correctly fetch the value associated with variable <code>num</code>, even though that variable was supposed to &quot;disappear&quot; as soon as the runtime exits <code>make_adder</code>'s local scope? That's because the function returned by <code>make_adder</code> is a &quot;closure&quot; (<a href="#backmatter">1</a>).</p>
+<p>Lua originally introduced the indirection of <a href="https://www.lua.org/pil/27.3.3.html">upvalues</a> to implement closures that are amenable to a single pass compiler for an interpreted language. Upvalues are variables referenced by a function that live outside the scope of the said function.  Under the hood, the Lua interpreter moves local variables (which live on the lua stack) that are referenced by upvalues, to some place in the heap when their scope is about to end. This way, the function can still carry a reference to the variable's heap location and use that to read/write to upvalues.</p>
+<h2 id="luas-sister-languages">Lua's sister languages<a name="luas_sister_languages"></a></h2>
+<p>(If you're not interested in Lua trivia, skip this part)</p>
+<p>There are several sister languages to Lua that either transpile to, or take inspiration from the language. I'll list them briefly in this section in case they're of interest to you.</p>
+<ol>
+<li><a href="https://github.com/pallene-lang/pallene">Pallene</a>: Statically typed, compiles to C and can use Lua's C-API to communicate with the Lua runtime. Users can author Pallene scripts, make shared object libraries and import them in regular Lua programs.
+</li>
+<li><a href="https://github.com/teal-language/tl">Teal</a>: Statically typed, transpiles to Lua. I like to think of it as Lua's Typescript.
+</li>
+<li><a href="https://moonscript.org/">Moonscript</a>: Duck typed, transpiles to Lua. Whitespace sensitive with classes and lots of syntactic sugar. This is popular among the LÖVE2D community. Takes heavy inspiration from coffeescript.
+</li>
+<li><a href="https://github.com/markpwns1/jammy">Jammy</a>: Duck typed, transpiles to Lua. It's very much like Moonscript but I like it's syntax more personally.
+</li>
+<li><a href="https://ravilang.github.io/">Ravi</a>: Lua with optional static typing and support for JIT. This uses a more enhanced version of the LuaVM.
+</li>
+<li><a href="https://nelua.io/">Nelua</a>: Statically typed, compiles to C. A systems programming language with Lua-like syntax and static types.
+</li>
+<li><a href="https://terralang.org/">Terra</a>: Statically typed and compiles to native code. Has support for metaprogramming through Lua.
+</li>
+<li><a href="https://fennel-lang.org/">Fennel</a>: Duck-typed LISP that transpiles to Lua. Also popular in the game programming community.
+</li>
+<li><a href="https://amulet.works/">Amulet</a> Functional language with a strong type system that transpiles to Lua. Belongs to the ML family.
+</li>
+<li><a href="https://devcat-studio.github.io/kailua/en-US/">Kailua</a>: Similar to facebook's Flow in that it's just tooling for regular lua where type annotations are allowed via comments!
+</li>
+<li><a href="https://wu-lang.gitbook.io/guide/">Wu</a>: Statically typed language that transpiles to Lua, written in Rust!
+</li>
+</ol>
+<p>These are some of the most &quot;developed&quot; Lua dialects that I've seen in my time fiddling with the language, and I find all of them very amusing. There also exists my <a href="https://github.com/srijan-paul/AveTS">own experiment</a> that I plan to finish the lua transpiler for some day.</p>
+<h2 id="pallene">Pallene<a name="pallene"></a></h2>
+<p>Pallene is a statically typed dialect of Lua that compiles down to C code. For the most part, Pallene uses it's own internal APIs and libraries to do all the computation. Sometimes however, it makes calls to the Lua VM's C-API to communicate with the runtime. Due to this, it becomes possible to write Pallene code, compile it to C libraries and then import them in Lua with <code>require</code>.</p>
+<p>It is worth noting that Lua allows writing extension modules in C and then importing them from Lua.
+In fact, all of the language's standard library itself is actually written in C! This feature is facilitated via <a href="https://en.wikipedia.org/wiki/Dynamic_loading">dynamic loading</a> of shared C libraries using <a href="https://man7.org/linux/man-pages/man3/dlopen.3.html">dlopen</a> and it's windows/mac counterparts.</p>
+<p>The Lua reference manual describes how to author C libraries in detail <a href="https://www.lua.org/pil/26.2.html">here</a>. I'd recommend getting familiar with it before continuing further.</p>
+<p>Now let's consider a sample code snippet written in Pallene:</p>
+<pre><code class="language-lua">local m: module = {}
+function m.add(a: integer, b: integer): integer
+	return a + b    
+end
+return m
+</code></pre>
+<p>Pallene code is very similar to standard lua code + the type annotations and some minor semantic differences.
+I highly recommend reading the short <a href="https://github.com/pallene-lang/pallene/blob/master/doc/manual.md">manual</a> to get a taste of the language.</p>
+<p>Pallene works by compiling to C, and then using <code>gcc</code> to compile the C to shared libraries which can then be imported into lua scripts and called from Lua. For instance, the <code>add</code> function above compiles to the following C code (cleaned up and some unnecessary details omitted):</p>
+<pre><code class="language-c">// This function is internally used by pallene and not visible to the user
+static lua_Integer add_c(lua_Integer a, lua_Integer b) {
+    return a + b;
+}
+
+// This is the function exposed as a part of the Pallene module 'm'.
+// function m.add(a, b)
+int add_lua(lua_State *L) {
+    StackValue *base = L-&gt;ci-&gt;func; // [1]
+
+    int nargs     = lua_gettop(L);  // [2]
+    lua_Integer a = ivalue(s2v(base + 1));
+    lua_Integer b = ivalue(s2v(base + 2));
+
+    lua_Integer ret = function_02(a, b); // [3]
+    lua_pushinteger(L, ret);             // [4]
+    return 1;
+}
+</code></pre>
+<p>The first interesting point to note is that our Pallene function <code>add</code> got compiled to two C functions. Why is that?
+It's because Lua allows users to author functions in C (see <a href="https://www.lua.org/source/5.3/lua.h.html#lua_CFunction">lua_CFunction</a>), which can be called by the Lua interpreter. However, these functions must follow a certain convention. That being:</p>
+<ol>
+<li>A function callable by the lua interpreter must be of the type <code>int (*)(lua_State*)</code>.
+</li>
+<li>The arguments are placed on the lua stack right on top of the function, in order.
+</li>
+<li>The function must push the return value(s) onto the stack, and return the number of values it pushed to the stack.
+</li>
+</ol>
+<p>The <code>add_lua</code> 's <code>lua</code> suffix signifies the fact that it's a <code>lua_CFunction</code> , which is called by pushing the arguments to the stack and transferring control to it. Then the function performs following actions:</p>
+<ol>
+<li>Get a reference to the base of the current call frame, this is a pointer to the function object that is being called (a.k.a  <code>add_lua</code>'s address in the Lua stack). Offsets from this pointer can be used to refer to arguments.
+</li>
+<li>Extract the the number of arguments, and the numeric arguments <code>a</code> and <code>b</code> from the stack, put them into C local variables (<a href="#backmatter">2</a>).
+</li>
+<li>Call the corresponding <strong>C entry  point</strong> with the right arguments, and store the return value from that in yet another C local variable.
+</li>
+<li>Push the value received onto the Lua stack, and signal that one value was returned by <code>return 1</code>-ing the control back to the Lua Runtime.
+</li>
+</ol>
+<p>You'll notice that the C-entry points of the functions (<code>add_c</code>) mirror the user-written Pallene code more closely and that the Lua-entry points (<code>add_lua</code>) just exist to act as a bridge between the Lua runtime and the Pallene runtime. They perform the task of type-checking arguments, and passing the arguments from Lua's dynamic world to C's statically typed world. An eagle's eyes view of this can be imagined to be something like so:</p>
+<img src="/assets/svg/pallene_convention.svg" width="100%" />
+<p>In this image, the steps colored blue are controlled by the Lua interpreter's runtime and the steps colored in yellow are governed by the C code which is generated by the Pallene compiler.</p>
+<h2 id="closures-in-pallene">Closures in Pallene<a name="closures_in_pallene"></a></h2>
+<p>Before diving into this part, it helps to establish some terminology to make sure we're on the same page:</p>
+<ol>
+<li><strong>Lua user code</strong>: The user-written Lua scripts that may call our Pallene module exposed functions.
+</li>
+<li><strong>Lua entry point</strong>: The helper C function generated by the Pallene compiler which receives arguments from the Lua user code and transfers them to the C-entry point. It is a <a href="https://www.lua.org/source/5.3/lua.h.html#lua_CFunction">lua_CFunction</a>. e.g- <code>add_lua</code>.
+</li>
+<li><strong>C entry point</strong>: The C version of the Pallene user code, also generated by the Pallene compiler. This is a direct representation of the user's logic in C. e.g - <code>add_c</code>.
+</li>
+</ol>
+<p>This is where the proposal comes in. The above convention has no support for higher order functions and closures.
+Some things to keep in mind when approaching this problem:</p>
+<ol>
+<li>Standard C  does not allow nested functions or closures (<a href="#backmatter">3</a>).
+</li>
+<li>Lua however does support Closure objects that can defer to C functions for executing the logic (see <a href="https://www.lua.org/source/5.3/lobject.h.html#CClosure">CClosure</a>).
+</li>
+<li>The &quot;Lua user code ↔ Lua entry point&quot; convention is rigidly specified by lua and must follow the aforementioned rules for every <a href="https://www.lua.org/source/5.3/lua.h.html#lua_CFunction">lua_CFunction</a>.
+</li>
+<li>The &quot;Lua entry point ↔  C entry point&quot; calling convention is flexible and up to discretion the Pallene authors. Can we take advantage of this by passing some extra arguments to the C entry point that represent the upvalues?
+</li>
+</ol>
+<p>The C-Closures in Lua are more or less defined as such:</p>
+<pre><code class="language-c">struct CClosure {
+  lua_CFunction f;    /* C function containing the logic */
+  TValue* upvalues;   /* Dynamic array containing the upvalues */
+};
+
+</code></pre>
+<p>This way of thinking about closures is the key. A closure can be thought of as a bag containing two items: the <strong>code</strong> and the <strong>data</strong>. The &quot;code part&quot; uses the &quot;data&quot; to compute results.</p>
+<p>Another key observation to make can be seen via this image:</p>
+<img src="/assets/svg/pallene_convention_2.svg" width="100%" />
+<p>Every part of the convention above the dotted red line is rigidly defined by the Lua standard, and can't be altered.
+However, parts of the convention below the red-line are completely in Pallene's control.</p>
+<p>We just have to make sure that the C function is able to find the upvalues somewhere. They can be stored in a global map, array or better, the <code>upvalue</code> list of the <code>CClosure</code> object itself! With this in mind, the calling convention can be thought of as such (pseudocode):</p>
+<pre><code class="language-c">int lua_entry_point(lua_State* L) {
+  base         = get_base(L);       // get the base of the current call-frame
+  current_func = (CClosure*)(base); // cast the base to a CClosure
+  upvalues     = current_func-&gt;upvalues;
+  c_entry_point(L, upvalues, arg1, arg2);
+}
+</code></pre>
+<p>The upvalues will be passed as an extra argument to the C entry point. The same C-entry point can work with different sets of upvalues  belonging to different <code>CClosure</code> objects. The &quot;logic&quot; can remain independent and work with different sets of &quot;data&quot;.</p>
+<p>The process of converting higher order functions written in Pallene to C is still left unexplained in this post. I also haven't answered questions such as:</p>
+<ol>
+<li>When/How are the closures created? Who creates them (Lua/C)?
+</li>
+<li>What about Garbage Collection? How does it affect the upvalues?
+</li>
+<li>How to facilitate mutation of upvalues?
+</li>
+</ol>
+<p>I intend to answer these questions in part 2!</p>
+<p>If you've loosely understood most of what we went through so far, then you're ready to understand the rest of the idea mentioned in <a href="https://docs.google.com/document/d/11eodot4ca2epSjRl4Xl0YLiWfcMCkNZ2FL00D9S7VN4/edit?usp=sharing">this document</a>. This was a part of my GSoC proposal which I wrote with help from my mentor, <a href="https://github.com/hugomg">Hugo Musso Gualandi</a>.</p>
+<h2 id="up-next">Up Next.<a name="up_next"></a></h2>
+<p>In the next blog post, I intend to summarize the work I did over this summer.
+A brief rundown of the problems I faced and things I learned.</p>
+<h2 id="backmatter">Backmatter<a name="backmatter"></a></h2>
+<ol>
+<li>Some experts argue that calling capturing functions &quot;closures&quot; is a misnomer since the word has a separate meaning in mathematics and set theory, but we're going to look past that for this write-up.
+</li>
+<li>It is possible for the user on the Lua side of the world to pass arguments with incorrect types, Pallene guards against this by emitting some runtime type checking code which I've omitted for brevity's sake.
+</li>
+<li>Some C compilers support lambdas and closures using non-standard extensions called <a href="https://en.wikipedia.org/wiki/Blocks_(C_language_extension)">Blocks</a>.
+</li>
+</ol>
+
+  </div>
+  <script>
+    hljs.highlightAll();
+    const tagsDiv = document.getElementById("tags")
+    const tags = ["lua","programming-languages","gsoc","post"]
+    tags.forEach(tag => {
+      const li = document.createElement('a')
+      li.classList.add('tag')
+      li.href = `/posts/index.html?tag=${tag}`
+      li.innerHTML = tag
+      tagsDiv.appendChild(li)
+    })
+  </script>
+</body>
+
+</html>
