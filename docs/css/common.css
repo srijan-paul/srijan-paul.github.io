@@ -116,7 +116,7 @@ pre, code {
 }
 
 .post-list-date {
-  color: var(gray);
+  color: gray;
   font-size: 15px;
   font-family: var(--font-serif-1);
   float: right;
