@@ -111,13 +111,13 @@ My first instinctive choice was to go with Teal or <a href="https://typescriptto
 However, both tools had their own problems:</p>
 <ol>
 <li>
-<p>Teal: I was excited to dig in - and I cloned the <a href="">repo</a> -
+<p><strong>Teal</strong>: I was excited to dig in - and I cloned the <a href="">repo</a> -
 only to see the whole codebase is a single file 6k+LoC (<a href="#backmatter">1</a>)<a name="1"></a>.
 At the time, this was a deal breaker for me sadly. I couldn't possibly edit a file that huge without losing my mind.
 It takes my editor and LSP an entire minute or two just to parse the file! Unfortunate.</p>
 </li>
 <li>
-<p>TS2Lua: It was all roses in the beginning,
+<p><strong>TS2Lua</strong>: It was all roses in the beginning,
 but I soon realized retrofitting a JS dialect to Lua isn't as pretty as it sounds. There exist weird issues like:</p>
 <ol>
 <li>Inconsistency of 0-indexed JS arrays vs 1-indexed Lua tables. I asked the developers and they wanted to keep things that way (Understandably so, there is no good solution for this that I can think of either).
@@ -345,10 +345,13 @@ There were several questions to answer such as:</p>
 <p>At the time of writing this blog post, some of these questions are still unanswered.
 However, we have some numbers to chew on in the mean time. We used two ways to collect some benchmark data:</p>
 <ul>
-<li>Find popular Lua repositories on Github and run their source code through a hacky script to find out the number of upvalues referenced by closures in these codebases. Once we have that data- we eyeball the codebase to check how often we'd be able to make box-merge optimizations.
+<li>
+<p>Find popular Lua repositories on Github and run their source code through a hacky script to find out the number of upvalues referenced by closures in these codebases.
+Once we have that data- we eyeball the codebase to check how often we'd be able to make box-merge optimizations.</p>
 </li>
-<li>Use the Pallene compiler to generate C files from Pallene source code that uses higher order functions.
-Then &quot;optimize&quot; the generated C code by hand. Once done, run both the compiler generated and hand-edited code through a benchmark tool like Hyperfine, and compare the results.
+<li>
+<p>Use the Pallene compiler to generate C files from Pallene source code that uses higher order functions.
+Then &quot;optimize&quot; the generated C code by hand. Once done, run both the compiler generated and hand-edited code through a benchmark tool like Hyperfine, and compare the results.</p>
 </li>
 </ul>
 <p>Some of the benchmark data that we gathered can be seen on the gist <a href="https://gist.github.com/srijan-paul/06d640db0b08086757687dbebffb7f1f">here</a> and this issue <a href="https://github.com/pallene-lang/pallene/issues/426">here</a>.

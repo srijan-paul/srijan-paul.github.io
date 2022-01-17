@@ -16,7 +16,7 @@ body {
   width: 55%;
   margin: auto;
   margin-bottom: 5rem;
-  font-size: 17px;
+  font-size: 20px;
 }
 
 .post-date {
@@ -47,7 +47,10 @@ a:hover {
   list-style: none;
   margin: 0;
   padding: 0;
+  font-size: 17px;
+  font-family: var(--font-serif-1);
   display: flex;
+  margin-bottom: 20px;
 }
 
 .tags > a {
@@ -145,12 +148,6 @@ blockquote p {
   text-decoration: none !important;
 }
 
-.tags {
-  display: contents;
-  margin-bottom: 20px;
-  font-size: 17px;
-}
-
 .tag {
   padding-right: 5px;
   /* float: right; */
@@ -166,6 +163,7 @@ blockquote p {
 code {
   font-size: 15px !important;
   font-family: "JetBrains Mono", monospace, sans-serif;
+  background-color: #e9f0ee;
   overflow: auto;
 }
 

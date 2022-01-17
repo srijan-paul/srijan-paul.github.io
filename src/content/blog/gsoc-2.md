@@ -64,12 +64,12 @@ So I decided against taking the blame for a 15th standard and started looking fo
 My first instinctive choice was to go with Teal or [TS2Lua](https://typescripttolua.github.io/).
 However, both tools had their own problems:
 
-1. Teal: I was excited to dig in - and I cloned the [repo]() -
+1. **Teal**: I was excited to dig in - and I cloned the [repo]() -
 only to see the whole codebase is a single file 6k+LoC ([1](#backmatter))<a name="1"></a>.
 At the time, this was a deal breaker for me sadly. I couldn't possibly edit a file that huge without losing my mind.
 It takes my editor and LSP an entire minute or two just to parse the file! Unfortunate.
 
-2. TS2Lua: It was all roses in the beginning, 
+2. **TS2Lua**: It was all roses in the beginning, 
 	but I soon realized retrofitting a JS dialect to Lua isn't as pretty as it sounds. There exist weird issues like:
 	1. Inconsistency of 0-indexed JS arrays vs 1-indexed Lua tables. I asked the developers and they wanted to keep things that way (Understandably so, there is no good solution for this that I can think of either).
 	2. Operator overloading, which I deem a must-have for working with vectors is achieved via weird hacks, and doesn't type-check as neatly.
@@ -294,7 +294,9 @@ There were several questions to answer such as:
 At the time of writing this blog post, some of these questions are still unanswered.
 However, we have some numbers to chew on in the mean time. We used two ways to collect some benchmark data:
 
--  Find popular Lua repositories on Github and run their source code through a hacky script to find out the number of upvalues referenced by closures in these codebases. Once we have that data- we eyeball the codebase to check how often we'd be able to make box-merge optimizations.
+-  Find popular Lua repositories on Github and run their source code through a hacky script to find out the number of upvalues referenced by closures in these codebases.
+Once we have that data- we eyeball the codebase to check how often we'd be able to make box-merge optimizations.
+
 -  Use the Pallene compiler to generate C files from Pallene source code that uses higher order functions.
    Then "optimize" the generated C code by hand. Once done, run both the compiler generated and hand-edited code through a benchmark tool like Hyperfine, and compare the results. 
 

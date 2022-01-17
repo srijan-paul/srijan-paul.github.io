@@ -1,18 +1,23 @@
-@import url('https://fonts.googleapis.com/css2?family=Bitter:wght@300;400&family=IBM+Plex+Serif&family=JetBrains+Mono&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Bitter:wght@300;400&family=IBM+Plex+Serif&family=JetBrains+Mono&display=swap'); */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant:wght@300;400;500;600&family=IBM+Plex+Serif&family=JetBrains+Mono&family=Roboto+Slab:wght@300;400&display=swap');
 
 :root {
   --clr-primary: #01a3a4;
   --clr-font: black;
   --link-color: #01a3a4;
   --bg-color: #fafafa;
-  --font-serif-2: "Bitter";
+  --font-serif-2: "Cormorant";
   --font-serif-1: "IBM Plex Serif"
+}
+
+strong {
+  font-weight: 600;
 }
 
 body {
   font-family: var(--font-serif-2), sans-serif;
   background-color: #fafafa;
-  font-size: 16.5px;
+  font-size: 19px;
   font-weight: 300;
 }
 
