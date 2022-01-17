@@ -177,14 +177,14 @@ code[class*="language-"] {
   background-color: var(--bg-color);
 }
 
-@media screen and (max-width: 840px) {
+@media screen and (max-width: 1000px) {
   .main {
-    width: 75%;
+    width: 85%;
   }
 }
 
 @media screen and (max-width: 500px) {
   .main {
-    width: 90%;
+    width: 94%;
   }
 }

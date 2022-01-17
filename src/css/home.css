@@ -47,7 +47,7 @@ code {
   font-size: 17px;
 }
 
-@media screen and (max-width: 890px) {
+@media screen and (max-width: 900px) {
   .w,
   .container {
     width: 85%;
