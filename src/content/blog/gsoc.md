@@ -1,5 +1,5 @@
 
-Well, who would've thought?
+Well, who would've thought? <br/>
 I'm now spending the summmer coding away at [Google Summer of Code](https://summerofcode.withgoogle.com/).
 
 I'm currently working on the [Pallene](https://github.com/pallene-lang/pallene) programming language's compiler,

@@ -1,11 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant:wght@300;400;500;600&family=IBM+Plex+Serif&family=JetBrains+Mono&family=Roboto+Slab:wght@300;400&display=swap');
 
 :root {
   --clr-primary: #01a3a4;
   --clr-font: black;
   --link-color: #01a3a4;
   --bg-color: #fafafa;
-  --font-serif-2: "Cormorant";
+  --font-serif-2: "Noto Serif";
   --font-serif-1: "IBM Plex Serif"
 }
 

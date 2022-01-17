@@ -16,7 +16,7 @@ body {
   width: 55%;
   margin: auto;
   margin-bottom: 5rem;
-  font-size: 20px;
+  font-size: var(--font-size);
 }
 
 .post-date {
