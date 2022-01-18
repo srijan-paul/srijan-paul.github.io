@@ -5,8 +5,8 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="../css/common.css">
-	<link rel="stylesheet" href="../css/post.css">
+	<link rel="stylesheet" href="/css/common.css">
+	<link rel="stylesheet" href="/css/post.css">
 	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/default.min.css">
 	<title>injuly - blog</title>
 </head>
@@ -35,31 +35,25 @@
 		</div>
 	</div>
 
+	<script src="/util.js" type="text/javascript"></script>
 	<script>
 
 		// Get all the post data.
 		const posts =  [
 			{{#posts}}
-				{{#data.title}}
+				{{#data.is_blog_post}}
 		 		 	{
 						tags: {{&data.tags}},
 						date: new Date("{{&data.date}}"),
 						name: "{{name}}",
 						title: `{{&data.title}}`
 					} ,
-				{{/data.title}}
+				{{/data.is_blog_post}}
 			{{/posts}}
 		];
 		
 		// sort the posts by date
 		posts.sort((a, b) => b.date - a.date)
-
-		function dateToString(date) {
-			const monthNames = ["January", "February", "March", "April", "May", "June",
-				"July", "August", "September", "October", "November", "December"
-			];
-			return `${monthNames[date.getMonth()]} ${date.getDate()}`;
-		}
 
 		// Returns an <li> element from a post object.
 		function getListElementFromPost(post) {

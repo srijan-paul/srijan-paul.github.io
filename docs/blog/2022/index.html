@@ -32,7 +32,7 @@
 
     <div class="leader">
       <h2> Hindsight - 2021 </h2>
-      <div class="post-date">2021-12-31</div>
+      <div class="post-date"></div>
       <ul class="tags" id="tags">
       </ul>
     </div>
@@ -150,17 +150,22 @@ On this blog however, you can continue to expect more math and functional progra
 Have a wonderful new year :)</p>
 
   </div>
+
+  <script src="/util.js"></script>
   <script>
     hljs.highlightAll();
-    const tagsDiv = document.getElementById("tags")
-    const tags = ["post","personal"]
+    const tagsDiv = document.getElementById("tags");
+    const tags = ["post","personal"];
     tags.forEach(tag => {
-      const li = document.createElement('a')
-      li.classList.add('tag')
+      const li = document.createElement("a")
+      li.classList.add("tag")
       li.href = `/posts/index.html?tag=${tag}`
       li.innerHTML = tag
       tagsDiv.appendChild(li)
-    })
+    });
+
+    const dateElement = document.querySelector(".post-date");
+    dateElement.innerText = dateToString(new Date("2021-12-31"), true);
   </script>
 </body>
 

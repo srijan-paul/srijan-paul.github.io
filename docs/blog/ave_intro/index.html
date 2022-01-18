@@ -32,7 +32,7 @@
 
     <div class="leader">
       <h2> Ave - JS with static types </h2>
-      <div class="post-date">2020-10-01</div>
+      <div class="post-date"></div>
       <ul class="tags" id="tags">
       </ul>
     </div>
@@ -131,17 +131,22 @@ The docs and README aren't exactly polished, but the code is well organized for 
 <p>In the next post I'll explain how I implemented the type system, and hopefully you end up taking something away from it.</p>
 
   </div>
+
+  <script src="/util.js"></script>
   <script>
     hljs.highlightAll();
-    const tagsDiv = document.getElementById("tags")
-    const tags = ["ave","programming-languages","type-system","post"]
+    const tagsDiv = document.getElementById("tags");
+    const tags = ["ave","programming-languages","type-system","post"];
     tags.forEach(tag => {
-      const li = document.createElement('a')
-      li.classList.add('tag')
+      const li = document.createElement("a")
+      li.classList.add("tag")
       li.href = `/posts/index.html?tag=${tag}`
       li.innerHTML = tag
       tagsDiv.appendChild(li)
-    })
+    });
+
+    const dateElement = document.querySelector(".post-date");
+    dateElement.innerText = dateToString(new Date("2020-10-01"), true);
   </script>
 </body>
 

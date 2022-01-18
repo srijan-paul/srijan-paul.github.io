@@ -32,7 +32,7 @@
 
     <div class="leader">
       <h2> Compiling to Brainf#ck - Meep. </h2>
-      <div class="post-date">2020-11-22</div>
+      <div class="post-date"></div>
       <ul class="tags" id="tags">
       </ul>
     </div>
@@ -517,17 +517,22 @@ your way around since I commented a lot of stuff for myself.</p>
 <p>Adios.</p>
 
   </div>
+
+  <script src="/util.js"></script>
   <script>
     hljs.highlightAll();
-    const tagsDiv = document.getElementById("tags")
-    const tags = ["brainfuck","programming-languages","post"]
+    const tagsDiv = document.getElementById("tags");
+    const tags = ["brainfuck","programming-languages","post"];
     tags.forEach(tag => {
-      const li = document.createElement('a')
-      li.classList.add('tag')
+      const li = document.createElement("a")
+      li.classList.add("tag")
       li.href = `/posts/index.html?tag=${tag}`
       li.innerHTML = tag
       tagsDiv.appendChild(li)
-    })
+    });
+
+    const dateElement = document.querySelector(".post-date");
+    dateElement.innerText = dateToString(new Date("2020-11-22"), true);
   </script>
 </body>
 

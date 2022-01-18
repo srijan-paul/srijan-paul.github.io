@@ -37,6 +37,7 @@
 		</ul>
 	</div>
 
+	<script src="/util.js" type="text/javascript"></script>
 	<script>
 		function getTagFromURL() {
 			const url = window.location.href;
@@ -52,9 +53,9 @@
 		// Though it can get wild sometimes.
 		const tagsOfPost =  {
 			{{#posts}}
-				{{#data.title}}
+				{{#data.is_blog_post}}
 		 			"{{name}}" : 	{{&data.tags}} ,
-				{{/data.title}}
+				{{/data.is_blog_post}}
 			{{/posts}}
 		};
 

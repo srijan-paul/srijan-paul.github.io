@@ -11,7 +11,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"
     integrity="sha512-Pbb8o120v5/hN/a6LjF4N4Lxou+xYZ0QcVF8J6TWhBbHmctQWd8O6xTDmHpE/91OjPzCk4JRoiJsexHYg4SotQ=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <title>{{ meta.title }}</title>
+  <title>Monads and monadic parsing in Haskell</title>
 </head>
 
 <body>
@@ -31,20 +31,20 @@
     <hr style="height:1px;border:none;color:#333;background-color:#333;">
 
     <div class="leader">
-      <h2> {{meta.title}} </h2>
-      <div class="post-date">{{! filled in by the script}}</div>
+      <h2> Monads and monadic parsing in Haskell </h2>
+      <div class="post-date"></div>
       <ul class="tags" id="tags">
-        {{! filled in by script }}
       </ul>
     </div>
-    {{&content}}
+    <p>Hello world</p>
+
   </div>
 
   <script src="/util.js"></script>
   <script>
     hljs.highlightAll();
     const tagsDiv = document.getElementById("tags");
-    const tags = {{&meta.tags}};
+    const tags = ;
     tags.forEach(tag => {
       const li = document.createElement("a")
       li.classList.add("tag")
@@ -54,7 +54,7 @@
     });
 
     const dateElement = document.querySelector(".post-date");
-    dateElement.innerText = dateToString(new Date("{{&meta.date}}"), true);
+    dateElement.innerText = dateToString(new Date("2022-18-01"), true);
   </script>
 </body>
 

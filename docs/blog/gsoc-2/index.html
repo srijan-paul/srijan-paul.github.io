@@ -32,7 +32,7 @@
 
     <div class="leader">
       <h2> GSoC&#39;21- Lifting lambdas &amp; Pallene [2/2] </h2>
-      <div class="post-date">2021-08-16</div>
+      <div class="post-date"></div>
       <ul class="tags" id="tags">
       </ul>
     </div>
@@ -434,17 +434,22 @@ More on this language in a future post! <a href="#4"><strong>(return ⮭)</stron
 </ol>
 
   </div>
+
+  <script src="/util.js"></script>
   <script>
     hljs.highlightAll();
-    const tagsDiv = document.getElementById("tags")
-    const tags = ["lua","programming-languages","gsoc","post"]
+    const tagsDiv = document.getElementById("tags");
+    const tags = ["lua","programming-languages","gsoc","post"];
     tags.forEach(tag => {
-      const li = document.createElement('a')
-      li.classList.add('tag')
+      const li = document.createElement("a")
+      li.classList.add("tag")
       li.href = `/posts/index.html?tag=${tag}`
       li.innerHTML = tag
       tagsDiv.appendChild(li)
-    })
+    });
+
+    const dateElement = document.querySelector(".post-date");
+    dateElement.innerText = dateToString(new Date("2021-08-16"), true);
   </script>
 </body>
 
