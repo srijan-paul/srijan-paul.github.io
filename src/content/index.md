@@ -5,7 +5,7 @@ I ocassionaly help develop Lua's compiled sister language - <a href="https://git
 Currently a software engineering intern at <a href="https://deepsource.io/" target="_blank">DeepSource</a>.
 
 Other interests include pixel art, reading and occasionally writing fiction.
-You can some amateur pixel art on <a href="https://twitter.com/_injuly" target="_blank">my twitter</a>.
+You might find some amateur pixel art on <a href="https://twitter.com/_injuly" target="_blank">my twitter</a>.
 
 ## This site
 
