@@ -62,7 +62,7 @@
 	const postsNode = document.getElementById("post-list");
 	for (const li of postsNode.children) {
 		const tags = tagsOfPost[li.id];
-		if(!tags.includes(queryTag)) {
+		if(!tags || !tags.includes(queryTag)) {
 			li.setAttribute('hidden', true);
 		}
 	}

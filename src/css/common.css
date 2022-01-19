@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Serif&family=JetBrains+Mono&family=Zilla+Slab:wght@300;400&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Serif&family=JetBrains+Mono&family=Zilla+Slab:wght@300;400&display=swap");
 
 :root {
   --clr-primary: #01a3a4;
@@ -58,7 +58,6 @@ a:hover {
   color: var(--link-color);
 }
 
-
 .navbar {
   display: flex;
   gap: 2rem;
@@ -69,7 +68,8 @@ a:hover {
   font-weight: bold;
 }
 
-pre, code {
+pre,
+code {
   font-weight: 400;
 }
 
@@ -160,4 +160,11 @@ pre, code {
   .nav-left {
     margin-bottom: 0.5rem;
   }
+}
+
+hr {
+  height: 1px;
+  border: none;
+  color: #333;
+  background-color: #333;
 }

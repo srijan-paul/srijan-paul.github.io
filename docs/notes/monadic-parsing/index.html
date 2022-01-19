@@ -6,11 +6,12 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/color-brewer.min.css" integrity="sha512-SJm3cAu//Nn6+cv90D0Ue8ArsnjDlszVGE3o/0JX55VOd9/KVbSGTegrZhyNK6ttKMeLbR14ezeGWyBUmF1Aww==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link rel="stylesheet" href="../../css/common.css">
-  <link rel="stylesheet" href="../../css/post.css">
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/post.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"
     integrity="sha512-Pbb8o120v5/hN/a6LjF4N4Lxou+xYZ0QcVF8J6TWhBbHmctQWd8O6xTDmHpE/91OjPzCk4JRoiJsexHYg4SotQ=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/languages/haskell.min.js" integrity="sha512-Evm1OPX+2rTy5waLPWqq/3mmw7ouQI6ree9E2jlfJ5nmZkJXCwHlH8ylq765LioP/VNpc3cqioZhVmyi80c1yw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <title>Monads and monadic parsing in Haskell</title>
 </head>
 
@@ -36,15 +37,53 @@
       <ul class="tags" id="tags">
       </ul>
     </div>
-    <p>Hello world</p>
+    <p>In my recent effort to be better at Haskell,
+I made a static site generator (which now powers this website).
+This SSG (called Bark), provides a simple data format to represent the metadata for a webpage.
+For a blog post, the metadata looks somewhat like this:</p>
+<pre><code class="language-javascript">{
+  template: &quot;post&quot;
+  tags: [&quot;post&quot; &quot;personal&quot;]
+  title: &quot;Foo bar&quot;
+  date: &quot;2021-12-31&quot;
+  is_blog_post: &quot;true&quot;
+}
+</code></pre>
+<p>The format is very JSON-like,
+except its much easier to write and has 2 fewer data types than JSON (no numbers or booleans).
+Once I was done writing <a href="https://github.com/srijan-paul/bark/blob/main/app/Bark/FrontMatter.hs">a simple parser</a> for it, I ran it through a haskell channel on a discord server.
+Some internet strangers rightly pointed out that my code had an atrocious amount of
+packing and unpacking data from wrappers (like <code>Either ParserError ParseTree</code>).
+I was also told that the right way to tackle this design problem in a functional language is to use
+Monads, and that writing a parser is a great way to learn how monads work.</p>
+<p>Shortly after, I had dug up the following resources to learn from and convert my parser into a magical monadic one:</p>
+<ul>
+<li><a href="https://homepages.inf.ed.ac.uk/wadler/papers/marktoberdorf/baastad.pdf">Monads for functional programming</a>
+</li>
+<li><a href="https://www.cs.nott.ac.uk/~pszgmh/monparsing.pdf">Monadic parser combinators</a>
+</li>
+<li><a href="http://learnyouahaskell.com/a-fistful-of-monads">A fistful of Monads (LYAH)</a>
+</li>
+</ul>
+<p>What a monad is and how it can be used to structure functional programs is covered neatly in
+the material above.
+What I'd like to do instead, is document the changes I needed to make to my sorry little parser.</p>
 
+
+
+    <div class="footer">
+    <hr>
+      Questions, suggestions or comments? <br/>
+      Shoot me an <a href="mailto:srijannr1@gmail.com">email</a>, or <a href="https://twitter.com/_injuly">tweet@me</a>.
+    </div>
   </div>
 
   <script src="/util.js"></script>
   <script>
     hljs.highlightAll();
     const tagsDiv = document.getElementById("tags");
-    const tags = ;
+    // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
+    const tags = [][0]; 
     tags.forEach(tag => {
       const li = document.createElement("a")
       li.classList.add("tag")

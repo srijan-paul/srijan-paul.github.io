@@ -6,11 +6,12 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/color-brewer.min.css" integrity="sha512-SJm3cAu//Nn6+cv90D0Ue8ArsnjDlszVGE3o/0JX55VOd9/KVbSGTegrZhyNK6ttKMeLbR14ezeGWyBUmF1Aww==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link rel="stylesheet" href="../../css/common.css">
-  <link rel="stylesheet" href="../../css/post.css">
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/post.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"
     integrity="sha512-Pbb8o120v5/hN/a6LjF4N4Lxou+xYZ0QcVF8J6TWhBbHmctQWd8O6xTDmHpE/91OjPzCk4JRoiJsexHYg4SotQ=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/languages/haskell.min.js" integrity="sha512-Evm1OPX+2rTy5waLPWqq/3mmw7ouQI6ree9E2jlfJ5nmZkJXCwHlH8ylq765LioP/VNpc3cqioZhVmyi80c1yw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <title>Hindsight - 2021</title>
 </head>
 
@@ -149,13 +150,21 @@ Specific goals will begin to take shape once I start clearing my backlog.
 On this blog however, you can continue to expect more math and functional programming.
 Have a wonderful new year :)</p>
 
+
+
+    <div class="footer">
+    <hr>
+      Questions, suggestions or comments? <br/>
+      Shoot me an <a href="mailto:srijannr1@gmail.com">email</a>, or <a href="https://twitter.com/_injuly">tweet@me</a>.
+    </div>
   </div>
 
   <script src="/util.js"></script>
   <script>
     hljs.highlightAll();
     const tagsDiv = document.getElementById("tags");
-    const tags = ["post","personal"];
+    // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
+    const tags = [["post","personal"]][0]; 
     tags.forEach(tag => {
       const li = document.createElement("a")
       li.classList.add("tag")

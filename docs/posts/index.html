@@ -28,6 +28,7 @@
 		<hr>
 
 		<ul id="post-list">
+			<li id="web3"><a href="/blog/web3">My many gripes with NFTs and the Web3</a></li>
 			<li id="gsoc-2"><a href="/blog/gsoc-2">GSoC&#39;21- Lifting lambdas &amp; Pallene [2/2]</a></li>
 			<li id="bfinbf"><a href="/blog/bfinbf">Compiling to Brainf#ck - Meep.</a></li>
 			<li id="gsoc"><a href="/blog/gsoc">GSoC&#39;21- Lifting lambdas &amp; Pallene [1/2]</a></li>
@@ -54,6 +55,7 @@
 		// Mustache isn't *that* bad huuuuuuuuuuhhhh.
 		// Though it can get wild sometimes.
 		const tagsOfPost =  {
+		 			"web3" : 	["web3","blockchain","post"] ,
 		 			"gsoc-2" : 	["lua","programming-languages","gsoc","post"] ,
 		 			"bfinbf" : 	["brainfuck","programming-languages","post"] ,
 		 			"gsoc" : 	["lua","programming-languages","gsoc","post"] ,
@@ -66,7 +68,7 @@
 	const postsNode = document.getElementById("post-list");
 	for (const li of postsNode.children) {
 		const tags = tagsOfPost[li.id];
-		if(!tags.includes(queryTag)) {
+		if(!tags || !tags.includes(queryTag)) {
 			li.setAttribute('hidden', true);
 		}
 	}
