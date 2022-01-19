@@ -1,4 +1,4 @@
-I've worked on NFT projects in the past which has taught me a lot, and introduced me to some great people.
+I've worked on NFT projects in the past which have taught me a lot, and introduced me to some great people.
 While I recognise the skills and reverence of engineers in this domain, I'm unable to onboard myself on this idea.
 
 If you're a blockchain enthusiast reading this, know that I understand completely where you stand.
