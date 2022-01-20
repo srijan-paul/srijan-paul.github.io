@@ -1,18 +1,21 @@
-I've worked on NFT projects in the past which have taught me a lot, and introduced me to some great people.
-While I recognise the skills and reverence of engineers in this domain, I'm unable to onboard myself on this idea.
+In the past, I've worked on blockchain and NFT projects, which has taught me a lot
+and introduced me to some great people.
+While I recognise the skill and reverence of some developers in this domain,
+I still stand uncharmed by the zeal of web3.
 
-If you're a blockchain enthusiast reading this, know that I understand completely where you stand.
-I've been in the same shoes as you, and I draw my opinions from personal encounters with the crypto ecosystem.
-What I ask of you as a former peer then, is that you put your tech under a lens of scrutiny and sever any bonds that may develop into religious fanaticism.
+If you're a blockchain enthusiast reading this, know that I understand where you stand.
+I've been in the same shoes as you,
+and I draw my opinions from personal encounters with the crypto ecosystem.
+What I ask of you as a peer then, is that you put your tech under a lens of scrutiny and sever any bonds that may develop into religious fanaticism.
 This is true of all engineering, of course.
 We cannot improve a technology if we're blind to it's limitations.
-And we can't become aware of it's limitations unless we are open to critique.
+And we can't become aware of limitations unless we are open to critique.
 Critique such as this one.
 
-The engineers who build blockchains and NFT based projects surely recognise the technical problems with this data model,
+The engineers who build blockchains and NFT based projects surely recognise the technical problems with this model,
 they simply choose to write them off as "tradeoffs" for *web3*, or worse, turn a blind eye to them.
 And then there are the social problems -
-ones that are much more nuanced and can't be tackled by any number of token standards or consensus algorithms.
+ones that are so nuanced that they can't be tackled by any number of token standards or consensus algorithms.
 I can at least attest to the ones that I am aware of.
 
 - [Social](#social)
@@ -26,7 +29,6 @@ I can at least attest to the ones that I am aware of.
 
 ## Social
 ### The majority of crypto is shady, even for artists.
-I don't have to explain myself with this one.
 Cryptocurrency is always found in a massive web of controversy, frauds and scams.
 Show me one successful crypto project that has served a real purpose,
 and I'll show you 10 that were outed for being scams.
@@ -36,7 +38,8 @@ But what happens when someone makes an NFT out of stolen art?
 Blockchains are immutable by nature.
 The thief now owns the art forever, even if they're found out.
 
-The solution that crypto evangelists propose is that artists should claim ownership of an NFT themselves before someone else gets the chance to do so.
+The solution that crypto evangelists propose is that artists should mint an NFT
+out of their art before someone else gets the chance.
 But this is far from a realistic solution.
 A creator should not be bothered with signing tokens on a myriad of different markets and blockchains just to avoid being wronged.
 Why should an artist **pay** to register an NFT on Flow, Ethereum, Solana, Monero, Tezos and countless other chains under the sun?
@@ -44,9 +47,9 @@ Why should an artist **pay** to register an NFT on Flow, Ethereum, Solana, Moner
 ### NFT marketplaces are centralised and controlled.
 
 The willingness to be free from institutional regulation and government censorship is at the nexus of "web3".
-The idea of a government powerless to stop a citizen from owning any obscene art piece appeals to many.
+The idea of a government powerless to stop a citizen from owning any digital asset appeals to many.
 However under this veil of liberation and freedom lies a truth that no crypto-bro will tell you - 
-"The very marketplace you view and trade your assets on are centralised and controlled".
+The very marketplace you view and trade your assets on are centralised and controlled.
 
 NFT assets **can** be removed from [objkt](https://objkt.com/) and [opensea](https://opensea.io/), you **can** be banned from [coinbase](https://www.coinbase.com).
 [Opensea even admits it](https://support.opensea.io/hc/en-us/articles/1500010625362-Why-are-my-items-and-collections-delisted-) themselves!
@@ -110,11 +113,12 @@ because people told you it means something.
 **The value of an NFT is what you believe it to be.**
 
 Crypto evangelists would have you believe this too, except they'd word it very differently.
-But you can't get the world to agree on this strange belief system where 32x32 pixel dudes are worth thousands of dollars.
+But you can't get the world to agree on this strange belief system
+where nearly identical 32x32 pixel people are supposed to encapsulate an "idea" worth
+thousands of dollars.
 
-To many, it just doesn't make sense.
-Why does this clump of pixels cost 1M$?
-Just because.
+To most, it just won't make sense.
+Why should this clump of pixels cost 1M$?
 
 <img src="https://cryptopotato.com/wp-content/uploads/2021/03/cryptopunk.jpg" width="200" height="200"/>
 
@@ -123,7 +127,8 @@ What value does it add to our lives? <br/>
 What can we achieve with this new school of thought that we couldn't before?
 
 Some crypto evangelists would answer this by saying "[It can make you rich!](https://cryptopotato.com/this-cryptopunk-nft-was-bought-for-15k-in-2018-now-sold-for-8-million/)".
-There is some truth to that, but it's a very twisted statement that conceals more than it shows.
+There is a nugget of truth in that,
+but it's a very twisted statement that conceals more than it shows.
 We've to realize that this value doesn't come from nowhere.
 For you to have gained in this flaky landscape, several others had to lose.
 And if general probability theory is anything to go by, you're more likely to find yourself in the losing lot.
@@ -137,7 +142,7 @@ Unknown to most regular consumers of crypto,
 the actual items represented by NFTs they own aren't actually stored on a blockchain.
 i.e - the million dollar ape JPEG someone spent their life savings on is physically located somewhere outside Ethereum.
 They're stored on a separate database which could be centralised (but generally isn't, like IPFS).
-The blockchain itself only stores a URI to the resource in question (say `ipfs:://foo/bar/orangutan.jpg`).
+The blockchain itself only stores a URI to the resource in question (say `ipfs://foo/bar/orangutan.jpg`).
 
 Look at Ethereum's [EIP-721](https://eips.ethereum.org/EIPS/eip-721) token standard.
 Once you've made your way through the document, you'll realise there is **nothing** stopping a server
