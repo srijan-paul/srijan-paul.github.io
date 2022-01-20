@@ -4,7 +4,7 @@ While I recognise the skill and reverence of some developers in this domain,
 I still stand uncharmed by the zeal of web3.
 
 If you're a blockchain enthusiast reading this, know that I understand where you stand.
-I've been in the same shoes as you,
+I've been in your shoes,
 and I draw my opinions from personal encounters with the crypto ecosystem.
 What I ask of you as a peer then, is that you put your tech under a lens of scrutiny and sever any bonds that may develop into religious fanaticism.
 This is true of all engineering, of course.
