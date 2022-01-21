@@ -15,7 +15,7 @@ Most engineers who build blockchains and NFT based projects recognise the techni
 Yet they choose to write them off as "tradeoffs" for *web3*, or worse, turn a blind eye to them.
 And then there are the social problems -
 ones that are so nuanced that they can't be tackled by any number of token standards or consensus algorithms.
-This post is my attempt at shedding some light on the ones that I'm aware of.
+This post is my attempt at shedding some light on the problems that I'm aware of.
 
 - [Social](#social)
   - [The majority of crypto is shady, even for artists.](#the-majority-of-crypto-is-shady-even-for-artists)
