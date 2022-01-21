@@ -1,4 +1,4 @@
-During my time as a blockchain developer, I've learned a lot and have met amazing people.
+During my short stint as a blockchain developer, I've learned a lot and have met amazing people.
 While I acknowledge the skill and reverence of some developers in this domain,
 I still remain uncharmed by the zeal of web3.
 
