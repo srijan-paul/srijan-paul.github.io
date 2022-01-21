@@ -11,7 +11,7 @@ We cannot improve a technology if we're blind to it's limitations.
 And we can't perceive limitations unless we are open to critique.
 Critique such as this one.
 
-Most engineers who build blockchains and NFT based projects recognise the technical limitations under this technology.
+Most engineers who build blockchains and NFT based projects recognise the technical limitations of this technology.
 Yet they choose to write them off as "tradeoffs" for *web3*, or worse, turn a blind eye to them.
 And then there are the social problems -
 ones that are so nuanced that they can't be tackled by any number of token standards or consensus algorithms.
