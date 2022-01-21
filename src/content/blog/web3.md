@@ -1,7 +1,6 @@
-In the past, I've worked on blockchain and NFT projects, which has taught me a lot
-and introduced me to some great people.
-While I recognise the skill and reverence of some developers in this domain,
-I still stand uncharmed by the zeal of web3.
+During my time as a blockchain developer, I've learned a lot and have met amazing people.
+While I acknowledge the skill and reverence of some developers in this domain,
+I still remain uncharmed by the zeal of web3.
 
 If you're a blockchain enthusiast reading this, know that I understand where you stand.
 I've been in your shoes,
@@ -12,11 +11,11 @@ We cannot improve a technology if we're blind to it's limitations.
 And we can't perceive limitations unless we are open to critique.
 Critique such as this one.
 
-The engineers who build blockchains and NFT based projects surely recognise the technical problems with this model,
-they simply choose to write them off as "tradeoffs" for *web3*, or worse, turn a blind eye to them.
+Most engineers who build blockchains and NFT based projects recognise the technical limitations under this technology.
+Yet they choose to write them off as "tradeoffs" for *web3*, or worse, turn a blind eye to them.
 And then there are the social problems -
 ones that are so nuanced that they can't be tackled by any number of token standards or consensus algorithms.
-I can at least attest to the ones that I am aware of.
+This post is my attempt at shedding some light on the ones that I'm aware of.
 
 - [Social](#social)
   - [The majority of crypto is shady, even for artists.](#the-majority-of-crypto-is-shady-even-for-artists)
@@ -28,15 +27,17 @@ I can at least attest to the ones that I am aware of.
   - [Web3 is not technically feasible.](#web3-is-not-technically-feasible)
 
 ## Social
+
 ### The majority of crypto is shady, even for artists.
+
 Cryptocurrency is always found in a massive web of controversy, frauds and scams.
 Show me one successful crypto project that has served a real purpose,
 and I'll show you 10 that were outed for being scams.
 
 NFTs claim to be a revolution for artists and creators.
 But what happens when someone makes an NFT out of stolen art?
-Blockchains are immutable by nature.
-The thief now owns the art forever, even if they're found out.
+Owing to a blockchain's immutable nature,
+the thief now owns the art forever, even if they're found out.
 
 The solution that crypto evangelists propose is that artists should mint an NFT
 out of their art before someone else gets the chance.
@@ -62,13 +63,13 @@ your NFT will be delisted from a supposedly "decentralised" and "uncensorable" m
 > - degrade or dox another individual,
 > - otherwise violate our [terms of service](https://opensea.io/tos). 
 
-Okay, and what constitutes "violence or hate against others"?
+But what constitutes "violence or hate against others"?
 Will I get banned if I make fun of a political figure?
 Rather, **Can** I get banned if I make fun of a political figure?
 Clearly, the answer is yes.
 The people moderating this website do wield that power.
 "Moderating a decentralised and censor-proof website" is an oxymoron,
-and how the engineers behind such platforms fail to realise this eludes me.
+and how the people trading on such platforms fail to realise this eludes me.
 
 ### NFTs are... worthless?
 
@@ -78,8 +79,8 @@ Say you spend all the money you saved for your child's education to buy this roc
 ![rock-nft](https://pbs.twimg.com/profile_images/1423533825028616195/-iFC12qC_400x400.jpg)
 
 Now you're pumped with adrenaline, because you **own** this piece of history.
-The image is yours, and you own all rights to its usage and redistribution.
-This artpiece is now valued as if it were a real and tangible rock, there is only one rock and only one owner - you.
+The image is yours, and you claim all rights to its usage and redistribution.
+This art piece is now valued as if it were a real and tangible rock, there is only one rock and only one owner - you.
 
 Right? <br/>
 Wrong. <br/>
@@ -103,10 +104,8 @@ If you can use it as your twitter avatar, I can too.
 And unlike the real world, my avatar has the exact same pixel composition as yours.
 
 Whatever you can do it with it, I can.
-Except you now bear a financial loss in pursuit of this "ownership",
+Except you now bear a financial loss in pursuit of this "ownership" 
 because people told you it means something.
-
-
 
 ### Your 'get-rich-quick' chances are miniscule.
 
@@ -122,12 +121,10 @@ Why should this clump of pixels cost 1M$?
 
 <img src="https://cryptopotato.com/wp-content/uploads/2021/03/cryptopunk.jpg" width="200" height="200"/>
 
-Why should we collectively enforce this belief? <br/>
-What value does it add to our lives? <br/>
-What can we achieve with this new school of thought that we couldn't before?
+Why should we collectively enforce this belief? <br/>What can we achieve with this new school of thought that we couldn't before?
 
-Some crypto evangelists would answer this by saying "[It can make you rich!](https://cryptopotato.com/this-cryptopunk-nft-was-bought-for-15k-in-2018-now-sold-for-8-million/)".
-There is a nugget of truth in that,
+Some crypto evangelists answer this with "[It can make you rich!](https://cryptopotato.com/this-cryptopunk-nft-was-bought-for-15k-in-2018-now-sold-for-8-million/)".
+There is a nugget of truth to that,
 but it's a very twisted statement that conceals more than it shows.
 We've to realize that this value doesn't come from nowhere.
 For you to have gained in this flaky landscape, several others had to lose.
@@ -137,7 +134,9 @@ MLM scams and pyramid schemes play a surprisingly similar game,
 but enough people have already drawn this analogy so that I don't have to.
 
 ## Engineering
+
 ### NFTs CAN be altered.
+
 Unknown to most regular consumers of crypto,
 the actual items represented by NFTs they own aren't actually stored on a blockchain.
 i.e - the million dollar ape JPEG someone spent their life savings on is physically located somewhere outside Ethereum.
@@ -152,6 +151,7 @@ There is even a word for this act, it starts with a **c**, ends with an **r** an
 See [this NFT](https://moxie.org/2022/01/07/web3-first-impressions.html#making-an-nft) by Moxie Marlinspike as an example.
 
 ### Web3 is not technically feasible.
+
 Ever so often you'll cross web3 enthusiasts on twitter who claim the internet will be decentralized in the near future.
 That there will be no institutional control and a governments' powers over social media will cease to exist.
 And they claim this will be by virtue of a blockchain driven internet, that runs on gas fees.
@@ -182,4 +182,3 @@ A classic "rich get richer" scheme.
 This is not to say blockchain is completely useless.
 It **might** be used for problems such as food contamination tracing, and verifying ownership of legal documents.
 However the world today is in a frenzy to use it in all the places where it doesn't belong.
-
