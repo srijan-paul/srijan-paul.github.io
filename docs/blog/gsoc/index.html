@@ -5,9 +5,11 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/color-brewer.min.css" integrity="sha512-SJm3cAu//Nn6+cv90D0Ue8ArsnjDlszVGE3o/0JX55VOd9/KVbSGTegrZhyNK6ttKMeLbR14ezeGWyBUmF1Aww==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/post.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/base16/atelier-estuary-light.min.css" integrity="sha512-XDRO+ev1q3ob06fdRyAko1ahMQSHpvVrX5gNAP3JI+gPTOSlo7hwVjii55CdqCVX5+aJ/uryD+QY9xVR/snCYA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"
     integrity="sha512-Pbb8o120v5/hN/a6LjF4N4Lxou+xYZ0QcVF8J6TWhBbHmctQWd8O6xTDmHpE/91OjPzCk4JRoiJsexHYg4SotQ=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -81,10 +83,10 @@ For example, in the snippet below we are creating a name-less function that retu
 <p>The term &quot;closure&quot; refers to a function that can capture variables from outside it's scope and
 retain references to them even after the surrounding scope has been exited.</p>
 <pre><code class="language-lua">local function make_adder()
-    local num = 100
-	return function (y)
-        return x + num
-    end
+  local num = 100
+  return function (y)
+    return x + num
+  end
 end
 
 local adder = make_adder()

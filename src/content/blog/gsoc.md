@@ -39,10 +39,10 @@ retain references to them even after the surrounding scope has been exited.
 
 ```lua
 local function make_adder()
-    local num = 100
-	return function (y)
-        return x + num
-    end
+  local num = 100
+  return function (y)
+    return x + num
+  end
 end
 
 local adder = make_adder()
