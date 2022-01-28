@@ -162,7 +162,7 @@ blockquote p {
 /* codeblocks */
 code {
   font-size: 16px !important;
-  font-family: "JetBrains Mono", monospace, sans-serif;
+  font-family: "Fira Code", monospace, sans-serif;
   /* background-color: #e9f0ee; */
   overflow: auto;
 }

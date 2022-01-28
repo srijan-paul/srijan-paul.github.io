@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Serif&family=JetBrains+Mono&family=Zilla+Slab:wght@300;400&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=IBM+Plex+Serif&family=Zilla+Slab:wght@300;400&display=swap');
 
 :root {
   --clr-primary: #01a3a4;
@@ -150,6 +150,10 @@ pre, code {
 
 .hljs-type, .hljs-keyword, .hljs-title, .hljs-params {
   font-weight: bold;
+}
+
+.hljs-comment {
+  color: #aaaaaa !important;
 }
 
 @media screen and (max-width: 730px) {

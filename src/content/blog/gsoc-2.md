@@ -361,7 +361,7 @@ local x: integer = 1 -- regular value
 -- a "box" type can be thought of as a struct
 -- surrounding a single, regular data type.
 record Box
-value: integer
+	value: integer
 end
 
 local y: Box = { value = 10 } -- "boxed value"
