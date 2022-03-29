@@ -8,7 +8,6 @@ but atleast the trajectory isn't too bad.
 
 Finished since last update:
 
-
 1. [Purescript by example](https://leanpub.com/purescript/read): *Chef's kiss*.
   I didn't read it cover-to-cover, because it's repetitive for anyone familiar with Haskell.
   I still found myself binging it in 3 days.
