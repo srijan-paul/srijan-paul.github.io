@@ -1,0 +1,8 @@
+{
+  template: "post"
+  tags: ["FP" "programming-languages" "post"]
+  title: "Monadic parser combinators"
+  date: "2022-03-31"
+  is_blog_post: "true"
+} 
+
