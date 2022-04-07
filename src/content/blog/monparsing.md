@@ -177,11 +177,9 @@ Since `Parser` is already a monad, we can instantiate `MonadPlus` typeclass to e
 this idea:
 ```hs
 instance MonadPlus Parser where
-  mzero = zero
+  mzero = null
   mplus = plus
 ```
-
-{TODO@injuly: describe `alphabet` etc here}
 
 The `or` combinator can then be simply:
 
@@ -192,20 +190,79 @@ p `or` q = Parser $ \inp -> case parse (p `plus` q) inp of
     (x : xs) -> [x]
 ```
 
-In fact, the `Alternative` typeclass already defines this functionality.
+In fact, the `Alternative` typeclass already defines this functionality with the `<|>` operator:
 
 ```hs
 instance Alternative Parser where
   empty = zero
-
-  p <|> q = Parser $ \inp -> case parse (p `mplus` q) inp of
-    [] -> []
-    (x : xs) -> [x]
+  (<|>) = or
 ```
 
-Finally, we can returned
+Finally, we can return to the `letter` and `alphanum` parsers:
 
 ```hs
+letter :: Parser Char
+letter = lower <|> upper
+
 alphanum :: Parser Char
 alphanum = letter <|> digit
+```
+
+As a random aside, we can use the
+[sequencing (>>) operator](https://hackage.haskell.org/package/base-4.16.1.0/docs/Prelude.html#v:-62--62-) at times.
+Consider the function `string` for example, where `string "foo"` returns a parser that only accepts strings which begin with "foo".
+
+```hs
+string :: String -> Parser String
+string "" = result ""
+string (x : xs) =
+  char x >> string xs >> result (x:xs)
+```
+
+Using `>>=` notation, we would have had to write:
+
+```hs
+string (x:xs) =
+  char x 
+    >>= const string xs -- same as \_ -> string xs
+    >>= const result (x:xs) -- same as \_ -> result (x:xs)
+```
+
+## Using the do notation
+Haskell provides a handy [do notation](https://en.wikibooks.org/wiki/Haskell/do_notation)
+for readably sequencing monadic computations.
+This is useful when composing monadic actions becomes a bit gnarly looking.
+Consider this example that composes the outputs of several parsers:
+
+```hs
+parser = parser1 >>= \x1 -> -- 1. apply parser1
+  make_parser2 x1 >>= \x2 -> -- 2. use parser1's output to make parser2
+    make_parser3 x2 >>= \x3 -> -- 3. Use parser2's output to make parser3
+      result (f x1 x2 x3) -- 4. Combine all parse results to form the final result
+```
+
+Using the do notation, the above code snippet becomes:
+
+```hs
+parser = do
+  x1 <- parser1
+  x2 <- make_parser2 x1
+  x3 <- make_parser3 x2
+  result (f x1 x2 x3)
+```
+
+## Combinators for repition
+
+You may be familiar with the regex matchers `+` and `*`.
+`a*` matches 0 or more occurences of the letter 'a' whereas
+`a+` expects at least 1 'a'.
+
+We can represent this in Haskell:
+
+```hs
+many :: Parser a -> Parser [a]
+many p = do
+  x  <- p -- apply p once
+  xs <- many p -- recursively apply `p` as many times as possible
+  return (x:xs)
 ```
