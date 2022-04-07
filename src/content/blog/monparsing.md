@@ -17,25 +17,31 @@ Here is an example of a parser that matches C style identifiers:
 
 ```hs
 -- matches strings that satisfy [a-zA-Z][a-zA-Z0-9]+
-parseId :: Parser String
+identifier :: Parser String
 -- One letter or '_', followed by zero of more '_', letters or digits
-parseId = alpha_ `then_` many (alpha_ `or` digit)
-  where alpha_ = letter `or` char '_'
+identifier = alpha_ `thenList` many (alpha_ <|> digit)
+  where
+    alpha_ = letter <|> char '_'
 ```
 
 Before reading any further, It is recommended for you to have some basic understanding of:
 
 - Parsers.
-- Monads and fundamentals of Haskell.
+- Monads in functional programming.
+- Haskell.
+
+These blog posts are derviatives of two papers I had read recently
+([1](https://homepages.inf.ed.ac.uk/wadler/papers/marktoberdorf/baastad.pdf), [2](https://www.cs.nott.ac.uk/~pszgmh/monparsing.pdf)).
+If you like yourself a denser reading, you could choose to go through the papers instead.
 
 ## The Parser type
 
-There are several ways to represent a Parser.
+Before we begin to define combinators that act on parsers, we must choose a representation for a parser first.
 
 A parser takes a string and produces an output that can be just about anything.
 A list parser will produce a list as it's output,
 an integer parser will produce `Int`s,
-A JSON parser data might return a custom [ADT](https://en.wikipedia.org/wiki/Algebraic_data_type) representing a JSON.
+a JSON parser data might return a custom [ADT](https://en.wikipedia.org/wiki/Algebraic_data_type) representing a JSON.
 
 Therefore, it makes sense to make Parser a polymorphic type.
 It also makes sense to return a list of results instead of a single result,
@@ -55,13 +61,13 @@ Often a parser is only intended to parse some prefix of the input, and let anoth
 Thus, we return a pair containing the parse result `a`, and the unconsumed string that can be used by subsequent parsers.
 
 We could have used the `type` keyword let `Parser` be an alias for `String -> [(a, String)]`,
-but having a unique data type has the advantage that it can be turned into a typeclass instance, which we'll do later on.
+but having a unique data type lends us the ability to instantiate it as a typeclass,
+which we'll do later on.
 
 ## Baby parsers
 
 We can start by describing some basic parsers that do very little work.
 A `result` parser always returns the same value and doesn't touch the input string.
-{TODO@injuly: backmatter explaining how this can be written in a pointfree style using TupleSections}
 
 ```hs
 result :: Parser a
@@ -126,7 +132,7 @@ With this new extension, our `sat` parser can be re-written as:
 
 ```hs
 sat p =
--- 1. Apply `item`, if it fails on an empty string, we simply short circuit and get `[]`.
+-- Apply `item`, if it fails on an empty string, we simply short circuit and get `[]`.
   item >>= \x -> 
     if p x
       then result x
@@ -209,7 +215,7 @@ alphanum = letter <|> digit
 ```
 
 As a random aside, we can use the
-[sequencing (>>) operator](https://hackage.haskell.org/package/base-4.16.1.0/docs/Prelude.html#v:-62--62-) at times.
+[sequencing (>>) operator](https://hackage.haskell.org/package/base-4.16.1.0/docs/Prelude.html#v:-62--62-) to write more concise code at times.
 Consider the function `string` for example, where `string "foo"` returns a parser that only accepts strings which begin with "foo".
 
 ```hs
@@ -238,7 +244,7 @@ Consider this example that composes the outputs of several parsers:
 parser = parser1 >>= \x1 -> -- 1. apply parser1
   make_parser2 x1 >>= \x2 -> -- 2. use parser1's output to make parser2
     make_parser3 x2 >>= \x3 -> -- 3. Use parser2's output to make parser3
-      result (f x1 x2 x3) -- 4. Combine all parse results to form the final result
+      return (f x1 x2 x3) -- 4. Combine all parse results to form the final result
 ```
 
 Using the do notation, the above code snippet becomes:
@@ -248,7 +254,7 @@ parser = do
   x1 <- parser1
   x2 <- make_parser2 x1
   x3 <- make_parser3 x2
-  result (f x1 x2 x3)
+  return (f x1 x2 x3)
 ```
 
 ## Combinators for repition
@@ -257,7 +263,7 @@ You may be familiar with the regex matchers `+` and `*`.
 `a*` matches 0 or more occurences of the letter 'a' whereas
 `a+` expects at least 1 'a'.
 
-We can represent this in Haskell:
+We can represent the `*` matcher as a combinator like so:
 
 ```hs
 many :: Parser a -> Parser [a]
@@ -265,4 +271,92 @@ many p = do
   x  <- p -- apply p once
   xs <- many p -- recursively apply `p` as many times as possible
   return (x:xs)
+```
+Looks decent, but when run in GHCi, it fails to produce the expected result:
+```
+*Main> parse (many $ char 'x') "xx"
+[]
+```
+
+If you try to work out the application of this parser out by hand, you'll notice a flaw in or base case:
+In the final recursive call, when the input string is `""`, `x <- p` fails and we short circuit to return `[]`.
+
+To handle this scenario, we can use our `or` combinator:
+
+```hs
+many :: Parser a -> Parser [a]
+many p =
+  ( do
+      x <- p -- apply `p` once
+      xs <- many p -- recursively apply `p` as many times as possible
+      return (x : xs) -- Combine the results returned by each parser
+  ) <|> return [] 
+  -- In case `p` fails either in the initial call, or in one of the
+  -- recursive calls to itself, we return an empty list as the parse result.
+```
+
+And we're golden:
+
+```
+*Main> parse (many $ char 'x') "xxx123"
+[("xxx","123")]
+```
+
+If the use of `<|>` is still confusing to you, try working it out on paper.
+
+Anologous to the regex `+` matcher, we can write a `many1` combinator that accepts atleast 1 occurence of an input sequence.
+Piggybacking off of `many`, this can be simply written as:
+
+```hs
+many1 :: Parser a -> Parser [a]
+many1 p = do
+  x <- p
+  xs <- many p
+  return (x:xs)
+```
+
+## Parsing regular languages
+If you haven't realized by now, we've built some combinator that are capable of parsing regular languages.
+Circling back to the beginning of this post, here is a combinator that parses a valid C-style identifier:
+
+```hs
+identifier :: Parser String
+identifier = do
+  x <- alpha_
+  xs <- many (alpha_ <|> digit)
+  return (x : xs)
+  where
+    alpha_ = letter <|> char '_'
+```
+
+```
+*Main> parse identifier "hello_123_ = 5"
+[("hello_123_"," = 5")]
+```
+
+To make it even more concise, we can define a `then'` combinator which combines
+the result produced by two parsers using a caller provided function.
+
+```hs
+then' :: (a -> b -> c) -> Parser a -> Parser b -> Parser c
+then' combine p q =
+  p >>= \x ->
+    q >>= \xs ->
+      result $ combine x xs
+```
+
+A `thenList` combinator can then combine to parse results of type `a` and `[a]` using `(:)`.
+
+```hs
+thenList :: Parser a -> Parser[a] -> Parser[a]
+thenList = then' (:)
+```
+
+Now our identifier parser becomes even shorter:
+
+```hs
+identifier :: Parser String
+identifier = alpha_ `thenList` many (alpha_ <|> digit)
+  where
+    alpha_ = letter <|> char '_'
 ```

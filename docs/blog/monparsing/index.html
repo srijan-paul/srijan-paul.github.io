@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/post.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/base16/atelier-estuary-light.min.css" integrity="sha512-XDRO+ev1q3ob06fdRyAko1ahMQSHpvVrX5gNAP3JI+gPTOSlo7hwVjii55CdqCVX5+aJ/uryD+QY9xVR/snCYA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"
+    integrity="sha512-Pbb8o120v5/hN/a6LjF4N4Lxou+xYZ0QcVF8J6TWhBbHmctQWd8O6xTDmHpE/91OjPzCk4JRoiJsexHYg4SotQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/languages/haskell.min.js" integrity="sha512-Evm1OPX+2rTy5waLPWqq/3mmw7ouQI6ree9E2jlfJ5nmZkJXCwHlH8ylq765LioP/VNpc3cqioZhVmyi80c1yw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <title>Monadic parser combinators</title>
+</head>
+
+<body>
+  <div class="main">
+		<div class="nav">
+			<div class="nav-left">
+				<a id="home-link" href="/">injuly.in</a>
+			</div>
+
+			<div class="nav-right">
+				<a href="/" class="nav-link">home</a>
+				<a href="/blog" class="nav-link">blog</a>
+				<a href="/current" class="nav-link">current</a>
+			</div>
+		</div>
+
+    <hr style="height:1px;border:none;color:#333;background-color:#333;">
+
+    <div class="leader">
+      <h2> Monadic parser combinators </h2>
+      <div class="post-date"></div>
+      <ul class="tags" id="tags">
+      </ul>
+    </div>
+    <p>A <a href="https://www.cs.nott.ac.uk/~pszgmh/monparsing.pdf">Parser combinator</a>, as wikipedia describes it,
+is a <em>higher-order function that accepts several parsers as input and returns a new parser as its output</em>.</p>
+<p>They can be very powerful when you want to build modular parsers and leave them open for further extension.
+But it can be tricky to get the error reporting right when using a 3rd party combinator library,
+and they tend to be slower in imperative languages.
+Nonetheless, it is an interesting cornerstone in both functional programming and PLT, so it shouldn't
+hurt for us to learn about them by building one on our own.</p>
+<p>To keep you from dozing off, this will be a 2-part series.</p>
+<p>In this first part, we're going to write a library that describes several tiny parsers
+which will allow us to write one-liners capable of accepting strings
+belonging to a <a href="https://en.wikipedia.org/wiki/Regular_language">regular language</a>.
+In other words, we're building a more verbose version of a regex library :^).
+Here is an example of a parser that matches C style identifiers:</p>
+<pre><code class="language-hs">-- matches strings that satisfy [a-zA-Z][a-zA-Z0-9]+
+identifier :: Parser String
+-- One letter or '_', followed by zero of more '_', letters or digits
+identifier = alpha_ `thenList` many (alpha_ &lt;|&gt; digit)
+  where
+    alpha_ = letter &lt;|&gt; char '_'
+</code></pre>
+<p>Before reading any further, It is recommended for you to have some basic understanding of:</p>
+<ul>
+<li>Parsers.
+</li>
+<li>Monads in functional programming.
+</li>
+<li>Haskell.
+</li>
+</ul>
+<p>These blog posts are derviatives of two papers I had read recently
+(<a href="https://homepages.inf.ed.ac.uk/wadler/papers/marktoberdorf/baastad.pdf">1</a>, <a href="https://www.cs.nott.ac.uk/~pszgmh/monparsing.pdf">2</a>).
+If you like yourself a denser reading, you could choose to go through the papers instead.</p>
+<h2 id="the-parser-type">The Parser type</h2>
+<p>Before we begin to define combinators that act on parsers, we must choose a representation for a parser first.</p>
+<p>A parser takes a string and produces an output that can be just about anything.
+A list parser will produce a list as it's output,
+an integer parser will produce <code>Int</code>s,
+a JSON parser data might return a custom <a href="https://en.wikipedia.org/wiki/Algebraic_data_type">ADT</a> representing a JSON.</p>
+<p>Therefore, it makes sense to make Parser a polymorphic type.
+It also makes sense to return a list of results instead of a single result,
+since grammars can be ambigious and there may be several ways to parse the same input string.</p>
+<p>An empty list, then implies the parser failed to parse the provided input.</p>
+<p>{TODO@injuly : add a bullet point to the back matter explaining alternative type definitions}.</p>
+<pre><code class="language-hs">newtype Parser a = Parser { parse :: String -&gt; [(a, String)] }
+</code></pre>
+<p>You might be wondering why we return the tuple <code>(a, String)</code>, and not just <code>a</code>.
+Well, a parser might not be able to parse the entire input string.
+Often a parser is only intended to parse some prefix of the input, and let another parser do the rest of the parsing.
+Thus, we return a pair containing the parse result <code>a</code>, and the unconsumed string that can be used by subsequent parsers.</p>
+<p>We could have used the <code>type</code> keyword let <code>Parser</code> be an alias for <code>String -&gt; [(a, String)]</code>,
+but having a unique data type lends us the ability to instantiate it as a typeclass,
+which we'll do later on.</p>
+<h2 id="baby-parsers">Baby parsers</h2>
+<p>We can start by describing some basic parsers that do very little work.
+A <code>result</code> parser always returns the same value and doesn't touch the input string.</p>
+<pre><code class="language-hs">result :: Parser a
+result val = Parser $ \inp -&gt; [(val, inp)]
+</code></pre>
+<p>The parser <code>null</code> will always fail by returning an empty list.</p>
+<pre><code class="language-hs">null :: Parser a
+null = Parser $ const []
+</code></pre>
+<p><code>item</code> unconditionally accepts the first character of an input string.</p>
+<pre><code class="language-hs">item :: Parser Char
+item = Parser $ parseItem
+  where
+    parseItem [] = []
+    parseItem (x:xs) = [(x, xs)]
+</code></pre>
+<h2 id="building-parsers-on-demand">Building parsers on demand</h2>
+<p>The basic parsers we defined above are of very little use.
+Ideally, we would want parsers that accept input strings which satisfy certain constraints.
+Say we want a parser that consumes a string if its first character satisfies a predicate.
+We can generalize this idea by writing a function that takes a <code>(Char -&gt; Bool)</code> predicate and
+returns a parser that only consumes an input string
+if its first character when supplied to the predicate returns <code>True</code>.</p>
+<p>The simplest solution for this is simply:</p>
+<pre><code class="language-hs">sat :: (Char -&gt; Bool) -&gt; Parser Char
+sat p (x:xs) = if p x
+  then [(x, xs)]
+  else []
+sat _ [] = []
+</code></pre>
+<p>However, since we already have an <code>item</code> parser that unconditionally extracts
+the first character from a string, we could use this as an opportunity create a basic parser combinator.</p>
+<p>Before writing a combinator, we must first instantiate <code>Parser</code> as a <code>Monad</code>.
+{TODO@injuly}: shortlinks that instantiate <code>Parser</code> from <code>Applicative, Functor</code>.</p>
+<pre><code class="language-hs">instance Monad Parser where
+  -- (&gt;&gt;=) : Parser a -&gt; (a -&gt; Parser b) -&gt; Parser b
+  p &gt;&gt;= f = Parser $ \inp -&gt;
+    concat [parse (f v) inp' | (v, inp') &lt;- parse p inp]
+  -- a -&gt; Parser a
+  return = result
+</code></pre>
+<p>The <code>bind</code> operation takes a <code>Parser a</code> (p) and a function <code>a -&gt; Parser b</code> (f), and returns a <code>Parser b</code>.
+The idea is to apply <code>p</code>, if it fails then we have an empty list which results in <code>concat [[]]</code> = <code>[]</code>.
+If <code>p</code> successfully parses <code>inp</code> into one more possible parse results,
+we apply <code>f</code> to each of the results to get corresponding <code>Parser b</code>s and then apply those to the rest of the input.</p>
+<p>With this new extension, our <code>sat</code> parser can be re-written as:</p>
+<pre><code class="language-hs">sat p =
+-- Apply `item`, if it fails on an empty string, we simply short circuit and get `[]`.
+  item &gt;&gt;= \x -&gt; 
+    if p x
+      then result x
+      else null 
+</code></pre>
+<p>Now we can use the <code>sat</code> combinator to describe several useful parsers.
+For example, a <code>char</code> parser that only consumes a string beginning with a specific character.</p>
+<pre><code class="language-hs">char :: Char -&gt; Parser Char
+char x  = sat (== x)
+</code></pre>
+<p>A parser for decimal digits:</p>
+<pre><code class="language-hs">-- import Data.Char (isDigit, isLower, isUpper)
+digit :: Parser Char
+digit = sat isDigit
+</code></pre>
+<p>And similarly small but useful parsers:</p>
+<pre><code class="language-hs">lower :: Parser Char
+lower = sat isLower
+
+upper :: Parser Char
+upper = sat isUpper
+</code></pre>
+<p>Now that we have <code>upper</code>, <code>lower</code> and <code>digit</code> this opens up new possibilities for combinations:</p>
+<ul>
+<li>An <code>alphabet</code> parser that accepts a char that is consumable by either <code>upper</code> or <code>lower</code>.
+</li>
+<li>An <code>alphanumeric</code> parser that accepts a char which is either <code>alphabet</code> or <code>digit</code>.
+</li>
+</ul>
+<p>An <code>or</code> combinator that captures this recurring pattern can come in handy.</p>
+<p>Let us begin by describing a <code>plus</code> combinator that concatenates the result returned by two parsers:</p>
+<pre><code class="language-hs">-- Applies two parsers to the same input, then returns a list
+-- containing results returned by both of them.
+plus :: Parser a -&gt; Parser a -&gt; Parser a
+p `plus` q = Parser $ \inp -&gt; parse p inp ++ parse q inp
+</code></pre>
+<p>Since <code>Parser</code> is already a monad, we can instantiate <code>MonadPlus</code> typeclass to enforce
+this idea:</p>
+<pre><code class="language-hs">instance MonadPlus Parser where
+  mzero = null
+  mplus = plus
+</code></pre>
+<p>The <code>or</code> combinator can then be simply:</p>
+<pre><code class="language-hs">or :: Parser a -&gt; Parser a -&gt; Parser a
+p `or` q = Parser $ \inp -&gt; case parse (p `plus` q) inp of
+    [] -&gt; []
+    (x : xs) -&gt; [x]
+</code></pre>
+<p>In fact, the <code>Alternative</code> typeclass already defines this functionality with the <code>&lt;|&gt;</code> operator:</p>
+<pre><code class="language-hs">instance Alternative Parser where
+  empty = zero
+  (&lt;|&gt;) = or
+</code></pre>
+<p>Finally, we can return to the <code>letter</code> and <code>alphanum</code> parsers:</p>
+<pre><code class="language-hs">letter :: Parser Char
+letter = lower &lt;|&gt; upper
+
+alphanum :: Parser Char
+alphanum = letter &lt;|&gt; digit
+</code></pre>
+<p>As a random aside, we can use the
+<a href="https://hackage.haskell.org/package/base-4.16.1.0/docs/Prelude.html#v:-62--62-">sequencing (&gt;&gt;) operator</a> to write more concise code at times.
+Consider the function <code>string</code> for example, where <code>string &quot;foo&quot;</code> returns a parser that only accepts strings which begin with &quot;foo&quot;.</p>
+<pre><code class="language-hs">string :: String -&gt; Parser String
+string &quot;&quot; = result &quot;&quot;
+string (x : xs) =
+  char x &gt;&gt; string xs &gt;&gt; result (x:xs)
+</code></pre>
+<p>Using <code>&gt;&gt;=</code> notation, we would have had to write:</p>
+<pre><code class="language-hs">string (x:xs) =
+  char x 
+    &gt;&gt;= const string xs -- same as \_ -&gt; string xs
+    &gt;&gt;= const result (x:xs) -- same as \_ -&gt; result (x:xs)
+</code></pre>
+<h2 id="using-the-do-notation">Using the do notation</h2>
+<p>Haskell provides a handy <a href="https://en.wikibooks.org/wiki/Haskell/do_notation">do notation</a>
+for readably sequencing monadic computations.
+This is useful when composing monadic actions becomes a bit gnarly looking.
+Consider this example that composes the outputs of several parsers:</p>
+<pre><code class="language-hs">parser = parser1 &gt;&gt;= \x1 -&gt; -- 1. apply parser1
+  make_parser2 x1 &gt;&gt;= \x2 -&gt; -- 2. use parser1's output to make parser2
+    make_parser3 x2 &gt;&gt;= \x3 -&gt; -- 3. Use parser2's output to make parser3
+      return (f x1 x2 x3) -- 4. Combine all parse results to form the final result
+</code></pre>
+<p>Using the do notation, the above code snippet becomes:</p>
+<pre><code class="language-hs">parser = do
+  x1 &lt;- parser1
+  x2 &lt;- make_parser2 x1
+  x3 &lt;- make_parser3 x2
+  return (f x1 x2 x3)
+</code></pre>
+<h2 id="combinators-for-repition">Combinators for repition</h2>
+<p>You may be familiar with the regex matchers <code>+</code> and <code>*</code>.
+<code>a*</code> matches 0 or more occurences of the letter 'a' whereas
+<code>a+</code> expects at least 1 'a'.</p>
+<p>We can represent the <code>*</code> matcher as a combinator like so:</p>
+<pre><code class="language-hs">many :: Parser a -&gt; Parser [a]
+many p = do
+  x  &lt;- p -- apply p once
+  xs &lt;- many p -- recursively apply `p` as many times as possible
+  return (x:xs)
+</code></pre>
+<p>Looks decent, but when run in GHCi, it fails to produce the expected result:</p>
+<pre><code>*Main&gt; parse (many $ char 'x') &quot;xx&quot;
+[]
+</code></pre>
+<p>If you try to work out the application of this parser out by hand, you'll notice a flaw in or base case:
+In the final recursive call, when the input string is <code>&quot;&quot;</code>, <code>x &lt;- p</code> fails and we short circuit to return <code>[]</code>.</p>
+<p>To handle this scenario, we can use our <code>or</code> combinator:</p>
+<pre><code class="language-hs">many :: Parser a -&gt; Parser [a]
+many p =
+  ( do
+      x &lt;- p -- apply `p` once
+      xs &lt;- many p -- recursively apply `p` as many times as possible
+      return (x : xs) -- Combine the results returned by each parser
+  ) &lt;|&gt; return [] 
+  -- In case `p` fails either in the initial call, or in one of the
+  -- recursive calls to itself, we return an empty list as the parse result.
+</code></pre>
+<p>And we're golden:</p>
+<pre><code>*Main&gt; parse (many $ char 'x') &quot;xxx123&quot;
+[(&quot;xxx&quot;,&quot;123&quot;)]
+</code></pre>
+<p>If the use of <code>&lt;|&gt;</code> is still confusing to you, try working it out on paper.</p>
+<p>Anologous to the regex <code>+</code> matcher, we can write a <code>many1</code> combinator that accepts atleast 1 occurence of an input sequence.
+Piggybacking off of <code>many</code>, this can be simply written as:</p>
+<pre><code class="language-hs">many1 :: Parser a -&gt; Parser [a]
+many1 p = do
+  x &lt;- p
+  xs &lt;- many p
+  return (x:xs)
+</code></pre>
+<h2 id="parsing-regular-languages">Parsing regular languages</h2>
+<p>If you haven't realized by now, we've built some combinator that are capable of parsing regular languages.
+Circling back to the beginning of this post, here is a combinator that parses a valid C-style identifier:</p>
+<pre><code class="language-hs">identifier :: Parser String
+identifier = do
+  x &lt;- alpha_
+  xs &lt;- many (alpha_ &lt;|&gt; digit)
+  return (x : xs)
+  where
+    alpha_ = letter &lt;|&gt; char '_'
+</code></pre>
+<pre><code>*Main&gt; parse identifier &quot;hello_123_ = 5&quot;
+[(&quot;hello_123_&quot;,&quot; = 5&quot;)]
+</code></pre>
+<p>To make it even more concise, we can define a <code>then'</code> combinator which combines
+the result produced by two parsers using a caller provided function.</p>
+<pre><code class="language-hs">then' :: (a -&gt; b -&gt; c) -&gt; Parser a -&gt; Parser b -&gt; Parser c
+then' combine p q =
+  p &gt;&gt;= \x -&gt;
+    q &gt;&gt;= \xs -&gt;
+      result $ combine x xs
+</code></pre>
+<p>A <code>thenList</code> combinator can then combine to parse results of type <code>a</code> and <code>[a]</code> using <code>(:)</code>.</p>
+<pre><code class="language-hs">thenList :: Parser a -&gt; Parser[a] -&gt; Parser[a]
+thenList = then' (:)
+</code></pre>
+<p>Now our identifier parser becomes even shorter:</p>
+<pre><code class="language-hs">identifier :: Parser String
+identifier = alpha_ `thenList` many (alpha_ &lt;|&gt; digit)
+  where
+    alpha_ = letter &lt;|&gt; char '_'
+</code></pre>
+
+
+
+    <div class="footer">
+    <hr>
+      Questions, suggestions or comments? <br/>
+      Shoot me an <a href="mailto:srijannr1@gmail.com">email</a>, or <a href="https://twitter.com/_injuly">tweet@me</a>.
+    </div>
+  </div>
+
+  <script src="/util.js"></script>
+  <script>
+    hljs.highlightAll();
+    const tagsDiv = document.getElementById("tags");
+    // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
+    const tags = [["FP","programming-languages","post"]][0]; 
+    tags.forEach(tag => {
+      const li = document.createElement("a")
+      li.classList.add("tag")
+      li.href = `/posts/index.html?tag=${tag}`
+      li.innerHTML = tag
+      tagsDiv.appendChild(li)
+    });
+
+    const dateElement = document.querySelector(".post-date");
+    dateElement.innerText = dateToString(new Date("2022-03-31"), true);
+  </script>
+</body>
+
+</html>
