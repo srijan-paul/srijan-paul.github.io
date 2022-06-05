@@ -2,7 +2,7 @@
   template: "post"
   tags: ["FP" "programming-languages" "post"]
   title: "Monadic parser combinators"
-  date: "2022-03-31"
+  date: "2022-05-05"
   is_blog_post: "true"
 } 
 
