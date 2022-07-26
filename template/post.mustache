@@ -1,72 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/css/common.css">
-  <link rel="stylesheet" href="/css/post.css">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/post.css">
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/base16/atelier-estuary-light.min.css" integrity="sha512-XDRO+ev1q3ob06fdRyAko1ahMQSHpvVrX5gNAP3JI+gPTOSlo7hwVjii55CdqCVX5+aJ/uryD+QY9xVR/snCYA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/ascetic.min.css" integrity="sha512-iaqCaYPu17nYG5ICr2vVaHgKT+LevpdqKwOGgR4YSpodnacEkfR/EM956YI0+1OWXIhDNQ1u1PCjMGBxZVUQ1g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"
-    integrity="sha512-Pbb8o120v5/hN/a6LjF4N4Lxou+xYZ0QcVF8J6TWhBbHmctQWd8O6xTDmHpE/91OjPzCk4JRoiJsexHYg4SotQ=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"
+            integrity="sha512-Pbb8o120v5/hN/a6LjF4N4Lxou+xYZ0QcVF8J6TWhBbHmctQWd8O6xTDmHpE/91OjPzCk4JRoiJsexHYg4SotQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/languages/haskell.min.js" integrity="sha512-Evm1OPX+2rTy5waLPWqq/3mmw7ouQI6ree9E2jlfJ5nmZkJXCwHlH8ylq765LioP/VNpc3cqioZhVmyi80c1yw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <title>{{ meta.title }}</title>
-</head>
+    <title>{{ meta.title }}</title>
+  </head>
 
-<body>
-  <div class="main">
-		<div class="nav">
-			<div class="nav-left">
-				<a id="home-link" href="/">injuly.in</a>
-			</div>
+  <body>
+    <div class="main">
+      <div class="nav">
+        <div class="nav-left">
+          <a id="home-link" href="/">injuly.in</a>
+        </div>
 
-			<div class="nav-right">
-				<a href="/" class="nav-link">home</a>
-				<a href="/blog" class="nav-link">blog</a>
-				<a href="/current" class="nav-link">current</a>
-			</div>
-		</div>
+        <div class="nav-right">
+          <a href="/" class="nav-link">index</a>
+          <a href="/blog" class="nav-link">blog</a>
+          <a href="/current" class="nav-link">current</a>
+        </div>
+      </div>
 
-    <hr style="height:1px;border:none;color:#333;background-color:#333;">
+      <hr style="height:1px;border:none;color:#333;background-color:#333;">
 
-    <div class="leader">
-      <h2> {{meta.title}} </h2>
-      <div class="post-date">{{! filled in by the script}}</div>
-      <ul class="tags" id="tags">
-        {{! filled in by script }}
-      </ul>
+      <div class="leader">
+        <h2> {{meta.title}} </h2>
+        <div class="post-date">{{! filled in by the script}}</div>
+        <ul class="tags" id="tags">
+          {{! filled in by script }}
+        </ul>
+      </div>
+      {{&content}}
+
+
+      <div class="footer">
+        <hr>
+        Questions, suggestions or comments? <br/>
+        Shoot me an <a href="mailto:srijannr1@gmail.com">email</a>, or <a href="https://twitter.com/_injuly">tweet@me</a>.
+      </div>
     </div>
-    {{&content}}
 
+    <script src="/util.js"></script>
+    <script>
+      hljs.highlightAll();
+      const tagsDiv = document.getElementById("tags");
+      // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
+      const tags = [{{&meta.tags}}][0]; 
+      tags.forEach(tag => {
+              const li = document.createElement("a")
+              li.classList.add("tag")
+              li.href = `/posts/index.html?tag=${tag}`
+              li.innerHTML = tag
+              tagsDiv.appendChild(li)
+            });
 
-    <div class="footer">
-    <hr>
-      Questions, suggestions or comments? <br/>
-      Shoot me an <a href="mailto:srijannr1@gmail.com">email</a>, or <a href="https://twitter.com/_injuly">tweet@me</a>.
-    </div>
-  </div>
-
-  <script src="/util.js"></script>
-  <script>
-    hljs.highlightAll();
-    const tagsDiv = document.getElementById("tags");
-    // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
-    const tags = [{{&meta.tags}}][0]; 
-    tags.forEach(tag => {
-      const li = document.createElement("a")
-      li.classList.add("tag")
-      li.href = `/posts/index.html?tag=${tag}`
-      li.innerHTML = tag
-      tagsDiv.appendChild(li)
-    });
-
-    const dateElement = document.querySelector(".post-date");
-    dateElement.innerText = dateToString(new Date("{{&meta.date}}"), true);
-  </script>
-</body>
+      const dateElement = document.querySelector(".post-date");
+      dateElement.innerText = dateToString(new Date("{{&meta.date}}"), true);
+    </script>
+  </body>
 
 </html>

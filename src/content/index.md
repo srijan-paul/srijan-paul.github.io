@@ -1,10 +1,11 @@
-A CS undergrad who is into functional programming, PL theory, distributed systems and game dev.
-I also go by **injuly** around the web, often writing software in Haskell/Typescript/C++.
+A CS undergrad who is into functional programming, PL theory,
+distributed systems and game dev.
+I also go by **injuly** around the web and write software in Haskell/Typescript/C++.
 I ocassionaly help develop Lua's compiled sister language - <a href="https://github.com/pallene-lang/pallene" target="_blank">Pallene</a>.
 
-Currently a software engineering intern at <a href="https://deepsource.io/" target="_blank">DeepSource</a>.
+Currently, I'm a software engineering intern at <a href="https://deepsource.io/" target="_blank">DeepSource</a>.
 
-Other interests include pixel art, reading and occasionally writing fiction.
+Some of my other interests include pixel art, reading and occasionally writing fiction.
 You might find some amateur pixel art on <a href="https://twitter.com/_injuly" target="_blank">my twitter</a>.
 
 ## This site
@@ -28,4 +29,6 @@ It is used to generate the attached <a href="/blog" target="_blank">blog</a> too
 And many more on my GitHub :)
 
 ## Contact
-The best way to reach me is a `"hi"` on discord - `injuly#6820`, or an e-mail at [srijannr1@gmail.com](mailto:srijannr1@gmail.com).
+The best way to reach me is a `"hi"` on discord - `injuly#6820`, or an e-mail at
+[srijannr1@gmail.com](mailto:srijannr1@gmail.com).
+

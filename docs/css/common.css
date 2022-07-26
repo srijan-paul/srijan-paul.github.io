@@ -1,15 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=IBM+Plex+Serif&family=Zilla+Slab:wght@300;400&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=IBM+Plex+Serif&family=Zilla+Slab:wght@300;400&display=swap'); */
+@import url('https://fonts.googleapis.com/css2?family=Alef&family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,600;1,400;1,500;1,600&family=Cousine:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,600;1,400;1,500;1,600&family=Cousine:ital,wght@0,400;0,700;1,400&family=Share+Tech+Mono&display=swap');
 
 :root {
-  --clr-primary: #01a3a4;
-  --clr-font: black;
-  --link-color: #01a3a4;
+  --clr-primary: #2c3e50;
+  --clr-font: #2C3A47;
+  --link-color: #192a56;
   --bg-color: #fafafa;
-  --font-serif-2: "Zilla Slab";
-  --font-serif-1: "IBM Plex Serif";
+  --font-serif-2: "Bai Jamjuree";
+  --font-serif-1: "Bai Jamjuree";
+  --font-code: "Cousine";
   --font-weight: 300;
   --font-weight-bold: 600;
-  --font-size: 20px;
+  --font-size: 18px;
 }
 
 strong {
