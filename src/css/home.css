@@ -1,8 +1,8 @@
 .container {
-  width: 52%;
+  width: 50%;
   margin: auto;
   margin-bottom: 5rem;
-  font-size: 18px;
+  font-size: var(--font-size);
 }
 
 .leader {
@@ -14,15 +14,6 @@
 .leader-image > img {
   width: 200px;
   border-radius: 50%;
-}
-
-.leader-name {
-  margin-top: 15px;
-}
-
-.leader-name {
-  font-size: 24px;
-  font-weight: bold;
 }
 
 .w {
