@@ -1,10 +1,9 @@
-
 A [Parser combinator](https://www.cs.nott.ac.uk/~pszgmh/monparsing.pdf), as wikipedia describes it,
 is a _higher-order function that accepts several parsers as input and returns a new parser as its output_.
 
 They can be very powerful when you want to build modular parsers and leave them open for further extension.
 But it can be tricky to get the error reporting right when using a 3<sup>rd</sup> party combinator library, and they tend to be slower in imperative languages.
-Nonetheless, it is an interesting cornerstone in functional programming and PLT, so it shouldn't hurt to learn about them by building one on our own.
+Nonetheless, it is an interesting cornerstone in functional programming and [PLT](https://en.wikipedia.org/wiki/Programming_language_theory), so it shouldn't hurt to learn about them by building one on our own.
 
 We're going to start by writing a library that describes several tiny parsers and functions that operate on those parsers.
 Then, we're going to build some parsers to demonstrate the usefulness of our work.
@@ -16,7 +15,7 @@ written with the help of our handy combinators:
 -- matches strings that satisfy [a-zA-Z][a-zA-Z0-9]+
 ident :: Parser String
 -- One letter or '_', followed by zero of more '_', letters or digits
-ident = alpha_ `thenList` many (alpha_ <|> digit)
+ident = alpha_ `thenList` many' (alpha_ <|> digit)
   where
     alpha_ = letter <|> char '_'
 ```
@@ -29,6 +28,7 @@ It is recommended for you to have some basic understanding of:
 
 This post is a derivative of two papers I had read recently ([1](https://homepages.inf.ed.ac.uk/wadler/papers/marktoberdorf/baastad.pdf), [2](https://www.cs.nott.ac.uk/~pszgmh/monparsing.pdf)).
 If you like a denser reading, you can go through the papers instead.
+The full code for this blog can be found [here on GitHub](https://gist.github.com/srijan-paul/87abfeacb84f0d862d093b3ae899cf67).
 
 ## The Parser type
 
@@ -80,7 +80,7 @@ zero = Parser $ const []
 
 ```hs
 item :: Parser Char
-item = Parser $ parseItem
+item = Parser parseItem
   where
     parseItem [] = []
     parseItem (x:xs) = [(x, xs)]
@@ -88,7 +88,7 @@ item = Parser $ parseItem
 
 Let's try some of these parsers in GHCi:
 
-```
+```hs
 *Main> parse (result 42) "abc"
 [(42, "abc")]
 *Main> parse item "abc"
@@ -106,10 +106,10 @@ The simplest solution for this would be:
 
 ```hs
 sat :: (Char -> Bool) -> Parser Char
-sat p (x:xs) = Parser $ if p x
-  then [(x, xs)]
-  else []
-sat _ [] = result []
+sat p = Parser parseIfSat
+  where
+    parseIfSat (x : xs) = if p x then [(x, xs)] else []
+    parseIfSat [] = []
 ```
 
 However, since we already have an `item` parser that unconditionally extracts
@@ -119,7 +119,6 @@ Before writing a combinator, we must first instantiate `Parser` as a `Monad`. ([
 
 ```hs
 instance Monad Parser where
-  (>>=) : Parser a -> (a -> Parser b) -> Parser b
   p >>= f = Parser $ \inp ->
     concat [parse (f v) inp' | (v, inp') <- parse p inp]
   -- a -> Parser a
@@ -150,8 +149,8 @@ char :: Char -> Parser Char
 char x = sat (== x)
 ```
 
-```
-*Main> parse char "abc"
+```hs
+*Main> parse (char 'a') "abc"
 [('a', "bc")]
 ```
 
@@ -173,7 +172,7 @@ upper :: Parser Char
 upper = sat isUpper
 ```
 
-```
+```hs
 $ ghci -i main.hs
 *Main> parse lower "aQuickBrownFox"
 [('a',"QuickBrownFox")]
@@ -184,7 +183,7 @@ Now that we have `upper`, `lower` and `digit` this opens up new possibilities fo
 - An `alphabet` parser that accepts a char that is consumable by either `upper` or `lower`.
 - An `alphanumeric` parser that accepts a char, either `alphabet` or `digit`.
 
-Clearly, an `or` combinator that captures this recurring pattern will come in handy.
+Clearly, an `or'` combinator that captures this recurring pattern will come in handy.
 
 Let us begin by describing a `plus` combinator that concatenates the result returned by two parsers:
 
@@ -208,17 +207,19 @@ Since `Parser` is already a monad, we can instantiate the `MonadPlus` typeclass 
 this idea:
 
 ```hs
-import Control.Applicative
+-- Add this to the list of imports:
+-- import Control.Monad (MonadPlus (..))
+
 instance MonadPlus Parser where
   mzero = zero
   mplus = plus
 ```
 
-The `or` combinator can then be:
+The `or'` combinator can then be:
 
 ```hs
-or :: Parser a -> Parser a -> Parser a
-p `or` q = Parser $ \inp -> case parse (p `plus` q) inp of
+or' :: Parser a -> Parser a -> Parser a
+p `or'` q = Parser $ \inp -> case parse (p `plus` q) inp of
     [] -> []
     (x:xs) -> [x]
 ```
@@ -228,7 +229,7 @@ In fact, the `Alternative` typeclass already defines this functionality with the
 ```hs
 instance Alternative Parser where
   empty = zero
-  (<|>) = or
+  (<|>) = or'
 ```
 
 Finally, we can return to the `letter` and `alphanum` parsers:
@@ -243,7 +244,7 @@ alphanum = letter <|> digit
 
 We can now take them for a spin in GHCi:
 
-```
+```hs
 *Main> parse letter "p0p3y3"
 [('p',"0p3y3")]
 *Main> parse letter "30p3y3"
@@ -252,7 +253,7 @@ We can now take them for a spin in GHCi:
 [('f',"oobar")]
 ```
 
-As a random aside, we can use the
+As an aside, we can use the
 [sequencing (>>) operator](https://hackage.haskell.org/package/base-4.16.1.0/docs/Prelude.html#v:-62--62-) to write more concise code at times.
 Consider the function `string` for example, where `string "foo"` returns a parser that only accepts strings which begin with "foo".
 
@@ -272,7 +273,7 @@ string (x:xs) =
     >>= const result (x:xs) -- same as \_ -> result (x:xs)
 ```
 
-```
+```hs
 *Main> parse (string "prefix") "prefixxxxx"
 [("prefix", "xxxx")]
 ```
@@ -311,32 +312,33 @@ You may be familiar with the regex matchers `+` and `*`.
 We can represent the `*` matcher as a combinator like so:
 
 ```hs
-many :: Parser a -> Parser [a]
-many p = do
+many' :: Parser a -> Parser [a]
+many' p = do
   x  <- p -- apply p once
-  xs <- many p -- recursively apply `p` as many times as possible
+  xs <- many' p -- recursively apply `p` as many times as possible
   return (x:xs)
 ```
 
 Looks decent, but when run in GHCi, it fails to produce the expected result:
 
-```
-*Main> parse (many $ char 'x') "xx"
+```hs
+*Main> parse (many' $ char 'x') "xx"
 []
 ```
 
 If you try to work out the application of this parser by hand, you'll notice a flaw in our base case:
 In the final recursive call, when the input string is `""`, `x <- p` fails, and we short circuit to return `[]`.
 
-To handle this scenario, we can use our `or` combinator:
+To handle this scenario, we can use our `or'` combinator:
 
 ```hs
-many :: Parser a -> Parser [a]
-many p = do {
-      x  <- p; -- apply p once
-      xs <- Main.many p; -- recursively apply `p` as many times as possible
-      return (x:xs)
-      } <|> return []
+many' :: Parser a -> Parser [a]
+many' p =
+  do
+    x <- p -- apply p once
+    xs <- many' p -- recursively apply `p` as many times as possible
+    return (x : xs)
+    <|> return []
 
   -- In case `p` fails either in the initial call, or in one of the
   -- recursive calls to itself, we return an empty list as the parse result.
@@ -344,21 +346,21 @@ many p = do {
 
 And we're golden:
 
-```
-*Main> parse (many $ char 'x') "xxx123"
+```hs
+*Main> parse (many' $ char 'x') "xxx123"
 [("xxx","123")]
 ```
 
 If the use of `<|>` is still confusing to you, try working it out on paper.
 
 Analogous to the regex `+` matcher, we can write a `many1` combinator that accepts one or more occurrences of an input sequence.
-Piggybacking off of `many`, this can be simply written as:
+Piggybacking off of `many'`, this can be simply written as:
 
 ```hs
 many1 :: Parser a -> Parser [a]
 many1 p = do
   x <- p
-  xs <- many p
+  xs <- many' p
   return (x:xs)
 ```
 
@@ -371,13 +373,13 @@ Circling back to the beginning of this post, here is a combinator that parses a 
 ident :: Parser String
 ident = do
   x <- alpha_
-  xs <- many (alpha_ <|> digit)
+  xs <- many' (alpha_ <|> digit)
   return (x : xs)
   where
     alpha_ = letter <|> char '_'
 ```
 
-```
+```hs
 *Main> parse ident "hello_123_ = 5"
 [("hello_123_"," = 5")]
 ```
@@ -404,7 +406,7 @@ Now our identifier parser becomes even shorter:
 
 ```hs
 ident :: Parser String
-ident = alpha_ `thenList` many (alpha_ <|> digit)
+ident = alpha_ `thenList` many' (alpha_ <|> digit)
   where
     alpha_ = letter <|> char '_'
 ```
@@ -417,7 +419,7 @@ Here is one way to do that:
 idList :: Parser [String]
 idList = do
   firstId <- ident
-  restIds <- many $ (char ',' >> ident)
+  restIds <- many' (char ',' >> ident)
   return (firstId : restIds)
 ```
 
@@ -429,7 +431,7 @@ As such, we can abstract away this idea with a `sepBy` combinator:
 sepBy :: Parser a -> Parser b -> Parser [a]
 p `sepBy` sep = do
   x <- p
-  xs <- many (sep >> p)
+  xs <- many' (sep >> p)
   return (x : xs)
 
 idList = ident `sepBy` char ','
@@ -450,7 +452,7 @@ bracket open p close = do
 Sequencing operators can be used to write `bracket` in a slightly more elegant manner:
 
 ```hs
-bracket open p close = open >> p << close
+bracket open p close = open >> p <* close
 ```
 
 Using this, our parser for a list of items can be written as:
@@ -476,6 +478,8 @@ Since our parsers are polymorphic, we can return a parse result containing an in
 Here is a parser that consumes and evaluates the value of a natural number:
 
 ```hs
+-- Add this to the list of imports:
+-- import Data.Text.Internal.Read (digitToInt)
 nat :: Parser Int
 nat =
   many1 digit >>= eval
@@ -507,8 +511,12 @@ However, it is possible to skip a tokenizer completely when using combinators.
 We can define a `token` combinator that takes care of all trailing whitespace:
 
 ```hs
-spaces :: Parse ()
-spaces = void $ many $ sat isSpace
+-- Add 'void' and 'isSpace' to import lists.
+-- import Control.Monad (MonadPlus (..), void)
+-- import Data.Char (isDigit, isLower, isUpper, isSpace)
+
+spaces :: Parser ()
+spaces = void $ many' $ sat isSpace
 
 token :: Parser a -> Parser a
 token p = p <* spaces
@@ -568,15 +576,6 @@ eval' (Lit a)   = a
 eval :: String -> Int
 eval =  fst . Bifunctor.first eval' . head <$> parse expr
 
-chainl1 :: Parser a -> Parser (a -> a -> a) -> Parser a
-p `chainl1` op = do
-  first <- p
-  rest <- many $ do
-    f    <- op
-    term <- p
-    return (f, term)
-  return $ foldl (\x (f, y) -> f x y) first rest
-
 -- Our expression parser expects a string of the following grammar:
 -- expr ::= term (op term)*
 -- op ::= '+' | '-'
@@ -589,7 +588,7 @@ p `chainl1` op = do
 expr :: Parser Expr
 expr = do
   x <- term
-  rest <- many parseRest
+  rest <- many' parseRest
   return $
     foldl (\x (op, y) -> x `op` y) x rest
   where
@@ -619,11 +618,11 @@ op = makeOp '+' Add <|> makeOp '-' Sub
 Spin up GHCi, and there we have it:
 
 ```hs
-*Main> parse expr "1 + 2 - (3 - 1)"
-[(1, "")]
+*Main> eval "1 + 2 - (3 - 1)"
+3
 
-*Main> eval "1 + 2  3 - 3"
-0
+*Main> eval "1 + 2 + 3"
+6
 ```
 
 Our parser is decent, but it can be refactored a little further.
@@ -635,7 +634,7 @@ As it turns out, parsing a list of token delimited items is a common pattern cap
 chainl1 :: Parser a -> Parser (a -> a -> a) -> Parser a
 p `chainl1` op = do
   first <- p
-  rest <- many $ do
+  rest <- many' $ do
     f    <- op
     term <- p
     return (f, term)
