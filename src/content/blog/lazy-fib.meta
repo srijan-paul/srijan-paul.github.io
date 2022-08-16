@@ -1,0 +1,7 @@
+{
+  template: "post"
+  tags: ["post" "haskell" "project-euler"]
+  title: "Intro to lazy evaluation and functional DP"
+  date: "2022-08-16"
+  is_blog_post: "true"
+}
