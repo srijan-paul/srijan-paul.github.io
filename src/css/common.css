@@ -158,6 +158,10 @@ pre, code {
   color: #aaaaaa !important;
 }
 
+.center {
+  text-align: center;
+}
+
 @media screen and (max-width: 730px) {
   .post-list > li {
     padding: 1rem 0rem;

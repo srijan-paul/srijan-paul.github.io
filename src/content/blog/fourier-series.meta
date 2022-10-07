@@ -1,0 +1,7 @@
+{
+  template: "post"
+  tags: ["post" "math"]
+  title: "Understanding the fourier series with interactive sketches."
+  date: "2022-10-06"
+  is_blog_post: "true"
+}
