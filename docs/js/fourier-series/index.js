@@ -3,6 +3,7 @@ import decompose, { approximateCurve, approximateFunc } from "./fourier.js";
 import Graph from "./graph.js";
 import rabbitCoords from "./rabbit-coords.js";
 import rabbitPolarVectors from "./rabbit-epicycles.js";
+import piegonCoords, { pigeonEpicycles } from "./piegon-coords.js";
 
 const id = (x) => document.getElementById(x);
 
@@ -66,7 +67,6 @@ function initDrawCanvas(canvasElement, width, height, sketchObj) {
   space.setup({ bgcolor: "#f5f6fa" });
   space.bindMouse();
 
-  sketchObj.points = [];
   let isMousePressed = false;
   space.bindCanvas("mousedown", () => {
     isMousePressed = true;
@@ -240,7 +240,7 @@ function initTrace(width, height, space, coeffs, epicycles) {
 
 const CANVAS_SIZE = 350;
 
-const userSketch = { points: [] };
+const userSketch = { points: piegonCoords };
 const drawSpace = initDrawCanvas(
   drawCanvas,
   CANVAS_SIZE,
@@ -250,7 +250,7 @@ const drawSpace = initDrawCanvas(
 drawSpace.play();
 
 let redrawSpace;
-drawCanvas.addEventListener("mouseup", () => {
+const callback = () => {
   const N = 42;
   const points = userSketch.points;
   const xs = points.map((pt) => pt[0]);
@@ -270,7 +270,12 @@ drawCanvas.addEventListener("mouseup", () => {
   const coeffs = { x: decompose(xFunc, N, 1), y: decompose(yFunc, N, 1) };
   initTrace(CANVAS_SIZE, CANVAS_SIZE, redrawSpace, coeffs);
   redrawSpace.play();
-});
+};
+
+drawCanvas.addEventListener("mouseup", callback);
+redrawSpace = newSpace(redrawCanvas);
+initTrace(CANVAS_SIZE, CANVAS_SIZE, redrawSpace, false, pigeonEpicycles);
+redrawSpace.play();
 
 function makeGraph(plots, { width, height, domain, range, center } = {}) {
   width = width || 400;
@@ -304,12 +309,9 @@ function addGraphsToSpace(
   space.playOnce();
 }
 
-const spaces = [];
-
 /**
  * Canvas showing the sum of two functions.
  */
-
 function funcSumCanvas() {
   const canvas = id("fun-sum");
   const funcSumSpace = newSpace(canvas);
@@ -379,7 +381,7 @@ function squareWaveFSCanvas() {
   ];
 
   const canvas = id("square-wave-fourier-graph");
-  const space = newSpace(canvas) 
+  const space = newSpace(canvas);
 
   let graph = makeGraph(squareWavePlots);
   const form = space.getForm();
@@ -424,7 +426,7 @@ const rabbitY = rabbitCoords.ys;
 
 function rabbitCanvas() {
   const rabbitCanvas = id("rabbit-canvas");
-  const rabbitSpace = newSpace(rabbitCanvas) 
+  const rabbitSpace = newSpace(rabbitCanvas);
   const form = rabbitSpace.getForm();
   rabbitSpace.add(() => drawLineArt(form, rabbitX, rabbitY));
   rabbitSpace.playOnce();
@@ -437,7 +439,7 @@ const rabbitYFunc = vectorToFunc(rabbitY);
 
 function rabbitPlotCanvas() {
   const canvas = id("rabbit-plot-canvas");
-  const rabbitPlotSpace = newSpace(canvas) 
+  const rabbitPlotSpace = newSpace(canvas);
 
   addGraphsToSpace(
     rabbitPlotSpace,
@@ -457,7 +459,7 @@ rabbitPlotCanvas();
 
 function rabbitRecreateCanvas() {
   const canvas = id("rabbit-recreate-canvas");
-  const space = newSpace(canvas)
+  const space = newSpace(canvas);
 
   let N = 12;
   const trace = {
@@ -543,7 +545,7 @@ function drawPolarFuncs(space, width, height, funcs) {
 
 function polarSineCanvas() {
   const canvas = id("polar-sine");
-  const space = newSpace(canvas)
+  const space = newSpace(canvas);
   pauseWhenOutOfViewport(canvas, space);
 
   drawPolarFuncs(space, canvas.width, canvas.height, [{ radius: 70, freq: 1 }]);
@@ -559,7 +561,7 @@ polarSineCanvas();
 
 function twoRotatingVectors() {
   const canvas = id("two-rotating-vectors");
-  const space = newSpace(canvas)
+  const space = newSpace(canvas);
   pauseWhenOutOfViewport(canvas, space);
 
   drawPolarFuncs(space, canvas.width, canvas.height, [
@@ -578,7 +580,7 @@ twoRotatingVectors();
  */
 function rabbitEpicycle() {
   const canvas = id("rabbit-epicycle");
-  const space = newSpace(canvas) 
+  const space = newSpace(canvas);
 
   initTrace(canvas.width, canvas.height, space, false, rabbitPolarVectors);
   space.play();
