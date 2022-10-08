@@ -72,9 +72,11 @@ Fourier series does exactly that, except for mathematical functions.
 
 The Fourier series of any periodic function \\(f(x)\\) with a frequency of \\(\omega_0\\) is described as:
 
-$$
-f(x) = a_0/2 + \sum_{n=1}^{\infty}b_n sin(n\omega_0x) + \sum_{n=1}^{\infty}a_n cos(n\omega_0x)
-$$
+<div class="tex">
+   $$
+   f(x) = a_0/2 + \sum_{n=1}^{\infty}b_n sin(n\omega_0x) + \sum_{n=1}^{\infty}a_n cos(n\omega_0x)
+   $$
+</div>
 
 Meaning that for every periodic function \\(f\\),
 there exists a set of coefficients \\(a\\) and \\(b\\),
@@ -91,7 +93,7 @@ b_n = \int_0^T{f(x)sin(nw_0x)}
 $$
 
 The interval of integration, \\(T\\), is the fundamental period of the function.
-\\(T\\) and \\(\omega_0\\) are related by this equation: 
+\\(T\\) and \\(\omega_0\\) are related by this equation:
 
 $$
 \omega_0 = 2\pi/T
@@ -132,7 +134,7 @@ You can play with the slider to alter the number of terms we take from the serie
       </div>
 </div>
 
-Clearly, our approximation improves as we take more terms from the series. 
+Clearly, our approximation improves as we take more terms from the series.
 The Fourier series can be proven to [converge](https://en.wikipedia.org/wiki/Convergent_series).
 This means that if we take an infinite number of terms from the series, we can get the _exact_ value of \\(f(x)\\) for any \\(x\\).
 
@@ -355,9 +357,11 @@ _Can we represent any periodic function as a sum of simple sine and cosine funct
 
 Precisely, he sought to represent any periodic function \\(f(x)\\) with a frequency of \\(\omega_0\\) , in the following form:
 
-$$
-f(x) = (a_0 + a_1 cos(\omega_0 t) + a_2 cos(2\omega_0 t) + ... + a_n cos(n\omega_0t)) + (b_1 sin(\omega_0 t) + b_1 sin(2\omega_0 t) + ... + b_n sin(n\omega_0t)
-$$
+<div class="tex">
+   $$
+   f(x) = (a_0 + a_1 cos(\omega_0 t) + a_2 cos(2\omega_0 t) + ... + a_n cos(n\omega_0t)) + (b_1 sin(\omega_0 t) + b_1 sin(2\omega_0 t) + ... + b_n sin(n\omega_0t)
+   $$
+</div>
 
 Revered mathematicians of the time, including Langrange and Laplace, rejected this idea as informal and hand-wavy.
 The panel evaluating his findings said:
@@ -377,13 +381,15 @@ By this point, you know enough about Fourier analysis to delve deeper into it yo
 It would be a shame to blunt the edge of theory by not applying it in practice.
 
 Here a few things you could do:
+
 - Implement noise reduction in sounds.
-- Sharpen images with denoising. 
-- Write a [JPEG](https://en.wikipedia.org/wiki/JPEG) encoder/decoder. 
+- Sharpen images with denoising.
+- Write a [JPEG](https://en.wikipedia.org/wiki/JPEG) encoder/decoder.
 - [Fit an elephant](https://www.johndcook.com/blog/2011/06/21/how-to-fit-an-elephant/)
 - Write basic shape recognizers.
 
 ## Resources and further reading
+
 - 3b1b - [But what is a Fourier series?](https://www.youtube.com/watch?v=r6sGWTCMz2k).
 - Swarthmore college - [The fourier series](http://lpsa.swarthmore.edu/Fourier/Series/WhyFS.html).
 - Jez Swanson - [An interactive introduction to the fourier transform](https://www.jezzamon.com/fourier/index.html).

@@ -18,14 +18,16 @@ body {
   color: gray;
 }
 
-.MJX-TEX {
+.tex {
+  text-align: center;
   overflow-x: scroll;
   max-width: 80%;
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  margin: auto;
+  -ms-overflow-style :-ms-autohiding-scrollbar;
+  scrollbar-width: 1px; /* Firefox */
 }
 
-.MJX-TEX::-webkit-scrollbar {
+.tex::-webkit-scrollbar {
   display: none;
 }
 
