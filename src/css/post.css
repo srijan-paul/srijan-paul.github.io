@@ -31,23 +31,6 @@ body {
   display: none;
 }
 
-/* links */
-
-a,
-a:hover,
-a:visited,
-a:link,
-a:active {
-  text-decoration: none;
-  color: var(--link-color);
-  font-weight: bold;
-}
-
-a:hover {
-  text-decoration: underline;
-  filter: brightness(0.8);
-  color: var(--clr-primary);
-}
 
 /* tags */
 
