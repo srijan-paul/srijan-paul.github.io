@@ -48,7 +48,7 @@
 <p>The satisfying animation is made possible by the subject of this post - an infinite sum called <a href="https://en.wikipedia.org/wiki/Fourier_series">the Fourier series</a>.
 The formula is short, and with some effort, you can memorize it.
 However, I implore you to understand where the series comes from, and build deeper intuition for it.</p>
-<p>To keep you from clicking off this page however,
+<p>To keep you from clicking off this page,
 I'll defer the proof and origin of this equation to the second half,
 and thread some interactive animations through the body of this write-up.</p>
 <h2 id="adding-functions">Adding functions</h2>
@@ -64,18 +64,18 @@ Assume <code>f</code> is \(2sin(x)\) and <code>g</code> is \(cos(2x)\).</p>
    <canvas id="fun-sum" width="350px" height="350px"></canvas>
 </div>
 <p>Note how in some places, the values of \(f\) and \(g\) are both positive, and their sum is therefore a larger positive number,
-while in other places, \(f\) and \(g\) have opposite signs, and their values cancel out to a smaller number.</p>
+while in other places, \(f\) and \(g\) have opposite signs and their values cancel out to a smaller number.</p>
 <p>Through the lens of physics, you could look at the functions as two electromagnetic waves, or just visible light rays oscillating in the domain of time.
 When two such waves overlap with each other in space, they're said to be in <a href="https://www.britannica.com/science/principle-of-superposition-wave-motion">superposition</a>.
-The superposition of two waves, results in a new wave that is the sum of both waves.</p>
+The superposition of two waves results in the sum of both waves.</p>
 <p>When two points in a wave supplement each other to result in a higher amplitude (the y-value),
 their interaction is termed &quot;constructive interference&quot;.
-When they cancel each other out, it's termed &quot;destructive interference&quot;.</p>
+When they cancel each other out, it's called &quot;destructive interference&quot;.</p>
 <p>Go through the last two paragraphs again, and try to digest this idea.
 Now, imagine if we had to work our way backwards.
-Imagine we were given a list containing the (x, y) coordinates of all points along the curve of \(h\),
+Say we are given a list containing the (x, y) coordinates of all points along the curve of \(h\),
 where \(x\) is time and \(y\) is the corresponding output of \(h\) at that point in time.
-Say we had to come up with two simpler periodic functions that when added, result in \(h\).</p>
+We have to come up with two simpler periodic functions that sum up to \(h\).</p>
 <p>This is exactly what the Fourier series does.</p>
 <p>There are several ways to interpret interference in the real world.
 If \(f\) and \(g\) were sound waves, their constructive interference would make loud noise, while the destructive interference would produce a quieter sound.
@@ -84,12 +84,12 @@ and destructive would look like dim patches.</p>
 <p>Applications of the Fourier series spill into almost every domain -
 signal processing, image compression, shape recognition,
 analog transmission, noise cancellation, studying thermodynamic systems
-and fitting equations to datasets.
-We show our interest in the science of tracing ugly sketches.</p>
+and fitting equations to datasets.</p>
+<p>From this wide array of applications, We show our interest in the science of tracing ugly sketches.</p>
 <h2 id="decomposing-periodic-functions">Decomposing periodic functions.</h2>
-<p>Imagine you had a machine that could take any food item on one end, and eject its the recipe out the other.
+<p>Imagine you had a machine that could scan any food item and display its recipe.
 Fourier series does exactly that, except for mathematical functions.</p>
-<p>For any periodic function \(f(x)\) that has a frequency of \(\omega_o\), its Fourier series is defined as:</p>
+<p>The Fourier series of any periodic function \(f(x)\) with a frequency of \(\omega_0\) is described as:</p>
 <p>$$
 f(x) = a_0/2 + \sum_{n=1}^{\infty}b_n sin(n\omega_0x) + \sum_{n=1}^{\infty}a_n cos(n\omega_0x)
 $$</p>
@@ -97,7 +97,7 @@ $$</p>
 there exists a set of coefficients \(a\) and \(b\),
 such that \(f(x)\) can be expressed as an infinite sum of sine and cosine terms of increasing frequencies where the
 \(nth\) sine term has a coefficient of \(b_n\) and the \(nth\) cosine term has a coefficient of \(a_n\).
-The values of these coefficients are given by the following formula:</p>
+The values of these coefficients are given by the following formulae:</p>
 <p>$$
 a_n = \int_0^T{f(x)cos(nw_0x)}
 $$</p>
@@ -105,9 +105,12 @@ $$</p>
 b_n = \int_0^T{f(x)sin(nw_0x)}
 $$</p>
 <p>The interval of integration, \(T\), is the fundamental period of the function.
-\(T\) and \(\omega_0\) are related by the following equation: \(\omega_0 = 2\pi/T\)</p>
+\(T\) and \(\omega_0\) are related by this equation:</p>
+<p>$$
+\omega_0 = 2\pi/T
+$$</p>
 <p>If that was too wordy and made little sense to you, that's okay.
-We'll prove this equation and explore its origins later in the post.
+We'll prove this equation later in the post.
 Until then, an example will help understand this better.</p>
 <p>Consider the square wave - a periodic signal that alternates between 1 and -1 depending on its input.
 Formally, it is described like so:</p>
@@ -135,22 +138,22 @@ You can play with the slider to alter the number of terms we take from the serie
       </div>
 </div>
 <p>Clearly, our approximation improves as we take more terms from the series.
-The Fourier series can be proven to <a href="https://en.wikipedia.org/wiki/Convergent_series">converge</a>
+The Fourier series can be proven to <a href="https://en.wikipedia.org/wiki/Convergent_series">converge</a>.
 This means that if we take an infinite number of terms from the series, we can get the <em>exact</em> value of \(f(x)\) for any \(x\).</p>
 <p>Of course, it is not possible to add up infinite terms in computers.
-Instead, we decide upon a fixed number of terms and that approximate our function well enough for most practical purposes.</p>
-<p>Whenever I say &quot;Fourier series of a function&quot;, I mean a series of simple periodic functions that can be added at any given input to approximate the output of the original function at that input.
+Instead, we decide upon a fixed number of terms that approximate our function well enough for most practical purposes.</p>
+<p>Whenever I say &quot;Fourier series of a function&quot;, I mean a series of simple periodic functions that can be added at any given input to approximate the output of the original function at the same input.
 For the remainder of this post our goal with Fourier series is to <strong>approximate periodic functions with sums of simpler sine/cosine functions</strong>.</p>
 <h2 id="drawing-with-the-fourier-series">Drawing with the Fourier series</h2>
 <p>If you wish to understand how the Fourier series works before seeing it in action,
 you can skip this section and read ahead to <a href="#proof">the proof</a>, then come back here.</p>
-<p>So, How do we go from decomposing time domain functions to recreating sketches?
-Imagine you're drawing a sketch on a square sheet of paper.
+<p>So, How do we go from decomposing time domain functions to recreating sketches?</p>
+<p>Imagine you're drawing a sketch on a square sheet of paper.
 You are to draw your sketch, start to finish, without lifting the nib of your pen from the paper's surface.
-In other words, your sketch must be <em>continuous</em>, with no &quot;breaks&quot; in between.</p>
-<p>Assume also that the bottom-left corner of the sheet is the origin.
+In other words, your sketch must be <em>continuous</em> with no &quot;breaks&quot; in between.</p>
+<p>Assume also that the bottom-left corner of the sheet is its origin.
 Once you start drawing, I can delineate the position of the pen's tip using a pair of coordinates \((x, y)\) at any given point in time.</p>
-<p>The \(x\) coordinate represents the horizontal distance from the origin, and \(y\) vertical, just like a regular cartesian plane.
+<p>Much like a cartesian plane, the \(x\) coordinate represents the horizontal distance from the origin, and \(y\) the vertical.
 Both the x and y coordinates change as the pen moves on the sheet's surface.
 Meaning, the position of the x-coordinate of your pen's tip can be written as a function of time.
 Say you draw this figure:</p>
@@ -163,12 +166,14 @@ Say you draw this figure:</p>
 </div>
 <p>The blue curve represents the values of x-coordinates of your sketch.
 The vertical axis represents the x-value, and the horizontal axis represents time.
-Similarly, the red curve plots the y-coordinates as a function of time.</p>
-<p>For each curve, we can find a Fourier series that approximates it.
-Say, the function \(x(t)\) returns the x-position of the pen's tip at time \(t\) (the blue curve),
-and \(y(t)\) does the same for its y-position (the red curve).</p>
+Similarly, the red curve plots the y-coordinates.</p>
+<p>Both these curves can be viewed as functions of time.
+The blue curve represents a function \(x(t)\) that returns the x-position of the pen's tip at time \(t\),
+Similarly, the red curve is a function \(y(t)\) which the same for its y-position.
+For each of these functions, we can find a Fourier series that approximates it.</p>
 <p>Let \(f_x(t)\) and \(f_y(t)\) be the Fourier approximations for \(x(t)\) and \(y(t)\) respectively.
-Then recreating the sketch is as simple as computing the values returned by these functions for a range of values of t, and joining the (x, y) coordinates together with lines.
+Then recreating the sketch requires computing the values returned by <code>f_t</code> and <code>y_t</code> over a range of values of t.
+then pairing them into <code>(x, y)</code> coordinates and connecting the coordinates with lines.
 Here is some pseudo-typescript code that mimics this logic:</p>
 <pre><code class="language-typescript">// The &quot;dt&quot; is our time step.
 // In the real world, a line is an infinitely long series of points.
@@ -215,7 +220,7 @@ It is easy to just plot the values returned by \(f_x\) and \(f_y\) on the cartes
 But how do we animate this using revolving circles?</p>
 <p>If you've followed the contents of this article so far, you already know how to recreate sketches.
 To animate them, you need to understand <a href="https://en.wikipedia.org/wiki/Polar_coordinate_system">The polar coordinate system</a>.</p>
-<p>You can read the wikipedia article, or <a href="https://www.mathsisfun.com/polar-cartesian-coordinates.html">this article</a> to build some intuition for conversion of points between cartesian and polar coordinates.</p>
+<p>You can read the wikipedia article, or <a href="https://www.mathsisfun.com/polar-cartesian-coordinates.html">this article</a> to build some intuition for conversion between cartesian and polar coordinates.</p>
 <p>In the polar coordinate system, a periodic function with period \(T\) is a vector that rotates around the origin, and completes one full rotation around itself every \(T\) time units.
 Look at the graph of \(sin(t)\) in Polar form, for example:</p>
 <div class="center">
@@ -223,14 +228,13 @@ Look at the graph of \(sin(t)\) in Polar form, for example:</p>
 </div>
 <p>Note how the y-coordinates of the vector's tip traces out a regular sine wave.
 You can just as easily plot any periodic function in the polar coordinate system.
-To add two periodic functions together, you take one rotating vector and center it on the tip of the another rotating vector.
+To add two periodic functions together, take one rotating vector and center it on the tip of the another rotating vector.
 The end result is shown below.
 The following animation shows 3 rotating vectors added together, each representing a periodic function:</p>
 <div class="center">
    <canvas id="two-rotating-vectors" width="350" height="350"></canvas>
 </div>
-<p>Now, we know that it is possible to visualize periodic functions and their sums in the polar coordinate system.
-To convert a sketch to an epicycle animation then, all we need is to convert a term in the Fourier series from cartesian to polar coordinates.
+<p>To convert a sketch to an epicycle animation then, all we need is to convert a term in the Fourier series from cartesian to polar coordinates.
 Once we have that, we can add up the terms like in the animation above, and figure out the x and y-coordinates using two sets of epicycles, each representing the Fourier approximation for \(x(t)\) or \(y(t)\).</p>
 <p>To do this conversion, we can use the <a href="https://en.wikipedia.org/wiki/Fourier_series#Amplitude-phase_form">polar form of the Fourier series</a>.
 Precisely, these are the steps you need to follow:</p>
@@ -286,7 +290,7 @@ $$</p>
 <p>We can turn the order of this proof, and first say that given any function \(f(t)\), we can find its odd and even parts using the odd-even decomposition rule.
 Then, we can represent the odd part as a sum of sinusoids, and the even part as a sum of co-sinusoids.</p>
 <p>Now, all that's left is to derive the values for \(a_n\) and \(b_n\) using the two equations stated above.
-This is where I save myself the trouble of writing more LaTeX, and defer you <a href="http://lpsa.swarthmore.edu/Fourier/Series/DerFS.html">this excellent proof</a> by Swarthmore college.
+This is where I save myself the trouble of writing more LaTeX, and defer you to <a href="http://lpsa.swarthmore.edu/Fourier/Series/DerFS.html">this excellent proof</a> by professors from Swarthmore college.
 I know I said I'd walk you through the proof, but I can't do a better job of it than the electronics professors at Swarthmore did already.
 I'd hate to repeat their work and not give credit.
 If you follow the page I linked, you'll realize that the proof only uses basic calculus and trigonometric identities taught in high school.</p>
@@ -295,12 +299,12 @@ If you follow the page I linked, you'll realize that the proof only uses basic c
 <p>2 centuries before Fourier, <a href="https://en.wikipedia.org/wiki/Carl_Friedrich_Gauss">Carl Friedrich Gauss</a> created several algorithms to aid his study of astronomy.
 He was one of the many applied mathematicians who wanted to predict the position of Ceres in the night sky.
 One of the algorithms he discovered in this quest, was the <a href="https://en.wikipedia.org/wiki/Fast_Fourier_transform">Fast Fourier Transform</a> - a function that is very closely related with the Fourier Series.
-However, he never published his work because he believed his method to be an unimportant detail in his method of estimating Ceres' position.</p>
+However, he never published his work because he believed his method to be an unimportant detail in his achievement of estimating Ceres' position.</p>
 <p>In the 1700s, Euler had found applications for decomposing periodic functions with Fourier Series.</p>
 <p>Half a century before Fourier, <a href="https://en.wikipedia.org/wiki/Daniel_Bernoulli">Bernoulli</a> was studying the motion of a string.
 He proposed the idea that periodic functions can be represented as sums of harmonics.
 Nobody at the time believed this to be a general method, and his ideas were left unexplored.</p>
-<p>Things changed in 1807, when a french math wizard named Joseph Fourier found himself studying the heat equation in a metal plate.
+<p>Things changed in 1807, when a French math wizard named Joseph Fourier found himself studying the heat equation in a metal plate.
 In his search for a solution, he sought to ask a seemingly absurd question:</p>
 <p><em>Can we represent any periodic function as a sum of simple sine and cosine functions?</em></p>
 <p>Precisely, he sought to represent any periodic function \(f(x)\) with a frequency of \(\omega_0\) , in the following form:</p>
@@ -308,9 +312,9 @@ In his search for a solution, he sought to ask a seemingly absurd question:</p>
 f(x) = (a_0 + a_1 cos(\omega_0 t) + a_2 cos(2\omega_0 t) + ... + a_n cos(n\omega_0t)) + (b_1 sin(\omega_0 t) + b_1 sin(2\omega_0 t) + ... + b_n sin(n\omega_0t)
 $$</p>
 <p>Revered mathematicians of the time, including Langrange and Laplace, rejected this idea as informal and hand-wavy.
-The panel evaluating him said:</p>
-<p><em>&quot;The manner in which the author arrives at these equations is not exempt of difficulties and...his analysis to integrate them still leaves something to be desired on the score of generality and even rigour.&quot;</em></p>
-<p>Perhaps this was because of a lack of reasoning as to <em>why</em> one should even begin to think of periodic functions this way.</p>
+The panel evaluating his findings said:</p>
+<p><em>&quot;The manner in which the author arrives at these equations is not exempt of difficulties and...his analysis to integrate them still leaves something to be desired on the score of generality and even rigour.&quot;</em>
+Perhaps this was because of a lack of reasoning as to <em>why</em> one should even begin to think of periodic functions this way.</p>
 <p>It's not unheard of mathematical ideas to sprout into existence out of seemingly ridiculous places.
 Ramanujan attributed some of his major findings to God, and dipped at the age of 32.</p>
 <p>After the Fourier Series was accepted by the scientific populace, it spawned a new field of research, called Fourier analysis.
