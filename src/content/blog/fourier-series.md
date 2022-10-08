@@ -1,7 +1,7 @@
 Try drawing something on the first canvas, and watch two sets of mechanical alien arms retrace your sketch:
 
-<div style="display: flex; gap: 3rem; flex-direction: row;">
-   <canvas id="draw-canvas" width="350" height="350" style="border: 1px solid black;"></canvas>
+<div class="center fourier-canvas-pair">
+   <canvas id="draw-canvas"  width="350" height="350" style="border: 1px solid black;"></canvas>
    <canvas id="redraw-canvas" width="350" height="350" style="border: 1px solid black;"></canvas>
 </div>
 
@@ -31,7 +31,7 @@ Their sum then, can be given by a function - \\(h(x) = 2sin(x) + cos(2x)\\).
 The graph below plots \\(f\\) and \\(g\\) in shades of gray, and their sum, \\(h\\), in red.
 
 <div class="center">
-   <canvas id="fun-sum" width="400" height="400"></canvas>
+   <canvas id="fun-sum" width="350px" height="350px"></canvas>
 </div>
 
 Note how in some places, the values of \\(f\\) and \\(g\\) are both positive, and their sum is therefore a larger positive number,
@@ -106,7 +106,7 @@ $$
 Here's how it looks when graphed out:
 
 <div class="center">
-   <canvas id="square-wave-graph" width="450" height="450"></canvas>
+   <canvas id="square-wave-graph" width="350" height="350"></canvas>
 </div>
 
 If we use the first few terms from \\(f\\)'s Fourier series, we can closely approximate the behavior of this function.
@@ -114,7 +114,7 @@ In the following graph, the gray curve represents the the square wave and the re
 You can play with the slider to alter the number of terms we take from the series and see how that changes our approximation.
 
 <div class="center">
-   <canvas id="square-wave-fourier-graph" width="450" height="450"></canvas>
+   <canvas id="square-wave-fourier-graph" width="350" height="350"></canvas>
       <div className="controls" style="display: 'flex'; gap: 2rem;">
         <input
           type="range"
@@ -122,7 +122,7 @@ You can play with the slider to alter the number of terms we take from the serie
           max="50"
           value="4"
           id="square-fs-slider"
-          style="width: 400px"
+          style="width: 300px"
         ></input>
       </div>
 </div>
@@ -162,7 +162,7 @@ Say you draw this figure:
 If we plot the x and y-coordinates independently as functions of time, they'll form curves that look like this:
 
 <div class="center">
-   <canvas id="rabbit-plot-canvas" width="450" height="450"> </canvas>
+   <canvas id="rabbit-plot-canvas" width="350" height="350"> </canvas>
 </div>
 
 The blue curve represents the values of x-coordinates of your sketch.

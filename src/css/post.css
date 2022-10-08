@@ -192,6 +192,22 @@ code[class*="language-"] {
   background-color: var(--bg-color);
 }
 
+/* 
+ * styles specific to certain blogs
+ */
+
+/* fourier series */
+.fourier-canvas-pair {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+}
+
+.fourier-canvas-pair > canvas {
+  width: 350px;
+  height: 350px;
+}
+
 @media screen and (max-width: 1000px) {
   .main {
     width: 85%;
@@ -201,5 +217,11 @@ code[class*="language-"] {
 @media screen and (max-width: 500px) {
   .main {
     width: 94%;
+  }
+
+  .fourier-canvas-pair {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
   }
 }

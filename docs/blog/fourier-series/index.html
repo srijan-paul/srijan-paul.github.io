@@ -40,8 +40,8 @@
         </ul>
       </div>
       <p>Try drawing something on the first canvas, and watch two sets of mechanical alien arms retrace your sketch:</p>
-<div style="display: flex; gap: 3rem; flex-direction: row;">
-   <canvas id="draw-canvas" width="350" height="350" style="border: 1px solid black;"></canvas>
+<div class="center fourier-canvas-pair">
+   <canvas id="draw-canvas"  width="350" height="350" style="border: 1px solid black;"></canvas>
    <canvas id="redraw-canvas" width="350" height="350" style="border: 1px solid black;"></canvas>
 </div>
 <p>Once you're done with this introduction to Fourier analysis, you'll be capable of making this (and a lot more) yourself.</p>
@@ -61,7 +61,7 @@ Assume <code>f</code> is \(2sin(x)\) and <code>g</code> is \(cos(2x)\).</p>
 <p>Their sum then, can be given by a function - \(h(x) = 2sin(x) + cos(2x)\).</p>
 <p>The graph below plots \(f\) and \(g\) in shades of gray, and their sum, \(h\), in red.</p>
 <div class="center">
-   <canvas id="fun-sum" width="400" height="400"></canvas>
+   <canvas id="fun-sum" width="350px" height="350px"></canvas>
 </div>
 <p>Note how in some places, the values of \(f\) and \(g\) are both positive, and their sum is therefore a larger positive number,
 while in other places, \(f\) and \(g\) have opposite signs, and their values cancel out to a smaller number.</p>
@@ -116,13 +116,13 @@ f(t) = 4 \lfloor{t}\rfloor - 2\lfloor2t\rfloor + 1
 $$</p>
 <p>Here's how it looks when graphed out:</p>
 <div class="center">
-   <canvas id="square-wave-graph" width="450" height="450"></canvas>
+   <canvas id="square-wave-graph" width="350" height="350"></canvas>
 </div>
 <p>If we use the first few terms from \(f\)'s Fourier series, we can closely approximate the behavior of this function.
 In the following graph, the gray curve represents the the square wave and the red curve represents our approximation of it.
 You can play with the slider to alter the number of terms we take from the series and see how that changes our approximation.</p>
 <div class="center">
-   <canvas id="square-wave-fourier-graph" width="450" height="450"></canvas>
+   <canvas id="square-wave-fourier-graph" width="350" height="350"></canvas>
       <div className="controls" style="display: 'flex'; gap: 2rem;">
         <input
           type="range"
@@ -130,7 +130,7 @@ You can play with the slider to alter the number of terms we take from the serie
           max="50"
           value="4"
           id="square-fs-slider"
-          style="width: 400px"
+          style="width: 300px"
         ></input>
       </div>
 </div>
@@ -159,7 +159,7 @@ Say you draw this figure:</p>
 </div>
 <p>If we plot the x and y-coordinates independently as functions of time, they'll form curves that look like this:</p>
 <div class="center">
-   <canvas id="rabbit-plot-canvas" width="450" height="450"> </canvas>
+   <canvas id="rabbit-plot-canvas" width="350" height="350"> </canvas>
 </div>
 <p>The blue curve represents the values of x-coordinates of your sketch.
 The vertical axis represents the x-value, and the horizontal axis represents time.

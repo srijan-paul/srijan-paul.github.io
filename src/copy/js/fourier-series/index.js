@@ -31,21 +31,15 @@ function pauseWhenOutOfViewport(canvas, space) {
 }
 
 /**
- * @param {HTMLElement} htmlElement An element in the DOM.
- * @returns {boolean} `true` if `el` is visible in the current viewport.
+ * @param {HTMLCanvasElement} canvas
+ * @return {CanvasSpace}
  */
-function isInViewPort(htmlElement) {
-  const bounds = htmlElement.getBoundingClientRect();
-  const viewportWidth =
-    window.innerWidth || document.documentElement.clientWidth;
-  const viewportHeight =
-    window.innerHeight || document.documentElement.clientHeight;
-  return (
-    bounds.top >= 0 &&
-    bounds.left >= 0 &&
-    bounds.right <= viewportWidth &&
-    bounds.bottom <= viewportHeight
-  );
+function newSpace(canvas) {
+  const space = new CanvasSpace(canvas);
+  const { width, height } = canvas;
+  space.resize(new Bound(new Pt(width, height)));
+  space.setup({ bgcolor: "#fafafa" });
+  return space;
 }
 
 const sin = Math.sin;
@@ -279,8 +273,8 @@ drawCanvas.addEventListener("mouseup", () => {
 });
 
 function makeGraph(plots, { width, height, domain, range, center } = {}) {
-  width = width || 450;
-  height = height || 450;
+  width = width || 400;
+  height = height || 400;
   return new Graph(plots, {
     width: width,
     height: height,
@@ -293,13 +287,14 @@ function makeGraph(plots, { width, height, domain, range, center } = {}) {
 function addGraphsToSpace(
   space,
   plots,
-  domain = [-1, 1],
-  range = [-2, 2],
-  center = [225, 225]
+  { domain, range, center, width, height } = {}
 ) {
-  let graphs = makeGraph(plots, {
-    width: 450,
-    height: 450,
+  domain = domain || [-1, 1];
+  range = range || [-2, 2];
+  center = center || [200, 200];
+  const graphs = makeGraph(plots, {
+    width: width || 400,
+    height: height || 400,
     domain,
     range,
     center,
@@ -316,9 +311,8 @@ const spaces = [];
  */
 
 function funcSumCanvas() {
-  const funcSumCanvas = id("fun-sum");
-  const funcSumSpace = new CanvasSpace(funcSumCanvas);
-  funcSumSpace.setup({ bgcolor: "#fafafa" });
+  const canvas = id("fun-sum");
+  const funcSumSpace = newSpace(canvas);
 
   const f = (x) => 2 * Math.sin(x);
   const g = (x) => Math.cos(2 * x);
@@ -330,8 +324,12 @@ function funcSumCanvas() {
       { fun: g, color: "#a4b0be" },
       { fun: h, color: RED },
     ],
-    [-10, 10],
-    [-6, 6]
+    {
+      domain: [-10, 10],
+      range: [-6, 6],
+      width: canvas.width,
+      height: canvas.height,
+    }
   );
 }
 
@@ -343,13 +341,14 @@ funcSumCanvas();
 
 function squareWaveCanvas() {
   const squareWaveCanvas = id("square-wave-graph");
-  const squareWaveSpace = new CanvasSpace(squareWaveCanvas);
-  squareWaveSpace.setup({ bgcolor: "#fafafa" });
+  const squareWaveSpace = newSpace(squareWaveCanvas);
   addGraphsToSpace(
     squareWaveSpace,
     [{ fun: (x) => Math.sign(Math.sin(x)), color: "#ee5253" }],
-    [-10, 10],
-    [-3, 3]
+    {
+      domain: [-10, 10],
+      range: [-3, 3],
+    }
   );
 }
 
@@ -380,8 +379,7 @@ function squareWaveFSCanvas() {
   ];
 
   const canvas = id("square-wave-fourier-graph");
-  const space = new CanvasSpace(canvas);
-  space.setup({ bgcolor: "#fafafa" });
+  const space = newSpace(canvas) 
 
   let graph = makeGraph(squareWavePlots);
   const form = space.getForm();
@@ -426,8 +424,7 @@ const rabbitY = rabbitCoords.ys;
 
 function rabbitCanvas() {
   const rabbitCanvas = id("rabbit-canvas");
-  const rabbitSpace = new CanvasSpace(rabbitCanvas);
-  rabbitSpace.setup({ bgcolor: "#fafafa" });
+  const rabbitSpace = newSpace(rabbitCanvas) 
   const form = rabbitSpace.getForm();
   rabbitSpace.add(() => drawLineArt(form, rabbitX, rabbitY));
   rabbitSpace.playOnce();
@@ -439,9 +436,8 @@ const rabbitXFunc = vectorToFunc(rabbitX);
 const rabbitYFunc = vectorToFunc(rabbitY);
 
 function rabbitPlotCanvas() {
-  const rabbitPlotCanvas = id("rabbit-plot-canvas");
-  const rabbitPlotSpace = new CanvasSpace(rabbitPlotCanvas);
-  rabbitPlotSpace.setup({ bgcolor: "#fafafa" });
+  const canvas = id("rabbit-plot-canvas");
+  const rabbitPlotSpace = newSpace(canvas) 
 
   addGraphsToSpace(
     rabbitPlotSpace,
@@ -449,9 +445,11 @@ function rabbitPlotCanvas() {
       { fun: rabbitXFunc, color: BLUE },
       { fun: rabbitYFunc, color: RED },
     ],
-    [0, 1],
-    [0, 500],
-    [0, 450]
+    {
+      domain: [0, 1],
+      range: [0, 500],
+      center: [0, canvas.height],
+    }
   );
 }
 
@@ -459,8 +457,7 @@ rabbitPlotCanvas();
 
 function rabbitRecreateCanvas() {
   const canvas = id("rabbit-recreate-canvas");
-  const space = new CanvasSpace(canvas);
-  space.setup({ bgcolor: "#fafafa" });
+  const space = newSpace(canvas)
 
   let N = 12;
   const trace = {
@@ -546,8 +543,7 @@ function drawPolarFuncs(space, width, height, funcs) {
 
 function polarSineCanvas() {
   const canvas = id("polar-sine");
-  const space = new CanvasSpace(canvas);
-  space.setup({ bgcolor: "#fafafa" });
+  const space = newSpace(canvas)
   pauseWhenOutOfViewport(canvas, space);
 
   drawPolarFuncs(space, canvas.width, canvas.height, [{ radius: 70, freq: 1 }]);
@@ -563,8 +559,7 @@ polarSineCanvas();
 
 function twoRotatingVectors() {
   const canvas = id("two-rotating-vectors");
-  const space = new CanvasSpace(canvas);
-  space.setup({ bgcolor: "#fafafa" });
+  const space = newSpace(canvas)
   pauseWhenOutOfViewport(canvas, space);
 
   drawPolarFuncs(space, canvas.width, canvas.height, [
@@ -583,7 +578,7 @@ twoRotatingVectors();
  */
 function rabbitEpicycle() {
   const canvas = id("rabbit-epicycle");
-  const space = new CanvasSpace(canvas);
+  const space = newSpace(canvas) 
 
   initTrace(canvas.width, canvas.height, space, false, rabbitPolarVectors);
   space.play();
