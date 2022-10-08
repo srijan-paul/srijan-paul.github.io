@@ -18,6 +18,17 @@ body {
   color: gray;
 }
 
+.MJX-TEX {
+  overflow-x: scroll;
+  max-width: 80%;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.MJX-TEX::-webkit-scrollbar {
+  display: none;
+}
+
 /* links */
 
 a,
@@ -162,7 +173,11 @@ code {
   overflow: auto;
 }
 
-h1, h2, h3, h4, h5 {
+h1,
+h2,
+h3,
+h4,
+h5 {
   font-weight: bolder;
 }
 
