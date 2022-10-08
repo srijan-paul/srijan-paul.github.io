@@ -1,16 +1,18 @@
-/* @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=IBM+Plex+Serif&family=Zilla+Slab:wght@300;400&display=swap'); */
-@import url('https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,600;1,400;1,500;1,600&family=Cousine:ital,wght@0,400;0,700;1,400&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400&family=Zilla+Slab:wght@300;400&family=Cousine:ital,wght@0,400;0,700;1,400&display=swap");
+/* @import url("https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,600;1,400;1,500;1,600&family=Cousine:ital,wght@0,400;0,700;1,400&display=swap"); */
 
 :root {
   --clr-primary: #2c3e50;
-  --clr-font: #2C3A47;
-  --link-color: #192a56;
-  --bg-color: #fafafa;
-  --font-serif-2: "Bai Jamjuree";
-  --font-serif-1: "Bai Jamjuree";
+  --clr-font: #2c3a47;
+  --link-color: #0077b6;
+  --link-color-hover: #023e8a;
+  --bg-color: #fff;
+  /* other fonts: Cormorand, Zilla Slab, IBM Plex Serif */
+  --font-serif-2: "IBM Plex Sans";
+  --font-serif-1: "IBM Plex Sans";
   --font-code: "Cousine";
   --font-weight: 300;
-  --font-weight-bold: 600;
+  --font-weight-bold: 400;
   --font-size: 18px;
 }
 
@@ -19,7 +21,7 @@ strong {
 }
 
 body {
-  font-family: var(--font-serif-2), sans-serif;
+  font-family: var(--font-serif-1), sans-serif;
   background-color: #fafafa;
   font-size: var(--font-size);
   font-weight: var(--font-weight);
@@ -45,7 +47,6 @@ a:hover {
 } */
 
 a,
-a:hover,
 a:visited,
 a:link,
 a:active {
@@ -56,8 +57,7 @@ a:active {
 
 a:hover {
   text-decoration: underline;
-  filter: brightness(0.8);
-  color: var(--link-color);
+  color: var(--link-color-hover);
 }
 
 .navbar {
@@ -106,7 +106,7 @@ code {
 
 .nav-link {
   text-decoration: none !important;
-  font-family: var(--font-serif-2);
+  font-family: var(--font-serif-1);
   opacity: 0.8;
 }
 
@@ -146,11 +146,15 @@ hr {
   background-color: #333;
 }
 
-pre, code {
+pre,
+code {
   tab-size: 2;
 }
 
-.hljs-type, .hljs-keyword, .hljs-title, .hljs-params {
+.hljs-type,
+.hljs-keyword,
+.hljs-title,
+.hljs-params {
   font-weight: bold;
 }
 

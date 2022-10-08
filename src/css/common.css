@@ -1,5 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=IBM+Plex+Sans:wght@300;400&family=Zilla+Slab:wght@300;400&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,600;1,400;1,500;1,600&family=Cousine:ital,wght@0,400;0,700;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400&family=Zilla+Slab:wght@300;400&family=Cousine:ital,wght@0,400;0,700;1,400&display=swap");
+/* @import url("https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,600;1,400;1,500;1,600&family=Cousine:ital,wght@0,400;0,700;1,400&display=swap"); */
 
 :root {
   --clr-primary: #2c3e50;
@@ -7,6 +7,7 @@
   --link-color: #0077b6;
   --link-color-hover: #023e8a;
   --bg-color: #fff;
+  /* other fonts: Cormorand, Zilla Slab, IBM Plex Serif */
   --font-serif-2: "IBM Plex Sans";
   --font-serif-1: "IBM Plex Sans";
   --font-code: "Cousine";
