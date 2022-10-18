@@ -18,13 +18,13 @@ It is used to generate the attached <a href="/blog" target="_blank">blog</a> too
 
 - <a href="https://github.com/srijan-paul/snap" target="_blank">Vyse</a>: A dynamically typed and interpreted programming language for embedding in applications like web-servers and game engines.
 
-- <a href="https://github.com/srijan-paul/snap" target="_blank">Bonkyon</a>: A small puzzler game written in LOVE. Play <a href="https://injuly.itch.io/bonkyon" target="_blank">here</a>.
+- <a href="https://github.com/srijan-paul/bonkyon" target="_blank">Bonkyon</a>: A small puzzler game written in LOVE. Play <a href="https://injuly.itch.io/bonkyon" target="_blank">here</a>.
 
 - <a href="https://github.com/srijan-paul/bark" target="_blank">Bark</a>: A static site generator like Hugo/11ty/Jekyll written in Haskell.
 
 - <a href="https://github.com/srijan-paul/horror-game" target="_blank">Shriek</a>: A topdown horror RPG game.
 
-- <a href="" target="_blank">CSTriviaBot</a>: A fun, general purpose discord bot.
+- <a href="https://github.com/srijan-paul/CSTriviaBot" target="_blank">CSTriviaBot</a>: A fun, general purpose discord bot.
 
 And many more on my GitHub :)
 
