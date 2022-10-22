@@ -105,7 +105,7 @@ function initGraphCanvas2() {
       width: 350,
       height: 350,
       domain: [-3, 3],
-      range: [-5, 5],
+      range: [-3, 3],
     }
   );
 

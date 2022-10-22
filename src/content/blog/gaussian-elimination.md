@@ -9,7 +9,7 @@ by [Gilbert Strang](https://math.mit.edu/~gs/). Within it, the author writes:
 is probably the most well known algorithm for solving a system of linear equations.
 If you're reading this post, you've probably studied it.
 While it's not the most challenging algorithm to code or work out on paper,
-I never quite understood how arranging a set of equations in a matrix, then playing with its rows led us to a solution.
+I never quite understood how arranging a set of equations in a matrix, then playing with its rows led to the solution.
 Most linear algebra is closely related to shapes, curves and spaces.
 Certainly there should be a way to visualize the process by which we find where some planes intersect? 
 Furthermore, how do we know this works for *any* set of equations in an N-dimensional space?
@@ -235,7 +235,7 @@ ax_p + by_p - k = c - k \newline
 $$
 
 Clearly, \\((x_p, y_p)\\) all satisfies the equation for the new line.
-Meaning that \\(p\\) lines on \\(l_1\\), \\(l_2\\),
+Meaning that \\(p\\) lies on \\(l_1\\), \\(l_2\\),
 *and* the line that is obtained by adding/subtracting \\(l_1\\) and \\(l_2\\).
 
 We can conclude that it also works when we take a add or subtract multiples of \\(l_1\\) \\(l_2\\),
