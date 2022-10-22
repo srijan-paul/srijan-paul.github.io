@@ -19,8 +19,11 @@ export default class Graph {
   dx = 0.01;
   // The position of the origin ((0, 0)) in the CanvasSpace.
   center;
-  // A cached list of points in the curve
-  // pts[i][j] is the `j`th point of the `i`th function in `this.funcs`
+
+  /**
+   * A cached list of points in the curve
+   * pts[i][j] is the `j`th point of the `i`th function in `this.funcs`
+   */
   pts = [];
   // width of the CanvasSpace in pixels
   width;
@@ -74,7 +77,7 @@ export default class Graph {
       this.colorOfFunc.push(funcPlot.color);
     }
     // pts[i] stores the points in the `i`th funtion's curve.
-    // `funcs`, `colorOfFunc` and `pts` are all arrays that
+    // `funcs`, `colorOfFunc` and `pts` all have the same number of elements.
     this.pts.push([]);
     if (
       !(
@@ -85,6 +88,26 @@ export default class Graph {
       throw new Error("Impossible code point reached.");
     }
   }
+
+  /**
+   * Clear the functions in this graph.
+   */
+  clear() {
+    this.pts = [];
+    this.funcs = [];
+    this.colorOfFunc = [];
+  }
+
+  /**
+   * set a function to something else.
+   * @param {number} i Index of the function to modify
+   * @param {(number) => number} fun The new function 
+   */
+  setFunc(i, fun) {
+    this.funcs[i] = fun;
+    this.isConstructed = false;
+  }
+
   /**
    * Reset the scale of the graph.
    * @param xScale scale on the x-axis
@@ -120,6 +143,15 @@ export default class Graph {
     }
     this.isConstructed = true;
   }
+
+  /**
+   * @param {[number, number]} coord A coordinate
+   * @return The position of the coord in the graph.
+   */
+  getScaledCoords([x, y]) {
+    return [this.center[0] + x * this.xScale, this.center[1] - y * this.yScale];
+  }
+
   /**
    * Renders the X-Y axes.
    * @param form The canvas form to draw with.
