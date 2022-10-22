@@ -185,7 +185,7 @@ This variant of Gaussian elimination does not require a back substitution step.
 This section is a little wordy,
 so feel free to take some time and work through each paragraph at a slower pace.
 
-It turns out, that you can rotate \\(l_2\\) around its
+It turns out that you can rotate \\(l_2\\) around its
 point of intersection with \\(l_1\\) by subtracting a multiple of \\(l_1\\) from \\(l_2\\).
 Meaning that for some non-zero \\(m\\), the formula for transforming \\(l_2\\) into into \\(l_2'\\) is really just:
 
