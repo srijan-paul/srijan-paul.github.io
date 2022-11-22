@@ -1,0 +1,7 @@
+{
+  template: "post" 
+  tags: ["misc"]
+  title: "The Angelfish"
+  date: "2022-11-22"
+  is_blog_post: "true"
+}
