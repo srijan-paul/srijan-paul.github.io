@@ -26,7 +26,7 @@ Put more formally - \\((f + g)(x) = f(x) + g(x)\\).
 Let's visualize this by taking an example.
 Assume `f` is \\(2sin(x)\\) and `g` is \\(cos(2x)\\).
 
-Their sum then, can be given by a function - \\(h(x) = 2sin(x) + cos(2x)\\).
+Their sum then, can be given by a function: \\(h(x) = 2sin(x) + cos(2x)\\).
 
 The graph below plots \\(f\\) and \\(g\\) in shades of gray, and their sum, \\(h\\), in red.
 
@@ -37,9 +37,9 @@ The graph below plots \\(f\\) and \\(g\\) in shades of gray, and their sum, \\(h
 Note how in some places, the values of \\(f\\) and \\(g\\) are both positive, and their sum is therefore a larger positive number,
 while in other places, \\(f\\) and \\(g\\) have opposite signs and their values cancel out to a smaller number.
 
-Through the lens of physics, you could look at the functions as two electromagnetic waves, or just visible light rays oscillating in the domain of time.
+Through the lens of physics, you could look at the two functions as electromagnetic waves, or visible light rays oscillating in the domain of time.
 When two such waves overlap with each other in space, they're said to be in [superposition](https://www.britannica.com/science/principle-of-superposition-wave-motion).
-The superposition of two waves results in the sum of both waves.
+The superposition of two waves results in their sum.
 
 When two points in a wave supplement each other to result in a higher amplitude (the y-value),
 their interaction is termed "constructive interference".
@@ -63,7 +63,7 @@ signal processing, image compression, shape recognition,
 analog transmission, noise cancellation, studying thermodynamic systems
 and fitting equations to datasets.
 
-From this wide array of applications, We show our interest in the science of tracing ugly sketches.
+From this wide array of applications, we show our interest in the science of tracing ugly sketches.
 
 ## Decomposing periodic functions.
 

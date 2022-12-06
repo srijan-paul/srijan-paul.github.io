@@ -2,7 +2,7 @@ You are an Angelfish.
 You're what all other fish in the tank wish they had been.
 Fast, sleek and beautiful.
 Tall and colorful dorsal fins flow in design as you cut through the waters.
-Your sleek, aerodynamic body gliding with ease.
+Your streamlined, aerodynamic body gliding with ease.
 You’re as strong and dexterous as you're visually alluring.
 The exotic and lustrous patterns on your scales complement your proverbial angelic nature.
 
@@ -34,11 +34,10 @@ To those other fish, it makes no difference.
 They’ve always been bottom-feeders.
 They will continue to be bottom-feeders.
 You, however, will cease to be at the top.
-The ocean scorns your pride, threatening to fling you down to the lower strata of marine life, stripping you of your honor.
+The ocean scorns your pride, threatening to fling you down to the lower strata of marine life, stripping you of honor.
 You realize now that your dignity anchored itself on fishes far beneath you.
 In a way, you *depended* on them.
 Fear of loss grips your chest tight, nerves stretching thin.
 Bereft of hope, where will you go?
 
 As far as you are above the other fish, the ocean is even farther above you.
-
