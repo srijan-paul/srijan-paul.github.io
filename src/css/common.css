@@ -60,11 +60,18 @@ a:active {
 
 a:hover {
   text-decoration: underline;
+  text-decoration-thickness: 2px;
   color: var(--link-color-hover);
 }
 
-.post-list a {
+.post-list a,
+a:visited {
   text-decoration: none;
+}
+
+.post-list a:hover {
+  text-decoration: underline;
+  text-decoration-style: dashed;
 }
 
 .navbar {
@@ -118,6 +125,7 @@ code {
 }
 
 .active-nav-link {
+  text-decoration: underline !important;
   opacity: 1;
 }
 
