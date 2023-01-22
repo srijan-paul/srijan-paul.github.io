@@ -37,12 +37,14 @@ Books I plan to read:
 
 ### Projects
 
-Unfortunately, I have nothing noteworthy like in the last few installments in this thread of updates.
+Unlike the last few updates, I have nothing noteworthy this time. 
 I've been doing touch-ups to [Vyse](injuly.in/vyse), hand-coding [neural networks](https://github.com/srijan-paul/neural-prob-estimation)
 from scratch, and making [fourier sketches](injuly.in/blog/fourier-series).
 
+Soon, I'm going to implement the Neural Language Model described in [Yoshua Bengio's paper](https://www.jmlr.org/papers/volume3/bengio03a/bengio03a.pdf) from 2003.
+
 My sojourn at the manifold of NNs and statistical models will probably last for a while.
-In the meantime, I'm on the lookout for things to build.
+In the meantime, I'm on the lookout for other things to build as well.
 
 ### Plans
 
