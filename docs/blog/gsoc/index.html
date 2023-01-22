@@ -27,6 +27,7 @@
 
         <div class="nav-right">
           <a href="/" class="nav-link">index</a>
+          <a href="/about" class="nav-link">about</a>
           <a href="/blog" class="nav-link">blog</a>
           <a href="/current" class="nav-link">current</a>
         </div>
@@ -183,7 +184,7 @@ int add_lua(lua_State *L) {
     return 1;
 }
 </code></pre>
-<p>The first interesting point to note is that our Pallene function <code>add</code> got compiled to two C functions.
+<p>The first point to note is that our Pallene function <code>add</code> got compiled to two C functions.
 Why is that?
 It's because Lua allows users to author functions in C (see <a href="https://www.lua.org/source/5.3/lua.h.html#lua_CFunction">lua_CFunction</a>),
 which can be called by the Lua interpreter.

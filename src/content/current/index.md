@@ -1,71 +1,55 @@
-## March 2022
+## Jan. 2023
 
-At the time of me writing this, march is nearly over.
-I can't say the past 3 months have been the most productive,
-but atleast the trajectory isn't too bad.
+It's been 10 months since my last update.
+I plan on pushing these out more often, starting with this one.
+Perhaps an active log will help me find out just where all my free time runs off to.
 
 ### Reading
 
-Finished since last update:
+I'm done with [The Way of Kings](https://www.goodreads.com/book/show/7235533-the-way-of-kings),
+and now consider it peak high fantasy.
+It is a perfect blend of excellent prose, compelling storytelling and masterful worldbuilding.
+I could go on, but I'd rather have you find out yourself.
 
-1. [Purescript by example](https://leanpub.com/purescript/read): *Chef's kiss*.
-  I didn't read it cover-to-cover, because it's repetitive for anyone familiar with Haskell.
-  I still found myself binging it in 3 days.
-  This book explains not just purescript, but fundamental functional programming concepts
-  that a programmer can apply everywhere. 
+In summary, I read these books over the past 10 months:
 
-2. [Dune Messiah](https://www.goodreads.com/book/show/44492285-dune-messiah):
-  The first two acts were "okay", the final act was fantastic and hearbreaking.
-  The ending is memorable, and probably one my favorite climaxes in any book despite being rushed.
-  My only gripe is with the frequent and long philosophical paragraphs that steer my attention away from the plot.
+- [The Way of Kings](https://www.goodreads.com/book/show/7235533-the-way-of-kings)
+- [Warbreaker](https://www.goodreads.com/book/show/1268479.Warbreaker)
+- [The three body problem](https://www.goodreads.com/book/show/20518872-the-three-body-problem)
+- [Dark Forest](https://www.goodreads.com/book/show/23168817-the-dark-forest)
+- [Death's End](https://www.goodreads.com/book/show/25451264-death-s-end)
+- [Exhalation](https://www.goodreads.com/book/show/41160292-exhalation)
+- [Free will](https://www.goodreads.com/book/show/13259270-free-will)
 
-1. [The Martian](https://www.goodreads.com/book/show/18007564-the-martian):
-  I would rate this as "good".
-  The scientific accuracy of everything stood out the most to me.
-  It can get very monotonous at times, as most of the book is just journal entries from the protagonist.
-  Perhaps my review is skewed towards the lower end because
-  I read it in several sittings, interspersed with long gaps and other misc. reading material.
+Books I'm currently reading:
 
-1. [Do epic shit](https://www.goodreads.com/en/book/show/59795331-do-epic-shit):
-  I just could not bring myself to like this book.
-  I'm not an avid reader of the self-help genre, but a friend had gifted this to me earlier this year.
-  I finally got around to reading it, and was very hopeful owing to the social media hype this has spawned.
-  However I don't deem it worth all the praise it's been getting.
-  At its best, it's a series of disconnected but temporarily inspiring scrawls.
-  At its worst, it's a "JUST-DO-IT" twitter thread printed on paper.
-  A temporary dose of dopamaine is probably all this will leave you with.
+- [Words of Radiance](https://www.goodreads.com/book/show/17332218-words-of-radiance): Stormlight Archive #2, sequel to The Way of Kings.
+- [Immortals of Meluha](https://www.goodreads.com/en/book/show/7913305):
+  I'm reading the audiobook on-and-off during bus rides, meals and walks.
+- [Linear Algebra and it's applications](https://www.goodreads.com/book/show/179699.Linear_Algebra_and_Its_Applications):
+  I've taken HS and college courses on this subject already, but this book is an excellent refresher.
 
-Currently reading:
+Books I plan to read:
 
-- [The way of kings](https://www.goodreads.com/book/show/7235533-the-way-of-kings) (Stormlight archive - 1)
-- [Children of Dune](https://www.goodreads.com/book/show/44492286-children-of-dune) (Should be over by the end of this month)
-- [Real world haskell](http://book.realworldhaskell.org)
-- [The way of zen](https://www.goodreads.com/book/show/514210.The_Way_of_Zen)
-
-Wish to read:
-
-- [Kafka on the Shore](https://www.goodreads.com/book/show/4929.Kafka_on_the_Shore)
-- [God Emperor of Dune](https://www.goodreads.com/book/show/44439415-god-emperor-of-dune)
-
+- [The Name of the Wind](https://www.goodreads.com/book/show/186074.The_Name_of_the_Wind) (Kingkiller chronicle #1)
+- [Hold up the sky](https://www.goodreads.com/book/show/49247266-to-hold-up-the-sky)
+- [Thinking with types](https://thinkingwithtypes.com/)
 
 ### Projects
 
-[Vyse](https://injuly.in/vyse) Now supports loading modules,
-and has a more fleshed out standard lirbary.
-It's time I take a step back and add documentation for the standard library and embedding API.
+Unfortunately, I have nothing noteworthy like in the last few installments in this thread of updates.
+I've been doing touch-ups to [Vyse](injuly.in/vyse), hand-coding [neural networks](https://github.com/srijan-paul/neural-prob-estimation)
+from scratch, and making [fourier sketches](injuly.in/blog/fourier-series).
 
-I'm likely to start a pet project in the next month.
-Although I won't commit to it in form of writing before I'm _really_ sure I'm going to do it.
-So I guess we'll have to wait before it's "announced".
+My sojourn at the manifold of NNs and statistical models will probably last for a while.
+In the meantime, I'm on the lookout for things to build.
 
 ### Plans
-I *have* to start keeping track of the research papers I half-read and then forget.
-I recently finished reading [this](https://www.cs.nott.ac.uk/~pszgmh/monparsing.pdf) paper by Graham Hutton,
-A haskell version of all the code presented in the paper can be found [here](https://github.com/srijan-paul/Monparsing-paper/blob/main/MonParse.hs).
-I'm planning on writing about it in the next week.
 
-The frequency of posts on my blog has been lower than what I promised myself, but I hope this
-results in higher quality posts than usual.
+Write more often.
+This time for real.
 
 ### Previous
-- [Jan 2021](/current/jan-2021)
+
+- [March 2022](/current/mar-2022)
+- [January 2022](/current/jan-2022)

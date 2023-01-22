@@ -15,6 +15,8 @@ To keep you from clicking off this page,
 I'll defer the proof and origin of this equation to the second half,
 and thread some interactive animations through the body of this write-up.
 
+Before we get to tracing sketches however, let's brush up some basic math.
+
 ## Adding functions
 
 Surely, you're familiar with the addition of numbers, vectors and matrices.

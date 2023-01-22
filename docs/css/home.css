@@ -6,7 +6,7 @@
 }
 
 .leader {
-  text-align: center;
+  /* text-align: center; */
   margin-top: 65px;
   margin-bottom: 0px;
 }
@@ -22,7 +22,7 @@
 }
 
 ul {
-  font-size: 19px;
+  /* font-size: 19px; */
   list-style-type: disc;
   margin-left: 0;
   padding-left: 0.8rem;

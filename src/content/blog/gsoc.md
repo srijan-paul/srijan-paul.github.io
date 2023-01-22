@@ -144,7 +144,7 @@ int add_lua(lua_State *L) {
 }
 ```
 
-The first interesting point to note is that our Pallene function `add` got compiled to two C functions.
+The first point to note is that our Pallene function `add` got compiled to two C functions.
 Why is that?
 It's because Lua allows users to author functions in C (see [lua_CFunction](https://www.lua.org/source/5.3/lua.h.html#lua_CFunction)),
 which can be called by the Lua interpreter.

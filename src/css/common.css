@@ -1,19 +1,20 @@
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400&family=Zilla+Slab:wght@300;400&family=Cousine:ital,wght@0,400;0,700;1,400&display=swap");
-/* @import url("https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,600;1,400;1,500;1,600&family=Cousine:ital,wght@0,400;0,700;1,400&display=swap"); */
+/* @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400&family=Zilla+Slab:wght@300;400&family=Cousine:ital,wght@0,400;0,700;1,400&display=swap"); */
+@import url("https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,600;1,400;1,500;1,600&family=Space+Grotesk:wght@300;400;500;600;700&family=Cousine:ital,wght@0,400;0,700;1,400&display=swap");
 
 :root {
   --clr-primary: #2c3e50;
   --clr-font: #2c3a47;
-  --link-color: #0077b6;
-  --link-color-hover: #023e8a;
-  --bg-color: #fff;
+  --clr-bold: #1e272e;
+  --link-color: #1e272e;
+  --link-color-hover: var(--link-color);
+  --bg-color: #fafafa;
   /* other fonts: Cormorand, Zilla Slab, IBM Plex Serif */
-  --font-serif-2: "IBM Plex Sans";
-  --font-serif-1: "IBM Plex Sans";
+  --font-serif-2: "Space Grotesk";
+  --font-serif-1: "Space Grotesk";
   --font-code: "Cousine";
   --font-weight: 300;
-  --font-weight-bold: 400;
-  --font-size: 18px;
+  --font-weight-bold: 500;
+  --font-size: 17px;
 }
 
 strong {
@@ -22,7 +23,7 @@ strong {
 
 body {
   font-family: var(--font-serif-1), sans-serif;
-  background-color: #fafafa;
+  background-color: var(--bg-color);
   font-size: var(--font-size);
   font-weight: var(--font-weight);
 }
@@ -50,14 +51,20 @@ a,
 a:visited,
 a:link,
 a:active {
-  text-decoration: none;
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  text-decoration-color: var(--clr-bold);
   color: var(--link-color);
-  font-weight: bold;
+  font-weight: 400;
 }
 
 a:hover {
   text-decoration: underline;
   color: var(--link-color-hover);
+}
+
+.post-list a {
+  text-decoration: none;
 }
 
 .navbar {

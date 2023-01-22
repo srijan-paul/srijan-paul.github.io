@@ -39,7 +39,7 @@ function newSpace(canvas) {
   const space = new CanvasSpace(canvas);
   const { width, height } = canvas;
   space.resize(new Bound(new Pt(width, height)));
-  space.setup({ bgcolor: "#ffffff" });
+  space.setup({ bgcolor: "#fafafa" });
   return space;
 }
 
@@ -122,7 +122,7 @@ const X_AXIS = 0,
  * @param epicycles cached epicycles
  */
 function initTrace(width, height, space, coeffs, epicycles) {
-  space.setup({ bgcolor: "#ffffff" });
+  space.setup({ bgcolor: "#fafafa" });
   const form = space.getForm();
 
   const xEpicycles = epicycles
@@ -266,7 +266,7 @@ const callback = () => {
   }
 
   redrawSpace = new CanvasSpace(redrawCanvas);
-  redrawSpace.setup({ bgcolor: "#ffffff" });
+  redrawSpace.setup({ bgcolor: "#fafafa" });
   const coeffs = { x: decompose(xFunc, N, 1), y: decompose(yFunc, N, 1) };
   initTrace(CANVAS_SIZE, CANVAS_SIZE, redrawSpace, coeffs);
   redrawSpace.play();
@@ -390,7 +390,7 @@ function squareWaveFSCanvas() {
 
   const slider = id("square-fs-slider");
   slider.onchange = () => {
-    space.setup({ bgcolor: "#ffffff" });
+    space.setup({ bgcolor: "#fafafa" });
 
     const n = slider.value;
     squareWaveApprox = computeApproximateFunction(squareWave, n);

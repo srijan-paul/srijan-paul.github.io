@@ -22,16 +22,20 @@
 
 			<div class="nav-right">
 				<a href="/" class="nav-link">index</a>
+				<a href="/about" class="nav-link">about</a>
 				<a href="/blog" class="active-nav-link nav-link">blog</a>
 				<a href="/current" class="nav-link">current</a>
 			</div>
 		</div>
 		<hr>
 
-		<ul id="post-list">
+		Posts tagged <span id="tag-name"></span>:
+
+		<ul id="post-list" class="post-list">
 		{{#posts}}
 		{{#data.title}}
 			<li id="{{name}}"><a href="/blog/{{name}}">{{data.title}}</a></li>
+			<br/>
 		{{/data.title}}
 		{{/posts}}
 		</ul>
@@ -47,7 +51,10 @@
 
 		const queryTag = getTagFromURL();
     const tagsDiv = document.getElementById("tags");
-		console.log(queryTag);
+
+		const tagNameEl = document.getElementById("tag-name")
+		tagNameEl.innerHTML = `<strong>${queryTag}</strong>`
+
 
 		// Mustache isn't *that* bad huuuuuuuuuuhhhh.
 		// Though it can get wild sometimes.
