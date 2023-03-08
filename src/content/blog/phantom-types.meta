@@ -1,0 +1,8 @@
+{
+  template: "post"
+  tags: ["FP" "programming-languages" "post" "haskell"]
+  title: "Of Phantom types, and partial functions in Haskell"
+  date: "2023-03-07"
+  is_blog_post: "true"
+}
+
