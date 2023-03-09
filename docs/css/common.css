@@ -152,6 +152,7 @@ code {
 
 .main {
   margin-bottom: 5rem;
+  max-width: 840px;
 }
 
 hr {
@@ -166,12 +167,13 @@ code {
   tab-size: 2;
 }
 
+/* bold keywords for hljs
 .hljs-type,
 .hljs-keyword,
 .hljs-title,
 .hljs-params {
   font-weight: bold;
-}
+}*/
 
 .hljs-comment {
   color: #aaaaaa !important;

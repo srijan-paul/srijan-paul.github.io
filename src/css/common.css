@@ -167,12 +167,13 @@ code {
   tab-size: 2;
 }
 
+/* bold keywords for hljs
 .hljs-type,
 .hljs-keyword,
 .hljs-title,
 .hljs-params {
   font-weight: bold;
-}
+}*/
 
 .hljs-comment {
   color: #aaaaaa !important;
