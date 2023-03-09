@@ -152,6 +152,7 @@ code {
 
 .main {
   margin-bottom: 5rem;
+  max-width: 840px;
 }
 
 hr {
