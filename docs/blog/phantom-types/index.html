@@ -41,36 +41,36 @@
         <ul class="tags" id="tags">
         </ul>
       </div>
-      <p>In most compiled languages, code compilation offers two guarantees.
+      <p>In most statically typed languages, compilation offers two guarantees.
 First is the guarnatee that our code is syntactically valid.
 The second guarantee is that our code is soundly typed, and does not have any semantic errors
 that may break the language's execution logic, like adding an <code>Int</code> with a <code>String</code>.</p>
 <p>In this post, I'll present a way to offer a third guarantee -
 one that is surprisingly good in keeping logical errors at bay.
 With meticulous use of Haskell's type system,
-we can deter some logic mistakes that are easy to make in imperative languages.</p>
-<p>The core idea is making invalid states un-representable, and using types to guide our program's logic.
+we can deter mistakes that are easy to make in imperative languages.</p>
+<p>The core idea is to make invalid states un-representable, and use types to guide our program's business logic.
 If that does not make sense to you now, it will after we go over an example.</p>
 <p>In a follow-up post, I will show an elegant way of building type-level proofs that ensure
 logical correctness of programs.</p>
 <h2 id="phantom-types">Phantom types</h2>
 <p>In Haskell, polymorphic types can have unused type parameters.
-The unused parameters are called <a href="https://wiki.haskell.org/Phantom_type">Phantom types</a>.
+These are called <a href="https://wiki.haskell.org/Phantom_type">Phantom types</a>.
 For example:</p>
 <pre><code class="language-haskell">newtype Attach a ph = Attach a
 </code></pre>
 <p>The Type <code>Attach</code> has a data constructor of the same name.
-When you call <code>Attach v</code> – where <code>v</code> is some value of type <code>a</code> –
-it will construct a type that wraps <code>v</code> inside it (<code>Attach a ph</code>).</p>
+When you call <code>Attach &quot;x&quot;</code> – where <code>&quot;x&quot;</code> has type <code>String</code> –
+it will construct a value with a type that wraps <code>String</code> inside it (<code>Attach String ph</code>).</p>
 <p>But what is the <code>ph</code> type?
 The data constructor does not provide <code>ph</code>, so where does it come from?</p>
-<p>Let's spin up a REPL and find out:</p>
+<p>Let's spin up a REPL to find out:</p>
 <pre><code class="language-haskell">ghci&gt; x = Attach &quot;x&quot;
 ghci&gt; :t Attach x
 Attach &quot;x&quot; :: forall {k} {ph :: k}. Spooky String ph
 </code></pre>
-<p>The variable <code>x</code> has a polymorphic type where the type <code>ph</code> is unspecified, and can be anything.
-We can use an explicit annotation to get the type to adapt to any valid signature:</p>
+<p>The variable <code>x</code> has a polymorphic type where <code>ph</code> is unspecified, and can be anything.
+We can use an explicit annotation to narrow the type of <code>x</code>:</p>
 <pre><code class="language-haskell">ghci&gt; y = x :: Attach String Int
 ghci&gt; :t y
 y :: Attach String Int
@@ -79,8 +79,8 @@ y :: Attach String Int
 The <code>Attach String Int</code> is like a permanent tattoo that identifies <code>y</code> as a value of type <code>String</code>,
 that has the ghost of an <code>Int</code> latching onto it.</p>
 <p>As it turns out, phantom types are incredibly useful in type-driven development.
-We can use them to represent invariants in our programs, and stop logically incorrect code from compiling.</p>
-<h2 id="case-study-a-database-library">Case study: A database library</h2>
+We can use them to encode invariants in our programs, and stop logically incorrect code from compiling.</p>
+<h2 id="case-study-a-database-library">Case study: a database library</h2>
 <p>Imagine you're authoring a backend library that offers – among other things – the following capabilities:</p>
 <ol>
 <li>Fetching data from any URL.
@@ -105,38 +105,40 @@ runDbQuery _ = return ()
 log :: String -&gt; IO ()
 log _ = return ()
 
--- fetch data from url
-fetchData :: URL -&gt; IO String
-fetchData _ = return ()
+-- fetch data from a URL 
+type Url = String
+fetchData :: Url -&gt; IO String
+fetchData = return
 </code></pre>
 <p>Allowing arbitrary strings to be interpreted as database commands is an obvious security hazard.
-Any string from an unsafe source (like an HTTP request parameter, a third party web-server, etc.)
+Every string from an unsafe source (an HTTP request parameter, a third party web-server, etc.)
 is a potential <a href="https://en.wikipedia.org/wiki/SQL_injection">SQL injection</a> attempt.</p>
 <p>Even logging such strings to the console can open us up to <a href="https://owasp.org/www-community/attacks/Log_Injection">log injection</a>.</p>
 <p>These threats now posit a requirement: A string must be validated for safety before being passed to <code>runDbQuery</code> and <code>log</code>.
-To avoid getting pwned, we can implement a validation function that checks if the input is secure for consumption:</p>
+To avoid getting pwned, we will implement a validation function that checks if the input is secure for consumption:</p>
 <pre><code class="language-haskell">-- file: Lib.hs
-isSafe :: String -&gt; Bool
-isSafe input = undefined
+isSecure :: String -&gt; Bool
+isSecure input = undefined
 </code></pre>
-<p><code>isSafe</code> returns <code>True</code> only if <code>input</code> is safe for consumption by the other functions that our library exports.
-Now, we are faced with a design challenge: Who gets to call <code>isSafe</code>? And where is it called?
+<p><code>isSecure</code> returns <code>True</code> only if <code>input</code> is safe for consumption by <code>log</code> and <code>runDbQuery</code>.
+Now, we are faced with a design challenge: Who calls <code>isSecure</code>?
+And how do we ensure that the validator has been called on some data before it is passed to other functions exported by <code>Lib</code>?
 Two approaches come to mind:</p>
-<p>The first is where the user calls <code>isSafe</code> to verify a string's safety before passing it to <code>runDbQuery</code> or <code>log</code>.
+<p>The first is where the user calls <code>isSecure</code> to verify a string's safety before passing it to <code>runDbQuery</code> or <code>log</code>.
 So the user would have to perform checks in the following manner:</p>
 <pre><code class="language-haskell">-- file: Main.hs
 import Lib (runDbQuery, log)
 
 main = do
   query &lt;- getLine
-  if isSafe query
+  if isSecure query
     then do 
       runDbQuery query
       log query
     else print &quot;Invalid DB query&quot;
 </code></pre>
-<p>But what happens when the user forgets to call <code>isSafe</code>?
-Incorrect use of our library still compiles and spawns a vulnerable application binary:</p>
+<p>But what happens when the user forgets to call <code>isSecure</code>?
+Incorrect use of our library still compiles and spawns a vulnerable binary:</p>
 <pre><code class="language-haskell">-- file: Main.hs
 
 main =  do
@@ -145,80 +147,78 @@ main =  do
   runDbQuery query -- PWNED x2
 </code></pre>
 <p>In a production application, there will be multiple places to draw tainted strings from.
-It's not uncommon for developers to forget sanitizing the tainted input.
+It's not uncommon for developers to forget sanitizing the input in some places.
 Even if the code is written perfectly in the beginning,
-someone might erroneously remove a call to <code>isSafe</code> during a refactor.
+someone might erroneously remove a call to <code>isSecure</code> during a refactor.
 Users of our library are now one line of code away from a gazillion dollar AWS bill.
 When something breaks because of tainted data having made it to a security critical function call,
 it's the consumers of <code>Lib</code> who're held guilty.</p>
 <p>Our design relies on human memory to perform data validation.
 Any application using such a library is doomed to break before the user has even begun working on the project.</p>
 <p>The possible code paths that unsafe data can take are simply too many, and it's irresponsible
-for us to expect users to routinely call <code>isSafe</code> before every sensitive function call.</p>
+for us to expect users to routinely call <code>isSecure</code> before every sensitive function call.</p>
 <p>A judicious library author should avoid transfering this burden of validation to users.</p>
-<p>An alternative design choice, therefore, is to call <code>isSafe</code> on the user's behalf:</p>
+<p>An alternative design choice, therefore, is to call <code>isSecure</code> on the user's behalf:</p>
 <pre><code class="language-haskell">-- file: Lib.hs
 runDbQuery :: String -&gt; IO ()
 runDbQuery query =
-  if isSafe query
+  if isSecure query
     then execute query
     else error &quot;Unsafe database query&quot;
 
 log :: String -&gt; IO ()
 log s =
-  if isSafe s
+  if isSecure s
     then print $ formatWithTime s
     else error &quot;Unsafe server log&quot;
 </code></pre>
 <p>Now, even if the user passes an insecure string to one of these functions, it'll be rejected.</p>
 <p>The security hole is patched,
-and all strings are guaranteed to be routed via <code>isSafe</code> before hitting any safety critical paths.</p>
+and all strings are guaranteed to be routed via <code>isSecure</code> before hitting any safety critical paths.</p>
 <p>However, this design has its own share of problems.</p>
 <p>The most glaringly obvious issue here is that of performance and redundancy.
 Even when the user has taken steps to ensure that the input is safe, we're performing redundant checks.
-Moreover, passing the same string to <code>runDbQuery</code> and <code>log</code> will perform the <code>isSafe</code> check twice.</p>
+Moreover, passing the same string to <code>runDbQuery</code> and <code>log</code> will perform the <code>isSecure</code> check twice.</p>
 <p>Sometimes, validation isn't necessary because the input comes from within the program.
 In the example below for instance, <code>input</code> is a string literal, and yet it gets validated twice:</p>
 <pre><code class="language-haskell">-- file: Main.hs
 main = do
   let input = &quot;insert into fruits value ('mango')&quot;
-  runDbQuery input -- Will run `isSafe` unneccessarily.
-  log input        -- will run `isSafe` again.
+  runDbQuery input -- Will run `isSecure` unneccessarily.
+  log input        -- will run `isSecure` again.
 </code></pre>
-<p>And what if we forget to call <code>isSafe</code> when writing the library code?
+<p>And what if we forget to call <code>isSecure</code> when writing the library code?
 Afterall, the possible code-paths in a real library massively outnumber our toy example.
 As seen earlier, the library still compiles,
 and we condemn our users to eternal pwnage from script kiddies on internet[dot]com.</p>
 <p>In a way, this approach is <em>worse</em>.
 Not only does it incur a higher performance cost,
-it still runs the risk of someone (read: us) forgetting to
-call <code>isSafe</code> before shipping our library.</p>
-<p>There is another issue with this desing which isn't apparent immediately: the functions aren't total.
-Currently, the functions <code>log</code> and <code>runDbQuery</code> are partial –
+it still runs the risk of someone forgetting to call <code>isSecure</code> before compiling.</p>
+<p>There is another issue with this design which isn't apparent immediately: the functions aren't total.
+Currently, <code>log</code> and <code>runDbQuery</code> are partial –
 they simply reject some values in their domain by erroring out.</p>
 <p>Some strings will be logged  successfully, while others will be rejected with an error (or a void return).
 Our users, then, have to carefully handle these scenarios.</p>
 <p>When writing functional code, it is ideal to prefer total functions wherever possible.
 This prevents the user from having to handle cases where our functions bail out, and
 the function can be expected to behave well for any input that satisfies its type signature.</p>
-<p>Sadly, no matter which design choice we make, there will be unwelcome scenarios.</p>
+<p>Sadly, no matter the design, there will be unwelcome scenarios.</p>
 <p>The conundrum we now face is very common in API design.
 Our library exports functions (called &quot;data sinks&quot;) that expect <em>valid</em>, well-formed data;
 A validator is also exposed, to check if some data is well-formed.
 We want to <strong>ensure that all input provided to a sink has been routed through a validator function</strong>.</p>
-<p>In a more abstract sense, the problem can be restated as follows:
-&quot;Any data that is passed to <code>f</code>, must first be passed to <code>g</code>&quot;.</p>
-<p>In our use-case, <code>f</code> is <code>runDbQuery</code>, and <code>g</code> is <code>isSafe</code>.</p>
+<p>In a more abstract sense, we want to restrict the control flow in a way that
+ensures some functions (<code>isSecure</code>) are called before others (<code>runDbQuery</code>, <code>log</code>).</p>
 <p>Ideally, we want our solution to have as little overhead as possible.</p>
 <h2 id="phantom-tags-as-proofs">Phantom tags as proofs</h2>
 <p>There is a third approach that has ideal performance, doesn't allow insecure code to compile, and ensures totality.
-It turns out, we can leverage the type system (and some data hiding)
-to ensure that all arguments to <code>log</code> and <code>runDbQuery</code> have been routed to <code>isSafe</code> first.</p>
-<p>The core idea is to introduce a new validator that &quot;tags&quot; the input as safe.
+As it turns out, we can leverage the type system (and some data hiding)
+to ensure that all arguments to <code>log</code> and <code>runDbQuery</code> have been routed to <code>isSecure</code> first.</p>
+<p>First, we introduce a new validator function that &quot;tags&quot; the input as safe.
 This &quot;tag&quot; is going to be a unique type that can only be produced by our validation function.</p>
 <p>Other library functions will have their type signatures updated to only accept values that are accompanied with a type-level <code>tag</code> to attest for safety.
 If a tag-less raw type is passed to one of these functions, the code will refuse to compile.</p>
-<p>A 'tagged' value is expressed using a phantom type that sticks to it:</p>
+<p>A 'tagged' value is expressed using a phantom type that is paired with it:</p>
 <pre><code class="language-haskell">-- file: Lib.hs
 module Lib (
   -- ... other exports,
@@ -228,7 +228,7 @@ module Lib (
 -- attach a phantom type `tag` to a value of type `a`
 newtype Tagged a tag = Tagged a
 
-tag :: a -&gt; Tagged a tag
+tag :: a -&gt; Tagged a t
 tag = Tagged
 
 -- The type `Safe` should not be exported by Lib.
@@ -249,14 +249,16 @@ module Lib (
 
 validate :: String -&gt; Maybe SafeString
 validate s = 
-  if isSafe s
+  if isSecure s
     then Just $ tag s
     else Nothing
 </code></pre>
 <p>Since the <code>Safe</code> data-type is not exported by <code>Lib</code>, our users cannot create values of the type <code>Tagged a Safe</code> by fiat.
 The only way to obtain a value of type <code>SafeString</code> is by calling <code>validate</code>.</p>
 <p>Finally, we update the type signatures for all sinks to only accept <code>SafeString</code>s:</p>
-<pre><code class="language-haskell">runDbQuery :: SafeString -&gt; IO ()
+<pre><code class="language-haskell">-- file: Lib.hs
+
+runDbQuery :: SafeString -&gt; IO ()
 runDbQuery (Tagged s) = undefined
 
 log :: SafeString -&gt; IO ()
@@ -264,14 +266,14 @@ log (Tagged s) = undefined
 </code></pre>
 <p>Now, if the user attempts to call <code>queryDb</code> on a plain string before passing it to <code>validate</code> first,
 it will refuse to compile. Consider this example:</p>
-<pre><code class="language-haskell">-- Lib.hs
+<pre><code class="language-haskell">-- file: Main.hs
 
 main = do
   input &lt;- getLine
   log input
   runDbQuery input
 </code></pre>
-<p>On compiling the above, we get:</p>
+<p>On compiling, we get:</p>
 <pre><code class="language-text">typecheck: Couldn't match type [Char] with: Tagged String Safe
 </code></pre>
 <p>The type system expected a <code>SafeString</code>, but was given a regular <code>String</code> type.
@@ -292,10 +294,11 @@ The above code is equivalent to:</p>
   Nothing -&gt; return ()
 </code></pre>
 <p>This is perfect.
-There are no redundant safety checks, and yet, passing unsafe values to sensitive functions will stop our code from compiling.
+We did away with all redundant safety checks, and yet,
+passing unsafe values to sensitive functions will stop our code from compiling.
 The user can now use the <code>SafeString</code> data type in their own security critical functions.</p>
 <p>In securing a toy library, we used the type system to guide our control flow.
-All 'incorrect' control flows will be rejected by the type-checker.
+All incorrect control flows will be rejected by the type-checker.
 This design philosophy of using types to encode logical constraints in a program is popularly called &quot;type driven design&quot;.</p>
 <p>As it turns out, we can generalize this idea of checking for preconditions using type-level proofs.
 In fact, we can allow the user to combine proofs to verify other properties about a program.
@@ -311,8 +314,6 @@ Until then, I leave you with some resources to study type-driven design.</p>
 <li><a href="https://fsharpforfunandprofit.com/series/designing-with-types/">Designing with types, in F#</a>
 </li>
 </ul>
-<h2 id="backmatter">Backmatter</h2>
-<p>[TODO]</p>
 
 
 
