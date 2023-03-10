@@ -1,5 +1,5 @@
 In most statically typed languages, compilation offers two guarantees.
-First is the guarnatee that our code is syntactically valid.
+First is the guarantee that our code is syntactically valid.
 The second guarantee is that our code is soundly typed, and does not have any semantic errors
 that may break the language's execution logic, like adding an `Int` with a `String`.
 
@@ -36,7 +36,7 @@ Let's spin up a REPL to find out:
 ```haskell
 ghci> x = Attach "x"
 ghci> :t Attach x
-Attach "x" :: forall {k} {ph :: k}. Spooky String ph
+Attach "x" :: forall {k} {ph :: k}. Attach String ph
 ```
 
 The variable `x` has a polymorphic type where `ph` is unspecified, and can be anything.
@@ -86,7 +86,7 @@ fetchData :: Url -> IO String
 fetchData = return
 ```
 
-Allowing arbitrary strings to be interpreted as database commands is an obvious security hazard.
+Allowing arbitrary strings to be interpreted as database commands is an egregious security hazard.
 Every string from an unsafe source (an HTTP request parameter, a third party web-server, etc.)
 is a potential [SQL injection](https://en.wikipedia.org/wiki/SQL_injection) attempt.
 
@@ -143,12 +143,12 @@ When something breaks because of tainted data having made it to a security criti
 it's the consumers of `Lib` who're held guilty.
 
 Our design relies on human memory to perform data validation.
-Any application using such a library is doomed to break before the user has even begun working on the project.
+Any application depending on such rickety design is doomed to break before the user has even begun working on the project.
 
 The possible code paths that unsafe data can take are simply too many, and it's irresponsible
 for us to expect users to routinely call `isSecure` before every sensitive function call.
 
-A judicious library author should avoid transfering this burden of validation to users.
+A judicious library author should avoid transferring this burden of validation to users.
 
 An alternative design choice, therefore, is to call `isSecure` on the user's behalf:
 
@@ -179,7 +179,7 @@ Even when the user has taken steps to ensure that the input is safe, we're perfo
 Moreover, passing the same string to `runDbQuery` and `log` will perform the `isSecure` check twice.
 
 Sometimes, validation isn't necessary because the input comes from within the program.
-In the example below for instance, `input` is a string literal, and yet it gets validated twice:
+In the example below, for instance, `input` is a string literal, and yet it gets validated twice:
 
 ```haskell
 -- file: Main.hs
