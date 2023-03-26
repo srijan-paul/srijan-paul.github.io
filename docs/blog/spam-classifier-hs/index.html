@@ -7,14 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/common.css">
     <link rel="stylesheet" href="/css/post.css">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/github.min.css" integrity="sha512-0aPQyyeZrWj9sCA46UlmWgKOP0mUipLQ6OZXu8l4IcAmD2u31EPEy9VcIMvl7SoAaKe8bLXZhYoMaE/in+gcgA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/css/theme.css">
     
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"
-            integrity="sha512-Pbb8o120v5/hN/a6LjF4N4Lxou+xYZ0QcVF8J6TWhBbHmctQWd8O6xTDmHpE/91OjPzCk4JRoiJsexHYg4SotQ=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/languages/haskell.min.js" integrity="sha512-Evm1OPX+2rTy5waLPWqq/3mmw7ouQI6ree9E2jlfJ5nmZkJXCwHlH8ylq765LioP/VNpc3cqioZhVmyi80c1yw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <title>Detecting spam with Haskell and Baye&#39;s theorem</title>
   </head>
 
@@ -51,22 +46,20 @@ So writing a spam fiter should be an easy task by comparison.</p>
 <h3 id="extracting-tokens-from-the-body-of-a-message">Extracting tokens from the body of a message</h3>
 <p>For our usecase, a message can be considered to be a sequence of words separated by punctuation and whitespace.
 Given any string - we want the all the substrings that are surrounded by &quot;non-words&quot; like whitespaces and punctuation marks.</p>
-<p>First, let's define a helper that tells us whether a character is a delimiter or not:</p>
-<pre><code class="language-hs">isWordDelimiter :: Char -&gt; Bool
-isWordDelimiter x = isSpace x || x `elem` punctuations
-  where
-    punctuations = &quot;,.!?;:'\&quot;&amp;-+-()[]=&quot; 
-</code></pre>
+<p>First, let&#39;s define a helper that tells us whether a character is a delimiter or not:</p>
+<code class="language-hs"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="ot">isWordDelimiter ::</span> <span class="dt">Char</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>isWordDelimiter x <span class="ot">=</span> <span class="fu">isSpace</span> x <span class="op">||</span> x <span class="ot">`elem`</span> punctuations</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>    punctuations <span class="ot">=</span> <span class="st">&quot;,.!?;:&#39;\&quot;&amp;-+-()[]=&quot;</span> </span></code></pre></div></code></pre>
 <p>Now, we want to iterate our way through a string, ignoring all sequences of delimiters
 and adding all word sequences to our list of tokens.</p>
-<pre><code class="language-hs">tokenize :: String -&gt; [String]
-tokenize s = case dropWhile isWordDelimiter s of -- drop all prefix delimiters
-  &quot;&quot; -&gt; []
-  remainingStr -&gt; word : tokenize s'
-    where
-      -- fetch the next sequence of characters until we encouter another delimiter
-      (word, s') = break isWordDelimiter remainingStr
-</code></pre>
+<code class="language-hs"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="ot">tokenize ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> [<span class="dt">String</span>]</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>tokenize s <span class="ot">=</span> <span class="kw">case</span> <span class="fu">dropWhile</span> isWordDelimiter s <span class="kw">of</span> <span class="co">-- drop all prefix delimiters</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;&quot;</span> <span class="ot">-&gt;</span> []</span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>  remainingStr <span class="ot">-&gt;</span> word <span class="op">:</span> tokenize s&#39;</span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>      <span class="co">-- fetch the next sequence of characters until we encouter another delimiter</span></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>      (word, s&#39;) <span class="ot">=</span> <span class="fu">break</span> isWordDelimiter remainingStr</span></code></pre></div></code></pre>
 <h3 id="removing-stop-words">Removing stop words</h3>
 <p>Some words like &quot;for&quot;, &quot;in&quot;, &quot;of&quot;, &quot;when&quot;, &quot;your&quot;, etc.
 are common in all kinds of sentences and should not contribute towards classifying an email as Spam or Ham.
@@ -75,25 +68,23 @@ we get rid of them altogether.</p>
 <p>NLTK - a Python library for Natural Language Processing has a dictionary of stop words for the english language.
 Thankfully, a kind GitHub user has listed all of them in <a href="https://gist.github.com/sebleier/554280">this gist</a></p>
 <p>We can simply copy that into our Haskell module:</p>
-<pre><code class="language-hs">stopWords :: [String]
-stopWords =
-  [ &quot;i&quot;,
-    &quot;me&quot;,
-    &quot;nor&quot;,
-    -- ... goes on for a while
-    &quot;now&quot;
-  ]
-</code></pre>
+<code class="language-hs"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="ot">stopWords ::</span> [<span class="dt">String</span>]</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>stopWords <span class="ot">=</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>  [ <span class="st">&quot;i&quot;</span>,</span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;me&quot;</span>,</span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;nor&quot;</span>,</span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- ... goes on for a while</span></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;now&quot;</span></span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>  ]</span></code></pre></div></code></pre>
 <p>Removing stop words is now fairly straightforward - filter a list of tokens,
 keeping only those that do not belong to the <code>stopWords</code> list.</p>
 <p>We also toss in another helper called <code>preprocessString</code> that tokenizes,
 and then removes stop words.</p>
-<pre><code class="language-hs">removeStopWords :: [String] -&gt; [String]
-removeStopWords = filter (`notElem` stopWords)
-
-preprocessString :: String -&gt; [String]
-preprocessString = removeStopWords . tokenize
-</code></pre>
+<code class="language-hs"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="ot">removeStopWords ::</span> [<span class="dt">String</span>] <span class="ot">-&gt;</span> [<span class="dt">String</span>]</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>removeStopWords <span class="ot">=</span> <span class="fu">filter</span> (<span class="ot">`notElem`</span> stopWords)</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a><span class="ot">preprocessString ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> [<span class="dt">String</span>]</span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>preprocessString <span class="ot">=</span> removeStopWords <span class="op">.</span> tokenize</span></code></pre></div></code></pre>
 <h2 id="references">References</h2>
 <ol>
 <li><a href="https://gist.github.com/chrisdone/47a9e22672b54dedc87dec8b415e8127">Email message parsing in Haskell in 2018</a>
@@ -102,7 +93,7 @@ preprocessString = removeStopWords . tokenize
 </li>
 <li><a href="http://www.randomhacks.net/2007/03/03/smart-classification-with-haskell/">Smart classification in Haskell</a>
 </li>
-<li><a href="https://gist.github.com/sebleier/554280">NLTK's list of stop words</a>
+<li><a href="https://gist.github.com/sebleier/554280">NLTK&#39;s list of stop words</a>
 </li>
 </ol>
 
@@ -110,14 +101,13 @@ preprocessString = removeStopWords . tokenize
 
       <div class="footer">
         <hr>
-        Questions, suggestions or comments? <br/>
+        Questions, suggestions or comments? <br />
         Shoot me an <a href="mailto:srijannr1@gmail.com">email</a>, or <a href="https://twitter.com/_injuly">tweet@me</a>.
       </div>
     </div>
 
     <script src="/util.js"></script>
     <script>
-      hljs.highlightAll();
       const tagsDiv = document.getElementById("tags");
       // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
       const tags = [["haskell","machine-learning","math","post","FP"]][0]; 

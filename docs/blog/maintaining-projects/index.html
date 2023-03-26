@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/post.css">
+    <link rel="stylesheet" href="/css/theme.css">
+    
+
+    <title>Maintaining third party language tooling is difficult</title>
+  </head>
+
+  <body>
+    <div class="main">
+      <div class="nav">
+        <div class="nav-left">
+          <a id="home-link" href="/">injuly.in</a>
+        </div>
+
+        <div class="nav-right">
+          <a href="/" class="nav-link">index</a>
+          <a href="/about" class="nav-link">about</a>
+          <a href="/blog" class="nav-link">blog</a>
+          <a href="/current" class="nav-link">current</a>
+        </div>
+      </div>
+
+      <hr style="height:1px;border:none;color:#333;background-color:#333;">
+
+      <div class="leader">
+        <h2> Maintaining third party language tooling is difficult </h2>
+        <div class="post-date"></div>
+        <ul class="tags" id="tags">
+        </ul>
+      </div>
+      <p>Developers at Facebook have written a type checker for Python called <a href="https://github.com/facebook/pyre-check">pyre-check</a>.
+It&#39;s written in OCaml - an excellent language for working with programming language sources.
+On top of Pyre, sits Pysa - a tool that performs security related static analysis
+on Python source code.</p>
+<p>As a part of my job, I maintain a static code analyser for the JavaScript ecosystem.
+I&#39;ve written a major chunk of the linter/analyzer that powers DeepSource&#39;s <a href>JavaScript analyzer</a>.
+As of late, an idea for an ambitious project had been brewing in my mind -
+A performant JS Linter with built-in data flow graphs (<a href>1</a>), and taint analysis.</p>
+<h2 id="unsuccessfully-writing-a-javascript-linter-in-haskell">(Unsuccessfully) Writing a JavaScript linter in Haskell</h2>
+<p>Why Haskell?
+Linters deal with syntax trees - data structures that are amenable to algebraic types.
+Bulk of a linter&#39;s job is to efficiently traverse and query ASTs.
+Inspecting an AST node&#39;s structure with Haskell&#39;s pattern matching is a breeze.
+Of course, I could&#39;ve used OCaml, Elm or PureScript, but I just like Haskell more.</p>
+<p>First, I want to see if there are any decent parsers for JavaScript in Haskell.
+A quick Google search tells me I have three options:
+<a href="https://hackage.haskell.org/package/language-javascript">language-javascript</a>,
+<a href="https://hackage.haskell.org/package/language-js">language-js</a>,
+and <a href="https://hackage.haskell.org/package/language-ecmascript">language-ecmascript</a>.</p>
+<p>I tried using all of these.
+To stress test language-javascript, I wrote a script to get it to parser minified sources of some popular libraries.
+In the process, I found that it fails to parse arrow functions in object properties:</p>
+<code class="language-javascript"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> thisFails <span class="op">=</span> {</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">a</span><span class="op">:</span> () <span class="kw">=&gt;</span> <span class="dv">1</span><span class="op">,</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">b</span><span class="op">:</span> () <span class="kw">=&gt;</span> <span class="dv">2</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
+<p>When on the <code>1</code> token, it sees a comma and tries to parse a comma separated expression (like <code>1, 2</code>),
+and fails with a very unhelpful error message.</p>
+<p>So this one&#39;s out of the equation.</p>
+<p>What about <code>language-js</code>?
+There is an <a href="https://github.com/diasbruno/language-js/issues/21">issue</a> on GitHub saying it
+incorrectly parses arrow functions, so we&#39;ll cross this one out as well.</p>
+<p>Finally, we&#39;re left with <code>language-ecmascript</code>.
+I tried adding it to my project&#39;s <code>.cabal</code> file, and it failed to compile.</p>
+<p>Alright, perhaps we should roll our own parser.
+I would hate to hand roll a parser for the ecmascript grammar, and then maintain it.
+That is just too much effort, and there are too many edge cases I can fail on.
+It would be nice if I could use a parser generator like <a href>Happy</a>.</p>
+<p>All I need is a formal description of JavaScript&#39;s grammar.
+Fortunately, this wasn&#39;t too difficult to find.</p>
+<p>A half-decent JavaScript linter would support TypeScript.</p>
+<h2 id="how-hard-is-a-linter">How hard is a linter?</h2>
+<p>Writing a linter is not the most difficult job on the planet.
+You merely walk over the AST and at every node, check if it matches an anti-pattern.
+For example, using literals in an if-statement&#39;s condition is an anti-pattern:</p>
+<code class="language-javascript"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="kw">false</span>) {</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>  <span class="co">// ... code</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
+<p>The AST for the above snippet would look like this:</p>
+<code class="language-javascript"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> ifStatAST <span class="op">=</span> {</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Every JS AST represents a &quot;program&quot;,</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>  <span class="co">// which is a collection of statement nodes.</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">type</span><span class="op">:</span> <span class="st">&quot;Program&quot;</span><span class="op">,</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">statements</span><span class="op">:</span> [</span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>      <span class="dt">type</span><span class="op">:</span> <span class="st">&quot;IfStatement&quot;</span><span class="op">,</span></span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>      <span class="dt">test</span><span class="op">:</span> {</span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>        <span class="dt">type</span><span class="op">:</span> <span class="st">&quot;Literal&quot;</span><span class="op">,</span></span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>        <span class="dt">value</span><span class="op">:</span> <span class="kw">false</span></span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>      }<span class="op">,</span></span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a>      <span class="dt">consequent</span><span class="op">:</span> {</span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a>        <span class="dt">type</span><span class="op">:</span> <span class="st">&quot;BlockStatement&quot;</span><span class="op">,</span></span>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a>        <span class="dt">body</span><span class="op">:</span> []</span>
+<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a>      }<span class="op">,</span></span>
+<span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a>      <span class="co">// there is no else-block</span></span>
+<span id="17"><a href="#17" aria-hidden="true" tabindex="-1"></a>      <span class="dt">alternate</span><span class="op">:</span> <span class="kw">null</span></span>
+<span id="18"><a href="#18" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="19"><a href="#19" aria-hidden="true" tabindex="-1"></a>  ]</span>
+<span id="20"><a href="#20" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
+<p>An ESLint rule that prevents you from having code like that is really an object that tells ESLint which nodes to visit,
+and what to do on those nodes:</p>
+<code class="language-javascript"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> rule <span class="op">=</span> {</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>  <span class="co">// .. boilerplate for ESLint rules,</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">create</span>(context) {</span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">IfStatement</span>(ifNode) {</span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (ifNode<span class="op">.</span><span class="at">test</span><span class="op">.</span><span class="at">type</span> <span class="op">===</span> <span class="st">&quot;Literal&quot;</span>) {</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>          context<span class="op">.</span><span class="fu">report</span>({</span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>            <span class="dt">message</span><span class="op">:</span> <span class="st">&quot;Do not use literals in if-statement conditions&quot;</span><span class="op">,</span></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>            <span class="dt">node</span><span class="op">:</span> ifNode</span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>          })</span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
+<p>This object, called a &quot;rule&quot; by ESLint, communicates to the linter that it should run the provided logic
+when visiting <code>IfStatement</code> nodes.</p>
+<p>Most lints, however, are not so simple.
+You can only do so much by looking at the mere shape of a user&#39;s program.
+Often times, you want to track where a value ends up.
+Here is an example of SQL injection in an express.js codebase:</p>
+<code class="language-javascript"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> app <span class="op">=</span> <span class="fu">express</span>()</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>app<span class="op">.</span><span class="fu">get</span>(<span class="st">&quot;/user&quot;</span><span class="op">,</span> <span class="kw">async</span> (req<span class="op">,</span> res) <span class="kw">=&gt;</span> {</span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> name <span class="op">=</span> req<span class="op">.</span><span class="at">params</span><span class="op">.</span><span class="at">username</span> </span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> query <span class="op">=</span> <span class="vs">`select * from users where name = </span><span class="sc">${</span>name<span class="sc">}</span><span class="vs">`</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> result <span class="op">=</span> db<span class="op">.</span><span class="fu">runQuery</span>(query)</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="op">!</span>result) { res<span class="op">.</span><span class="fu">statusEnd</span>(<span class="dv">404</span>)<span class="op">;</span> <span class="cf">return</span><span class="op">;</span> }</span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>  res<span class="op">.</span><span class="fu">json</span>(result)</span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div></code></pre>
+<p>If the <code>username</code> URL parameter contains a malicious string, this app is now exposed to SQL injection.
+However, to prevent this from happening we have to:</p>
+<ol>
+<li>Look for all function calls that match the shape of <code>db.runQuery</code>.
+</li>
+<li>Ensure that <code>db</code> is an instance of a database cursor from a database library.
+</li>
+<li>Ensure that the argument to <code>runQuery</code> is a value that contains tainted data in some form or another.
+</li>
+</ol>
+<p>The 3rd step is the hardest.</p>
+<!--We need to know where `query` was last assigned, and the value it was assigned.-->
+<!--In our case, it turns out to be a template string, so we go through all the interpolated expressions and run into -->
+<!--the variable reference - `name`.-->
+<!--Onec again, we follow `name` to see where it comes from, notice that is initialized to a property of the `req.params` object,-->
+<!--which is controlled by the user.-->
+<!---->
+<!--At this point, it is safe to say that this is an SQL injection risk, as the user did not take any steps to sanitize the value before-->
+<!--passing it to a database query.-->
+<!---->
+<p>The linter performs AST-level taint analysis to determine if me some pattern in the user&#39;s codebase is a security vulnerability.
+This requires a good amount of control flow analysis, tainted source and sink identification,
+and sometimes, type information; none of these are available directly in the AST.</p>
+<p>Ideally, you would want to:</p>
+<ol>
+<li>Traverse the AST and build a control flow graph.
+</li>
+<li>Traverse the AST again, and build a type information table. (<a href>1</a>)
+</li>
+<li>Lint the co... just kidding, traverse the AST yet again, and identify the taint sources.
+</li>
+<li>Lint the code, using all information gathered in steps 1-3.
+</li>
+</ol>
+<p>That is a <em>lot</em> of tree traversal, and every iteration requires traversing almost the entire tree.
+This spawns a gigantic codebase, of which 20% is pre/post-processing data, and 80% is walking over trees and recording information.
+For every project our linter analyzes, there will be one AST per source file.
+So, Traversing each AST 4 times in a project with 1000 source files would mean 4000 tree traversals (plus parsing, generating lint repors etc.).
+To keep your users happy, your linter has to be fast.</p>
+<p>While you&#39;re busy optimizing your tree traversal logic,
+you receive an e-mail from an angry user: &quot;My project uses React. Why is it not supported!?&quot;.
+Time to stash your optimizations in the backlog, and begin adding support for react flavored JSX.</p>
+<p>Halfway through your chore, rings another notification bell:
+&quot;A JS linter that does not support <a href="https://www.assemblyscript.org/">AssemblyScript</a>? What a shame.&quot;</p>
+
+
+
+      <div class="footer">
+        <hr>
+        Questions, suggestions or comments? <br />
+        Shoot me an <a href="mailto:srijannr1@gmail.com">email</a>, or <a href="https://twitter.com/_injuly">tweet@me</a>.
+      </div>
+    </div>
+
+    <script src="/util.js"></script>
+    <script>
+      const tagsDiv = document.getElementById("tags");
+      // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
+      const tags = [["personal","post","rant"]][0]; 
+      tags.forEach(tag => {
+              const li = document.createElement("a")
+              li.classList.add("tag")
+              li.href = `/posts/index.html?tag=${tag}`
+              li.innerHTML = tag
+              tagsDiv.appendChild(li)
+            });
+
+      const dateElement = document.querySelector(".post-date");
+      dateElement.innerText = dateToString(new Date("2023-03-21"), true);
+    </script>
+  </body>
+
+</html>

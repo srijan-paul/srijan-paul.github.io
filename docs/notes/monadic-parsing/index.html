@@ -7,14 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/common.css">
     <link rel="stylesheet" href="/css/post.css">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/github.min.css" integrity="sha512-0aPQyyeZrWj9sCA46UlmWgKOP0mUipLQ6OZXu8l4IcAmD2u31EPEy9VcIMvl7SoAaKe8bLXZhYoMaE/in+gcgA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/css/theme.css">
     
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"
-            integrity="sha512-Pbb8o120v5/hN/a6LjF4N4Lxou+xYZ0QcVF8J6TWhBbHmctQWd8O6xTDmHpE/91OjPzCk4JRoiJsexHYg4SotQ=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/languages/haskell.min.js" integrity="sha512-Evm1OPX+2rTy5waLPWqq/3mmw7ouQI6ree9E2jlfJ5nmZkJXCwHlH8ylq765LioP/VNpc3cqioZhVmyi80c1yw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <title>Monads and monadic parsing in Haskell</title>
   </head>
 
@@ -45,14 +40,13 @@
 I made a static site generator (which now powers this website).
 This SSG (called Bark), provides a simple data format to represent the metadata for a webpage.
 For a blog post, the metadata looks somewhat like this:</p>
-<pre><code class="language-javascript">{
-  template: &quot;post&quot;
-  tags: [&quot;post&quot; &quot;personal&quot;]
-  title: &quot;Foo bar&quot;
-  date: &quot;2021-12-31&quot;
-  is_blog_post: &quot;true&quot;
-}
-</code></pre>
+<code class="language-javascript"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">template</span><span class="op">:</span> <span class="st">&quot;post&quot;</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">tags</span><span class="op">:</span> [<span class="st">&quot;post&quot;</span> <span class="st">&quot;personal&quot;</span>]</span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">title</span><span class="op">:</span> <span class="st">&quot;Foo bar&quot;</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">date</span><span class="op">:</span> <span class="st">&quot;2021-12-31&quot;</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">is_blog_post</span><span class="op">:</span> <span class="st">&quot;true&quot;</span></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
 <p>The format is very JSON-like,
 except its much easier to write and has 2 fewer data types than JSON (no numbers or booleans).
 Once I was done writing <a href="https://github.com/srijan-paul/bark/blob/main/app/Bark/FrontMatter.hs">a simple parser</a> for it, I ran it through a haskell channel on a discord server.
@@ -71,20 +65,19 @@ Monads, and that writing a parser is a great way to learn how monads work.</p>
 </ul>
 <p>What a monad is and how it can be used to structure functional programs is covered neatly in
 the material above.
-What I'd like to do instead, is document the changes I needed to make to my sorry little parser.</p>
+What I&#39;d like to do instead, is document the changes I needed to make to my sorry little parser.</p>
 
 
 
       <div class="footer">
         <hr>
-        Questions, suggestions or comments? <br/>
+        Questions, suggestions or comments? <br />
         Shoot me an <a href="mailto:srijannr1@gmail.com">email</a>, or <a href="https://twitter.com/_injuly">tweet@me</a>.
       </div>
     </div>
 
     <script src="/util.js"></script>
     <script>
-      hljs.highlightAll();
       const tagsDiv = document.getElementById("tags");
       // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
       const tags = [][0]; 

@@ -7,7 +7,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="/css/common.css">
 	<link rel="stylesheet" href="/css/post.css">
-	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/default.min.css">
 	<title>injuly / Blog</title>
 </head>
 
@@ -33,7 +32,7 @@
 elaborate enough to warrant a full article.</p>
 <p>There is no coherent theme across all posts, but you can expect game-dev,
 programming languages, math and just about anything else.
-And while I still have your attention, here's some of what I've managed to write over the course of time.</p>
+And while I still have your attention, here&#39;s some of what I&#39;ve managed to write over the course of time.</p>
 
 		<div class="blog-index">
 			<ul id="post-list" class="post-list">
@@ -46,6 +45,12 @@ And while I still have your attention, here's some of what I've managed to write
 
 		// Get all the post data.
 		const posts =  [
+					{
+						tags: ["personal","post","rant"],
+						date: new Date("2023-03-21"),
+						name: "maintaining-projects",
+						title: `Maintaining third party language tooling is difficult`
+					} ,
 					{
 						tags: ["FP","programming-languages","post"],
 						date: new Date("2022-05-05"),

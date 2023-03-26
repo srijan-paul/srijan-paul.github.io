@@ -7,14 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/common.css">
     <link rel="stylesheet" href="/css/post.css">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/github.min.css" integrity="sha512-0aPQyyeZrWj9sCA46UlmWgKOP0mUipLQ6OZXu8l4IcAmD2u31EPEy9VcIMvl7SoAaKe8bLXZhYoMaE/in+gcgA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/css/theme.css">
     
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"
-            integrity="sha512-Pbb8o120v5/hN/a6LjF4N4Lxou+xYZ0QcVF8J6TWhBbHmctQWd8O6xTDmHpE/91OjPzCk4JRoiJsexHYg4SotQ=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/languages/haskell.min.js" integrity="sha512-Evm1OPX+2rTy5waLPWqq/3mmw7ouQI6ree9E2jlfJ5nmZkJXCwHlH8ylq765LioP/VNpc3cqioZhVmyi80c1yw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <title>Ave - JS with static types</title>
   </head>
 
@@ -42,111 +37,102 @@
         </ul>
       </div>
       <p>This is the first in a series of blog posts to come about how I made a statically type checked, scripting
-language that compiles to Javascript. The intent is to offer python/coffeescript's minimal syntax
-with Typescript's type system. All compiling down to ES6 Javascript.</p>
+language that compiles to Javascript. The intent is to offer python/coffeescript&#39;s minimal syntax
+with Typescript&#39;s type system. All compiling down to ES6 Javascript.</p>
 <h2 id="the-problem-with-plain-javascript">The problem with plain Javascript.</h2>
 <p>Lets first explore <em>why</em> the world needs another programming language when there are already so many.
-Here is something funny, copy paste the following code snippet in your browser's console (<code>F12</code>) and
+Here is something funny, copy paste the following code snippet in your browser&#39;s console (<code>F12</code>) and
 hit enter.</p>
-<pre><code class="language-js">const fruit = 'b' + 'a' + +'a' + 'a';
-console.log(fruit.toLowerCase());
-</code></pre>
+<code class="language-js"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> fruit <span class="op">=</span> <span class="st">&#39;b&#39;</span> <span class="op">+</span> <span class="st">&#39;a&#39;</span> <span class="op">+</span> <span class="op">+</span><span class="st">&#39;a&#39;</span> <span class="op">+</span> <span class="st">&#39;a&#39;</span><span class="op">;</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(fruit<span class="op">.</span><span class="fu">toLowerCase</span>())<span class="op">;</span></span></code></pre></div></code></pre>
 <p>Surprised?
-Probably not if you're used to Javascript. But many new users are, and this is just one of the many annoying eccentricities
-of Javascript's weird, implicit coercion loving &quot;type system&quot;.</p>
-<p>In case you didn't bother with running it, it spits out, <code>'banana'</code> even though there is no <code>'n'</code> in the expression on line 1.
-How? Try <code>console.log(+'a')</code> and you'll have a clue.</p>
-<p>Notice the unary <code>+</code> before the 3rd <code>'a'</code>? Welp, turns out Javascript doesn't complain when you use any of it's operators on
+Probably not if you&#39;re used to Javascript. But many new users are, and this is just one of the many annoying eccentricities
+of Javascript&#39;s weird, implicit coercion loving &quot;type system&quot;.</p>
+<p>In case you didn&#39;t bother with running it, it spits out, <code>&#39;banana&#39;</code> even though there is no <code>&#39;n&#39;</code> in the expression on line 1.
+How? Try <code>console.log(+&#39;a&#39;)</code> and you&#39;ll have a clue.</p>
+<p>Notice the unary <code>+</code> before the 3rd <code>&#39;a&#39;</code>? Welp, turns out Javascript doesn&#39;t complain when you use any of it&#39;s operators on
 strings but will croak and return a <code>NaN</code> at runtime.</p>
 <p>Since addition associates to the left, it roughly evaluates like this:</p>
-<pre><code class="language-js">'b' + 'a' -&gt; 'ba'
-'ba' + (+ 'a') -&gt; 'ba' + NaN -&gt; 'baNaN' // NaN coerces to string.
-'baNaN' + 'a' -&gt; 'baNaNa'
-</code></pre>
+<code class="language-js"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="st">&#39;b&#39;</span> <span class="op">+</span> <span class="st">&#39;a&#39;</span> <span class="op">-&gt;</span> <span class="st">&#39;ba&#39;</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="st">&#39;ba&#39;</span> <span class="op">+</span> (<span class="op">+</span> <span class="st">&#39;a&#39;</span>) <span class="op">-&gt;</span> <span class="st">&#39;ba&#39;</span> <span class="op">+</span> <span class="kw">NaN</span> <span class="op">-&gt;</span> <span class="st">&#39;baNaN&#39;</span> <span class="co">// NaN coerces to string.</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="st">&#39;baNaN&#39;</span> <span class="op">+</span> <span class="st">&#39;a&#39;</span> <span class="op">-&gt;</span> <span class="st">&#39;baNaNa&#39;</span></span></code></pre></div></code></pre>
 <p>and finally, <code>.toLowerCase()</code> turns &quot;baNaNa&quot; into &quot;banana&quot;. This is one of the many problems with Javascript,
-and unfortunately, the other bugs you will encouter won't be as fun to explore. Moreover, it's much harder to get your code to
+and unfortunately, the other bugs you will encouter won&#39;t be as fun to explore. Moreover, it&#39;s much harder to get your code to
 follow a proper schema/structure when writing Javascript. Which is why tools like Typescript and Flow exist to address this, and many other
 problems. So I took my own shot at this, and here we are.</p>
 <h2 id="introducing-ave">Introducing Ave.</h2>
-<p>Yeah I couldn't think of a name that wasn't already taken, so I went with 'Ave'. The word means 'a warm greeting' (I think?).
+<p>Yeah I couldn&#39;t think of a name that wasn&#39;t already taken, so I went with &#39;Ave&#39;. The word means &#39;a warm greeting&#39; (I think?).
 If you have a better name in mind, let me know.</p>
 <p>Anyway, this is what it looks like:</p>
-<pre><code class="language-py"># Variable declaration
-myNumber := 1
-myString := 'this is a string'
-
-myString := 123 # TypeError: Cannot assign value of type 'num' to 'str'.
-
-# Type annotations
-name: str = 'Hello World !'
-name += [1, 2, 3]
-# TypeError: Cannot use operator '+=' on values of type 'str' and 'Array&lt;num&gt;'
-</code></pre>
-<p>Don't like the way variable declaration looks ? You can do it the JS/TS way too !</p>
-<pre><code class="language-ts">let a: num = 123;
-let b = true;
-a += b;
-</code></pre>
-<p>This won't compile. Because You're trying to add a boolean to a number.
-Plain JS would accept this and <code>a</code> would be <code>124</code>. Now let's see what basic control flow looks like.</p>
-<pre><code class="language-lua">for i = 1, 10
-  if i % 2 console.log('i is odd')
-  else console.log('i is even !')
-</code></pre>
-<p>Yeah, the syntax is whitespace sensitive like Python. I know that's a turn off for many, but I'd
+<code class="language-py"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co"># Variable declaration</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>myNumber <span class="op">:=</span> <span class="dv">1</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>myString <span class="op">:=</span> <span class="st">&#39;this is a string&#39;</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>myString <span class="op">:=</span> <span class="dv">123</span> <span class="co"># TypeError: Cannot assign value of type &#39;num&#39; to &#39;str&#39;.</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a><span class="co"># Type annotations</span></span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>name: <span class="bu">str</span> <span class="op">=</span> <span class="st">&#39;Hello World !&#39;</span></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>name <span class="op">+=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]</span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a><span class="co"># TypeError: Cannot use operator &#39;+=&#39; on values of type &#39;str&#39; and &#39;Array&lt;num&gt;&#39;</span></span></code></pre></div></code></pre>
+<p>Don&#39;t like the way variable declaration looks ? You can do it the JS/TS way too !</p>
+<code class="language-ts"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> a<span class="op">:</span> num <span class="op">=</span> <span class="dv">123</span><span class="op">;</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> b <span class="op">=</span> <span class="kw">true</span><span class="op">;</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>a <span class="op">+=</span> b<span class="op">;</span></span></code></pre></div></code></pre>
+<p>This won&#39;t compile. Because You&#39;re trying to add a boolean to a number.
+Plain JS would accept this and <code>a</code> would be <code>124</code>. Now let&#39;s see what basic control flow looks like.</p>
+<code class="language-lua"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="va">i</span> <span class="op">=</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">10</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="va">i</span> <span class="op">%</span> <span class="dv">2</span> <span class="va">console</span><span class="op">.</span>log<span class="op">(</span><span class="st">&#39;i is odd&#39;</span><span class="op">)</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span> <span class="va">console</span><span class="op">.</span>log<span class="op">(</span><span class="st">&#39;i is even !&#39;</span><span class="op">)</span></span></code></pre></div></code></pre>
+<p>Yeah, the syntax is whitespace sensitive like Python. I know that&#39;s a turn off for many, but I&#39;d
 rather have it this way in my own language. Moving on,
 Did I mention record data types ?</p>
-<pre><code class="language-hs">record Person
-  name: str
-  age : num
-
-let bob: Person = {
-  name: &quot;Bob&quot;,
-  age: 12
-}
-</code></pre>
+<code class="language-hs"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>record <span class="dt">Person</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>  name<span class="op">:</span> str</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>  age <span class="op">:</span> num</span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> bob<span class="op">:</span> <span class="dt">Person</span> <span class="ot">=</span> {</span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>  name<span class="op">:</span> <span class="st">&quot;Bob&quot;</span>,</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>  age<span class="op">:</span> <span class="dv">12</span></span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
 <p>Kind of like structs in C or interfaces in Typescript.
 We also have generics.
 They can be recursive too !</p>
-<pre><code class="language-hs">record LLNode&lt;E&gt;
-  value: E
-  next: LLNode&lt;E&gt; | nil
-
-let head: LLNode&lt;num&gt; =
-  value: 1
-  next:
-    value: 23
-    next: nil
-</code></pre>
+<code class="language-hs"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>record <span class="dt">LLNode</span><span class="op">&lt;</span><span class="dt">E</span><span class="op">&gt;</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>  value<span class="op">:</span> <span class="dt">E</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>  next<span class="op">:</span> <span class="dt">LLNode</span><span class="op">&lt;</span><span class="dt">E</span><span class="op">&gt;</span> <span class="op">|</span> nil</span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> <span class="fu">head</span><span class="op">:</span> <span class="dt">LLNode</span><span class="op">&lt;</span>num<span class="op">&gt;</span> <span class="ot">=</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>  value<span class="op">:</span> <span class="dv">1</span></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>  next<span class="op">:</span></span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>    value<span class="op">:</span> <span class="dv">23</span></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>    next<span class="op">:</span> nil</span></code></pre></div></code></pre>
 <p>Notice how you can create objects even without the <code>{}</code> ? I personally prefer braces around them,
 but at least the user has that choice.</p>
 <p>And functions:</p>
-<pre><code class="language-go">func fib(n: num): num
-  if n == 0 or n == 1
-    return 1
-  return fib(n - 1) + fib(n - 2)
-
-fib10 := fib(10)
-</code></pre>
+<code class="language-go"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> fib<span class="op">(</span>n<span class="op">:</span> num<span class="op">):</span> num</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> n <span class="op">==</span> <span class="dv">0</span> or n <span class="op">==</span> <span class="dv">1</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">1</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> fib<span class="op">(</span>n <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">+</span> fib<span class="op">(</span>n <span class="op">-</span> <span class="dv">2</span><span class="op">)</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>fib10 <span class="op">:=</span> fib<span class="op">(</span><span class="dv">10</span><span class="op">)</span></span></code></pre></div></code></pre>
 <p>Obviously there is a lot more to the language that has been implemented so far,
 and a lot that is still on the to-do list (classes, inheritance, import/exports). But hopefully
 this gave you a &quot;feel&quot; for the language.</p>
 <p>Finally, if you want to take a look at the source code, it lives <a href="https://github.com/srijan-paul/AveTS">here</a> on github.
-The docs and README aren't exactly polished, but the code is well organized for the most part.</p>
-<p>In the next post I'll explain how I implemented the type system, and hopefully you end up taking something away from it.</p>
+The docs and README aren&#39;t exactly polished, but the code is well organized for the most part.</p>
+<p>In the next post I&#39;ll explain how I implemented the type system, and hopefully you end up taking something away from it.</p>
 
 
 
       <div class="footer">
         <hr>
-        Questions, suggestions or comments? <br/>
+        Questions, suggestions or comments? <br />
         Shoot me an <a href="mailto:srijannr1@gmail.com">email</a>, or <a href="https://twitter.com/_injuly">tweet@me</a>.
       </div>
     </div>
 
     <script src="/util.js"></script>
     <script>
-      hljs.highlightAll();
       const tagsDiv = document.getElementById("tags");
       // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
       const tags = [["ave","programming-languages","type-system","post"]][0]; 
