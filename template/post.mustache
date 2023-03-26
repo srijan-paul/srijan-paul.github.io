@@ -7,9 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/common.css">
     <link rel="stylesheet" href="/css/post.css">
-
-    {{! <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/ascetic.min.css" integrity="sha512-iaqCaYPu17nYG5ICr2vVaHgKT+LevpdqKwOGgR4YSpodnacEkfR/EM956YI0+1OWXIhDNQ1u1PCjMGBxZVUQ1g==" crossorigin="anonymous" referrerpolicy="no-referrer" /> }}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/github.min.css" integrity="sha512-0aPQyyeZrWj9sCA46UlmWgKOP0mUipLQ6OZXu8l4IcAmD2u31EPEy9VcIMvl7SoAaKe8bLXZhYoMaE/in+gcgA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/css/theme.css">
     
     {{# meta.katex}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.2/dist/katex.min.css" integrity="sha384-bYdxxUwYipFNohQlHt0bjN/LCpueqWz13HufFEV1SUatKs1cm4L6fFgCi1jT643X" crossorigin="anonymous">
@@ -24,10 +22,6 @@
         onload="renderMathInElement(document.body);"></script>
     {{/ meta.katex }}
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"
-            integrity="sha512-Pbb8o120v5/hN/a6LjF4N4Lxou+xYZ0QcVF8J6TWhBbHmctQWd8O6xTDmHpE/91OjPzCk4JRoiJsexHYg4SotQ=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/languages/haskell.min.js" integrity="sha512-Evm1OPX+2rTy5waLPWqq/3mmw7ouQI6ree9E2jlfJ5nmZkJXCwHlH8ylq765LioP/VNpc3cqioZhVmyi80c1yw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <title>{{ meta.title }}</title>
   </head>
 
@@ -67,7 +61,6 @@
 
     <script src="/util.js"></script>
     <script>
-      hljs.highlightAll();
       const tagsDiv = document.getElementById("tags");
       // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
       const tags = [{{&meta.tags}}][0]; 
