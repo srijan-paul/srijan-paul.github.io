@@ -3,5 +3,6 @@
   tags: ["brainfuck" "programming-languages" "post"]
   title: "Compiling to Brainf#ck - Meep."
   date: "2020-11-22"
+  meta: "Writing a brainfuck interpreter in brainfuck, using a language that compiles down to brainfuck"
   is_blog_post: "true"
 }

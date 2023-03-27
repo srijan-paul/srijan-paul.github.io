@@ -2,6 +2,7 @@
   template: "post" 
   tags: ["haskell" "machine-learning" "math" "post" "FP"]
   title: "Detecting spam with Haskell and Baye's theorem"
+  meta: "Writing a Spam Classifier in Haskell"
   date: "2022-07-26"
 }
 

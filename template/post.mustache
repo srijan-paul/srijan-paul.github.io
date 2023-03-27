@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/css/common.css">
     <link rel="stylesheet" href="/css/post.css">
     <link rel="stylesheet" href="/css/theme.css">
+    <meta name="description" content="{{ meta.meta }}">
     
     {{# meta.katex}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.2/dist/katex.min.css" integrity="sha384-bYdxxUwYipFNohQlHt0bjN/LCpueqWz13HufFEV1SUatKs1cm4L6fFgCi1jT643X" crossorigin="anonymous">
@@ -45,9 +46,9 @@
       <div class="leader">
         <h2> {{meta.title}} </h2>
         <div class="post-date">{{! filled in by the script}}</div>
-        <ul class="tags" id="tags">
+        <span class="tags" id="tags">
           {{! filled in by script }}
-        </ul>
+        </span>
       </div>
       {{&content}}
 
@@ -76,5 +77,5 @@
       dateElement.innerText = dateToString(new Date("{{&meta.date}}"), true);
     </script>
   </body>
-
 </html>
+

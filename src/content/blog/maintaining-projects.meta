@@ -3,5 +3,6 @@
   tags: ["personal" "post" "rant"]
   title: "Maintaining third party language tooling is difficult"
   date: "2023-03-21"
-  is_blog_post: "true"
+  meta: "Writing static analysis tools"
+  is_blog_post: "false"
 }

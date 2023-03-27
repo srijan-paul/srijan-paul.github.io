@@ -3,5 +3,6 @@
   tags: ["post" "haskell" "project-euler"]
   title: "Intro to lazy evaluation and functional DP"
   date: "2022-08-16"
+  meta: "Dynamic programming in Haskell with lazy evaluation"
   is_blog_post: "true"
 }
