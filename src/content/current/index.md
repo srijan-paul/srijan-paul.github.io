@@ -16,9 +16,9 @@ Still on Words of Radiance, and I picked [Real world haskell](https://book.realw
 
 My to-read list looks almost the same as last time:
 
-- [Bootstrapping Microservices with Docker, Kubernetes, and Terraform](https://www.manning.com/books/bootstrapping-microservices-with-docker-kubernetes-and-terraform)
+- [Docker deep dive](https://www.goodreads.com/en/book/show/36411996)
 - [The Name of the Wind](https://www.goodreads.com/book/show/186074.The_Name_of_the_Wind) (Kingkiller chronicle #1)
-- [Hold up the sky](https://www.goodreads.com/book/show/49247266-to-hold-up-the-sky)
+- [The Blade Itself](https://www.goodreads.com/book/show/944073.The_Blade_Itself)
 - [Thinking with types](https://thinkingwithtypes.com/)
 
 ### Projects

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/post.css">
+    <link rel="stylesheet" href="/css/theme.css">
+    <meta name="description" content="todo">
+    
+
+    <title>todo</title>
+  </head>
+
+  <body>
+    <div class="main">
+      <div class="nav">
+        <div class="nav-left">
+          <a id="home-link" href="/">injuly.in</a>
+        </div>
+
+        <div class="nav-right">
+          <a href="/" class="nav-link">index</a>
+          <a href="/about" class="nav-link">about</a>
+          <a href="/blog" class="nav-link">blog</a>
+          <a href="/current" class="nav-link">current</a>
+        </div>
+      </div>
+
+      <hr style="height:1px;border:none;color:#333;background-color:#333;">
+
+      <div class="leader">
+        <h2> todo </h2>
+        <div class="post-date"></div>
+        <span class="tags" id="tags">
+        </span>
+      </div>
+      <p>There have been more
+pointless startups in the past decade than any other time in human history.</p>
+<!-- TODO: this part -->
+<p>Back when the crypto rabble was only beginning to head down
+to the bottom of its death pit, a close friend mine had joined a blockchain startup.</p>
+<p>I&#39;d spoken with the company&#39;s interview panel,
+and their director made some points that seemed too good to be true.
+For instance:
+1. Zero gas fees on every transaction.
+2. Instant transactions faster than today&#39;s banking apps.
+3. Account recovery for users, <em>even when they&#39;d forgotten their recovery phrases</em>.</p>
+<p>Of course, I&#39;d several questions.
+If a transaction has no gas fee, why would a miner validate its checksum?
+There is no incentive for a GPU hoarder to mine their crypto over, say,</p>
+<p>I&#39;ve yet to see a blockchain product with real merit (<a href="TODO">1</a>).
+Most _D_applications are convuluted ways of solving problems that either do not exist,
+or exist solely because of other blockchain products.</p>
+
+
+
+      <div class="footer">
+        <hr>
+        Questions, suggestions or comments? <br />
+        Shoot me an <a href="mailto:srijannr1@gmail.com">email</a>, or <a href="https://twitter.com/_injuly">tweet@me</a>.
+      </div>
+    </div>
+
+    <script src="/util.js"></script>
+    <script>
+      const tagsDiv = document.getElementById("tags");
+      // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
+      const tags = [["post","blockchain","web3","personal"]][0]; 
+      tags.forEach(tag => {
+              const li = document.createElement("a")
+              li.classList.add("tag")
+              li.href = `/posts/index.html?tag=${tag}`
+              li.innerHTML = tag
+              tagsDiv.appendChild(li)
+            });
+
+      const dateElement = document.querySelector(".post-date");
+      dateElement.innerText = dateToString(new Date("2023-04-16"), true);
+    </script>
+  </body>
+</html>
+

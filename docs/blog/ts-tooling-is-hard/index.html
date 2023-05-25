@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/post.css">
+    <link rel="stylesheet" href="/css/theme.css">
+    <meta name="description" content="Looking to parse TypeScript? Don&#39;t.">
+    
+
+    <title>TypeScript will never have fast tooling</title>
+  </head>
+
+  <body>
+    <div class="main">
+      <div class="nav">
+        <div class="nav-left">
+          <a id="home-link" href="/">injuly.in</a>
+        </div>
+
+        <div class="nav-right">
+          <a href="/" class="nav-link">index</a>
+          <a href="/about" class="nav-link">about</a>
+          <a href="/blog" class="nav-link">blog</a>
+          <a href="/current" class="nav-link">current</a>
+        </div>
+      </div>
+
+      <hr style="height:1px;border:none;color:#333;background-color:#333;">
+
+      <div class="leader">
+        <h2> TypeScript will never have fast tooling </h2>
+        <div class="post-date"></div>
+        <span class="tags" id="tags">
+        </span>
+      </div>
+      <p>This other day, I set out to parse some TypeScript code with Haskell.</p>
+
+
+
+      <div class="footer">
+        <hr>
+        Questions, suggestions or comments? <br />
+        Shoot me an <a href="mailto:srijannr1@gmail.com">email</a>, or <a href="https://twitter.com/_injuly">tweet@me</a>.
+      </div>
+    </div>
+
+    <script src="/util.js"></script>
+    <script>
+      const tagsDiv = document.getElementById("tags");
+      // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
+      const tags = [["post","typescript","code"]][0]; 
+      tags.forEach(tag => {
+              const li = document.createElement("a")
+              li.classList.add("tag")
+              li.href = `/posts/index.html?tag=${tag}`
+              li.innerHTML = tag
+              tagsDiv.appendChild(li)
+            });
+
+      const dateElement = document.querySelector(".post-date");
+      dateElement.innerText = dateToString(new Date("2023-04-05"), true);
+    </script>
+  </body>
+</html>
+
