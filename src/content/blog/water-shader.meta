@@ -1,0 +1,8 @@
+{
+  template: "post" 
+  tags: ["post" "games" "lua" "love" "GLSL"]
+  title: "Water surface shader for 2D Pixel art games"
+  meta: ""
+  date: "2023-09-21"
+}
+
