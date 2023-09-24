@@ -1,22 +1,38 @@
-While browsing the LÖVE2D forums
-I came across a project called [potions](https://alexjgriffith.itch.io/potions).
-It is a small game about brewing potions and saving your cat.
-What interested me, though, was this reflection effect in the game's water surfaces:
+While browsing the LÖVE2D forums,
+I came across a game called [potions](https://alexjgriffith.itch.io/potions)
+where you brew potions and save your cat.
+The first thing I noticed after booting the game was the reflection effect in the game's water surfaces:
 
 ![Water reflections in potions](https://img.itch.zone/aW1nLzEzNDMwMjQ4LmdpZg==/original/P7lZvp.gif)
-<!-- ![Potions: reflection of a cat](https://alexjgriffith.com/i/3-step6.gif) -->
 
 There are two noteworthy effects that sell the presence of water:
-real-time reflections of in-game objects placed around the river-bank, and
-the wavy effect that distorts a reflection's appearance.
+real-time reflections of in-game objects close to the edges, and
+the wavy disorted appearance of the reflected image. 
 
-I attempted a recreation of this effect with Lua and LOVE2D, and ended up with this:
+I attempted a recreation of this effect, and was fairly successful:
 
-![My recreation of the water effect from Potions](/assets/)
+![My recreation of the water effect from Potions](/assets/img/water-shader/final-water-reflection.gif)
+
+Here, I'll document the entire process of getting a reflection system up and running.
+I'm using the Love game framework, and Lua as its scripting language (the original game is in [Fennel](https://fennel-lang.org/)).
+
+If you only want to see the shader logic, skip to [this section](#reflection-effect-with-displacement-shaders).
 
 ## Project setup
 
-First, we initialize some global constants that will be accessed throughout the game:
+I'm using some hand-drawn sprites for this demo.
+If you're going to follow along, download all images from [here](),
+and put them under an `assets` directory in your project root.
+
+Every love project starts with `main.lua`.
+Since we will be using low-res pixel-art sprites for this demo, the scaling filter is set to `nearest`:
+
+```lua
+-- file: main.lua
+love.graphics.setDefaultFilter("nearest", "nearest")
+```
+
+In another file, `constants.lua`, we initialize some global constants that will be accessed throughout the game:
 
 ```lua
 -- file: constants.lua
@@ -34,7 +50,13 @@ return {
     TileWater  = 1,
     TileGround = 0
 }
+```
 
+Import the constants in the main script:
+
+```diff
+love.graphics.setDefaultFilter("nearest", "nearest")
++ local const = require("constants")
 ```
 
 The surface of our game-world is drawn using tiles which are drawn every frame.
@@ -42,8 +64,8 @@ We can store all tiles in a 2D table, and fill the entire array with `TileGround
 
 ```lua
 -- file: main.lua:
-local const = require("constants")
 
+-- contains all tiles in our game-world.
 local grid = {}
 for i = 1, const.RowCount, 1 do
   grid[i] = {}
@@ -52,12 +74,14 @@ for i = 1, const.RowCount, 1 do
   end
 end
 ```
-We could loop over this table every frame and draw each tile individually.
-For larger game worlds, however, this will result in way too many unneccessary draw calls.
 
-If we pre-render the world's surface to an off-screen canvas instead, we can draw that canvas every frame to save compute:
+We could loop over this table every frame and draw each tile individually with `love.graphics.draw`.
+For larger game worlds, however, this will result in way too many unnecessary draw calls.
+If we pre-render the world's surface to an off-screen canvas instead,
+we can draw that canvas every frame instead and get away with just `draw` call per frame:
 
 ```lua
+-- file: main.lua
 -- @returns a canvas representing the surface of our game-world.
 local function get_ground_tiles_layer(screen_width, screen_height)
   -- create an empty canvas
@@ -84,9 +108,10 @@ end
 
 ```
 
-Now, we can initialize the canvas when setting-up, and then draw it every frame:
+Now, we can initialize the canvas at boot time, and then draw it every frame:
 
 ```lua
+-- file: main.lua
 local ground_tiles
 function love.load()
   local screen_width  = love.graphics.getWidth()
@@ -106,9 +131,7 @@ If we launch what we have so far using the `love` command, it should look like t
 ## Adding Water
 
 In a real game, bodies of water are either defined in a large table called tile-map,
-or generated procedurally.
-
-For a small demo, we can just store the bounds of our water-body in a table:
+or generated procedurally. For a small demo, we can just store the bounds of our water-body in a table:
 
 ```lua
 -- file: main.lua
@@ -287,7 +310,7 @@ For that, we need to draw some sprites for each border-type (left/right/top-left
 
 After adding borders, our water should look like this:
 
-![Water body with borders]()
+![Water body with borders](/assets/img/water-shader/water-with-border.gif)
 
 ## Drawing reflections
 
@@ -299,10 +322,7 @@ First, we'll need a class that represents a drawable sprite:
 ```lua
 -- file: sprite.lua
 
-local Sprite = {
-  all_sprites = {}
-}
-
+local Sprite = {}
 Sprite.__index = Sprite
 
 function Sprite:new(quad, scale)
@@ -316,7 +336,6 @@ function Sprite:new(quad, scale)
     rot = 0
   }
   setmetatable(sprite, Sprite)
-  table.insert(Sprite.all_sprites, sprite)
   return sprite
 end
 ```
@@ -325,7 +344,7 @@ A sprite object stores an image to render, and its scale, width, and height.
 Using this information, we can write two `draw` methods, one to draw the image itself,
 and another to draw its reflection.
 
-A reflection looks exactly the same as the image itself, just vertically inverted.
+A reflection looks exactly the same as the image itself, just flipped vertically.
 
 ```lua
 -- file: sprite.lua
@@ -346,6 +365,7 @@ function Sprite:draw_reflection(x, y)
     y + self.h * 1.5,
     self.rot,
     self.scale_x,
+    -- notice the negtaive scale:
     -self.scale_y)
 end
 
@@ -377,7 +397,7 @@ local tree = {
 -- ...
 ```
 
-Now, we can update the `love.draw` function to draw the tree and its reflection:
+We then update the `love.draw` function to draw the tree and its reflection:
 
 ```diff
 function love.draw()
@@ -390,7 +410,7 @@ end
 
 Launching the game again, we see:
 
-![Incorrect reflection]()
+![Incorrect reflection](/assets/img/water-shader/incorrect-reflection.png)
 
 Hmm, there's something wrong with the reflection.
 Try looking closer, and you'll notice that the reflection is drawn *over* the ground,
@@ -412,7 +432,7 @@ This way, tiles from the ground canvas will hide parts of the reflection image:
 
 With that change, the reflection at least looks somewhat believable:
 
-![Correct reflection]()
+![Correct reflection](/assets/img/water-shader/reflection-no-shader.gif)
 
 And yet, it doesn't look very convincing.
 For one, the color of the reflection is exactly the same as that of the object.
@@ -422,7 +442,7 @@ We want the reflected image to have a bit of a blue tint.
 Moreover, the water surface is moving, but the reflection is idle.
 Ideally, moving water should distort the image. 
 
-## Disorting reflections using a shader
+## Reflection effect with displacement shaders 
 
 Right now, our render loop is pretty straightforward:
 
@@ -441,12 +461,14 @@ I recommend going through it before reading ahead.
 
 Assuming you know the very basics of shaders, this one should be straightforward:
 
-```c++
-vec4 effect(vec4 color, Image texture, vec2 uv, vec2 pixel_coords) { 
-  vec4 pixel_color = Texel(texture, uv);
-  pixel_color.b = clamp(pixel_color.b + 0.2, 0.0, 1.0);
-  return pixel_color;
-}
+```lua
+local reflection_shader = love.graphics.newShader [[
+    vec4 effect(vec4 color, Image texture, vec2 uv, vec2 pixel_coords) { 
+      vec4 pixel_color = Texel(texture, uv);
+      pixel_color.b = clamp(pixel_color.b + 0.2, 0.0, 1.0);
+      return pixel_color;
+    }
+]]
 ```
 
 The `effect` function receives the current color set using `love.graphics.setColor`,
@@ -473,12 +495,12 @@ end
 
 Now, our reflections have a blue tint:
 
-![Reflection with a blue tint]()
+![Reflection with a blue tint](/assets/img/water-shader/reflection-blue-tint.gif)
 
-Now, we just need the image to twist and distort as if there are waves underneath.
-We want our reflections to appear like this:
+We also want the reflected image to twist and distort as if there are waves underneath.
+The final reflection should look like this:
 
-![Final reflection shader]()
+![Final result](/assets/img/water-shader/final-water-reflection.gif)
 
 This effect can be realized with one simple trick – for every `(X, Y)` coordinate in the image,
 instead of drawing the the pixel at `(X, Y)`, draw the pixel at `(X + dx, Y + dy)`.
@@ -511,20 +533,68 @@ It might not be intuitive immediately.
 I recommend that you open [this graph](https://www.desmos.com/calculator/k8qkzkijab) and play around with the sliders on the left
 to see how each parameter changes the shape of the graph.
 
+Parameters like `wave_height`, `time`, etc. are uniforms that will be sent to the shader from our Lua program.
+The updated shader is:
+
 ```c++
+//  These are passed to the shader from the Lua script.
+uniform float time;
+uniform float wave_height;
+uniform float wave_speed;
+uniform float wave_freq;
+
+
 vec4 effect(vec4 color, Image texture, vec2 uv, vec2 pixel_coords) { 
+  // Displace the `x` coordinate. 
   uv.x +=
-    sin((uv.y + iTime * wave_speed) * wave_freq)
-    * cos((uv.y + iTime * wave_speed) * wave_freq * 0.5)
+    sin((uv.y + time * wave_speed) * wave_freq)
+    * cos((uv.y + time * wave_speed) * wave_freq * 0.5)
     * wave_height;
+
+  // Displacement in `y` is half that of `x`.
+  // Displacing `x` and `y` equally looks unnatural
   uv.y +=
-    sin((uv.x + iTime * wave_speed) * wave_freq)
-    * cos((uv.x + iTime * wave_speed) * wave_freq * 0.5)
-    * wave_height;
+    sin((uv.x + time * wave_speed) * wave_freq)
+    * cos((uv.x + time * wave_speed) * wave_freq * 0.5)
+    * wave_height * 0.5;
+
   vec4 pixel = Texel(texture, uv);
+  // apply a blue tint to the reflection
   pixel.b += 0.2;
   return pixel;
 }
 ```
 
+We update the `love.draw` function yet again to send these parameters to the shader.
+
+```diff
+function love.draw()
+  water_tiles:draw()
++
++ local time = love.timer.getTime()
++ reflection_shader:send("time", time)
++ reflection_shader:send("wave_height", 0.02)
++ reflection_shader:send("wave_speed", 0.1)
++ reflection_shader:send("wave_freq", 45.0)
++
+  love.graphics.setShader(reflection_shader)
+... 
+```
+
+With that change, the reflection looks a lot more natural:
+
+![Reflection with displacement](/assets/img/water-shader/final-water-reflection.gif)
+
+I'm happy with this re-creation, so I'll stop here.
+The only thing that is probably missing is the shadow around the edges of the lake.
+That can also be achieved by adding drawing some borders on top of water tiles near the edges,
+and then applying the same shader with different parameters:
+
+![Shadows around the water body](/assets/img/water-shader/water-shadows.png)
+
+## Backmatter
+
+I recently found out about [this write-up](https://alexjgriffith.itch.io/potions/devlog/588358/the-one-where-water-is-made) by Alex Griffith – author of Potions.
+Interestingly, their approach to the shader was very different from the one I took.
+The shader used in the game uses a mask and a noise-map to decide the amount of distortion on each pixel.
 
