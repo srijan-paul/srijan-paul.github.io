@@ -52,7 +52,7 @@ I&#39;m using the Love game framework, and Lua as its scripting language (the or
 <p>If you only want to see the shader logic, skip to <a href="#reflection-effect-with-displacement-shaders">this section</a>.</p>
 <h2 id="project-setup">Project setup</h2>
 <p>I&#39;m using some hand-drawn sprites for this demo.
-If you&#39;re going to follow along, download all images from <a href>here</a>,
+If you&#39;re going to follow along, download all images from <a href="https://github.com/srijan-paul/shader-blog/tree/main/assets">here</a>,
 and put them under an <code>assets</code> directory in your project root.</p>
 <p>Every love project starts with <code>main.lua</code>.
 Since we will be using low-res pixel-art sprites for this demo, the scaling filter is set to <code>nearest</code>:</p>
@@ -268,8 +268,8 @@ The reason for not doing this should become clear once we write the distortion s
 <p>The borders of our water body look too straight and unnatural right now, and there is no sense of depth.
 We can fix that by drawing borders on top any water tile that is adjacent to a ground tile.</p>
 <p>For that, we need to draw some sprites for each border-type (left/right/top-left/top-right), and render them on top of the right tiles.
-<a href="TODO">The code</a> for this is boring, and not the point of this post, so I will not explain it here.</p>
-<p>After adding borders, our water should look like this:</p>
+<a href="https://github.com/srijan-paul/shader-blog/blob/e3aa7be34abbaf1512004987edbaf2232d23ee1e/main.lua#L72">The code</a> for this is boring, and not the point of this post, so I will not explain it here.</p>
+<p>After adding borders, the water should look like this:</p>
 <p><img src="/assets/img/water-shader/water-with-border.gif" alt="Water body with borders"></img></p>
 <h2 id="drawing-reflections">Drawing reflections</h2>
 <p>We could, if we wanted to, have an isometric pixel-art game and do fancy ray-tracing to show reflections.
@@ -316,7 +316,7 @@ and another to draw its reflection.</p>
 <span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a>    <span class="va">y</span> <span class="op">+</span> <span class="va">self</span><span class="op">.</span><span class="va">h</span> <span class="op">*</span> <span class="dv">1.5</span><span class="op">,</span></span>
 <span id="17"><a href="#17" aria-hidden="true" tabindex="-1"></a>    <span class="va">self</span><span class="op">.</span><span class="va">rot</span><span class="op">,</span></span>
 <span id="18"><a href="#18" aria-hidden="true" tabindex="-1"></a>    <span class="va">self</span><span class="op">.</span><span class="va">scale_x</span><span class="op">,</span></span>
-<span id="19"><a href="#19" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- notice the negtaive scale:</span></span>
+<span id="19"><a href="#19" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- notice the negative scale:</span></span>
 <span id="20"><a href="#20" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span><span class="va">self</span><span class="op">.</span><span class="va">scale_y</span><span class="op">)</span></span>
 <span id="21"><a href="#21" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
 <span id="22"><a href="#22" aria-hidden="true" tabindex="-1"></a></span>

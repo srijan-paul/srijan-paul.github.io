@@ -21,7 +21,7 @@ If you only want to see the shader logic, skip to [this section](#reflection-eff
 ## Project setup
 
 I'm using some hand-drawn sprites for this demo.
-If you're going to follow along, download all images from [here](),
+If you're going to follow along, download all images from [here](https://github.com/srijan-paul/shader-blog/tree/main/assets),
 and put them under an `assets` directory in your project root.
 
 Every love project starts with `main.lua`.
@@ -306,9 +306,9 @@ The borders of our water body look too straight and unnatural right now, and the
 We can fix that by drawing borders on top any water tile that is adjacent to a ground tile.
 
 For that, we need to draw some sprites for each border-type (left/right/top-left/top-right), and render them on top of the right tiles.
-[The code](TODO) for this is boring, and not the point of this post, so I will not explain it here. 
+[The code](https://github.com/srijan-paul/shader-blog/blob/e3aa7be34abbaf1512004987edbaf2232d23ee1e/main.lua#L72) for this is boring, and not the point of this post, so I will not explain it here. 
 
-After adding borders, our water should look like this:
+After adding borders, the water should look like this:
 
 ![Water body with borders](/assets/img/water-shader/water-with-border.gif)
 
@@ -365,7 +365,7 @@ function Sprite:draw_reflection(x, y)
     y + self.h * 1.5,
     self.rot,
     self.scale_x,
-    -- notice the negtaive scale:
+    -- notice the negative scale:
     -self.scale_y)
 end
 
