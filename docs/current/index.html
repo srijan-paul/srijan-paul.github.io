@@ -32,7 +32,7 @@
 <h3 id="peritext">Peritext</h3>
 <p>Earlier this year, I came across <a href="https://www.inkandswitch.com/peritext/">Peritext</a> – a CRDT for collaborative rich text editing.
 I skimmed over the authors&#39; blog post, a research paper by the same team, and some related literature on distributed data structures.
-Peritext seemed simple enough that it made me want to implement it and see if I can make something useful out of it.
+Peritext seemed simple enough that I wanted to implement it and see if I can make something useful out of it.
 With that goal in mind, I set out to build a browser-based collaborative rich text editor... <em>from scratch</em>.</p>
 <p>I&#39;ve always hated losing my zest for personal projects to a pile of third party libraries.
 With too many dependencies, an application is little more than a set of APIs calling into each other from within a murky <code>node_modules</code> directory.
@@ -54,7 +54,7 @@ The simplest way to decorate text in an editable HTML element –
 (Though nearly all browsers will continue to support it, lest half the internet&#39;s text inputs break).
 Worse yet, there is no alternative to <code>execCommand</code>.
 The only other way to manipulate rich text is to roll your miniature DOM that models the hierarchy of rich text elements.
-Moreover, your object model has to be built such that incorporating collaborative editing is natural, and doesn&#39;t call for a re-write.
+Moreover, your object model has to be built such that incorporating collaborative editing is natural, and doesn&#39;t call for a rewrite.
 I won&#39;t go into all the details, but you get the idea – there be dragons.</p>
 <p>After about three weeks, It occurred to me that I had unknowingly taken up <em>two</em> projects.
 One was to implement rich-text editing in browsers,
@@ -63,7 +63,7 @@ I still tried to push through and build on top of my poorly designed block struc
 didn&#39;t account for non-linear items in rich-text documents (e.g: comments, annotations in an image).
 So it should surprise no one when I say that in the following month, the project went down in flames.</p>
 <p>And just like that, another one of my private GitHub repos bites the dust.</p>
-<p>I hope to give it another try, this time with a clean slate, and the benefit of hindsight.
+<p>I hope to give it another try, this time with a clean slate and the benefit of hindsight.
 We shall see in my next update. o/</p>
 <h3 id="reading">Reading</h3>
 <p>Mostly fiction, and a pinch of technical reading.</p>

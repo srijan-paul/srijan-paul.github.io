@@ -4,7 +4,7 @@
 
 Earlier this year, I came across [Peritext](https://www.inkandswitch.com/peritext/) – a CRDT for collaborative rich text editing.
 I skimmed over the authors' blog post, a research paper by the same team, and some related literature on distributed data structures.
-Peritext seemed simple enough that it made me want to implement it and see if I can make something useful out of it. 
+Peritext seemed simple enough that I wanted to implement it and see if I can make something useful out of it.
 With that goal in mind, I set out to build a browser-based collaborative rich text editor... *from scratch*.
 
 I've always hated losing my zest for personal projects to a pile of third party libraries.
@@ -30,10 +30,10 @@ The simplest way to decorate text in an editable HTML element –
 (Though nearly all browsers will continue to support it, lest half the internet's text inputs break).
 Worse yet, there is no alternative to `execCommand`.
 The only other way to manipulate rich text is to roll your miniature DOM that models the hierarchy of rich text elements.
-Moreover, your object model has to be built such that incorporating collaborative editing is natural, and doesn't call for a re-write.
+Moreover, your object model has to be built such that incorporating collaborative editing is natural, and doesn't call for a rewrite.
 I won't go into all the details, but you get the idea – there be dragons.
 
-After about three weeks, It occurred to me that I had unknowingly taken up *two* projects. 
+After about three weeks, It occurred to me that I had unknowingly taken up *two* projects.
 One was to implement rich-text editing in browsers,
 and the other to design APIs and implement algorithms that allow making concurrent edits.
 I still tried to push through and build on top of my poorly designed block structure that
@@ -42,7 +42,7 @@ So it should surprise no one when I say that in the following month, the project
 
 And just like that, another one of my private GitHub repos bites the dust.
 
-I hope to give it another try, this time with a clean slate, and the benefit of hindsight.
+I hope to give it another try, this time with a clean slate and the benefit of hindsight.
 We shall see in my next update. o/
 
 ### Reading
@@ -71,7 +71,7 @@ and [What's expected of Us](https://en.wikipedia.org/wiki/What%27s_Expected_of_U
 
 - [Name of the wind](https://en.wikipedia.org/wiki/The_Name_of_the_Wind)
 - [Blindsight](https://en.wikipedia.org/wiki/Blindsight_(Watts_novel))
-- [Linear algebra - Gilbert Strang](https://www.amazon.in/Linear-Algebra-Applications-Gilbert-Strang/dp/8131501728): Been on hold for roughly a year. 
+- [Linear algebra - Gilbert Strang](https://www.amazon.in/Linear-Algebra-Applications-Gilbert-Strang/dp/8131501728): Been on hold for roughly a year.
 
 ### Projects
 
