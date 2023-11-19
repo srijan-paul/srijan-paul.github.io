@@ -1,50 +1,102 @@
-## Feb 2023
+## November 2023
 
-This month, I was busy setting base in Bangalore.
-Moving is a lot of work, and I am still adjusting to the city - loads of people,
-incessant honking on roads, metros operating at twice their capacity, and a language unknown to me.
+### Peritext
 
-I'm sure there's a lot more that will be to my liking, and I'm just taking my time synchronising.
-The whole moving-and-packing dance, however, has disrupted my usual schedule
-(which wasn't something to be proud of in the first place).
-I'm a little behind on some personal projects, and there's no library here like there was back in college,
-but my trajectory will fix itself.
+Earlier this year, I came across [Peritext](https://www.inkandswitch.com/peritext/) – a CRDT for collaborative rich text editing.
+I skimmed over the authors' blog post, a research paper by the same team, and some related literature on distributed data structures.
+Peritext seemed simple enough that it made me want to implement it and see if I can make something useful out of it. 
+With that goal in mind, I set out to build a browser-based collaborative rich text editor... *from scratch*.
+
+I've always hated losing my zest for personal projects to a pile of third party libraries.
+With too many dependencies, an application is little more than a set of APIs calling into each other from within a murky `node_modules` directory.
+For corporate software that is supposed to be reliable and attract revenue,
+I can understand the need to ship fast and have fewer lines of code to maintain.
+But bringing this mindset home to exploratory hobby projects cheapens the experience.
+
+My approach was to only add a library only when its use-case was orthogonal to what I was building.
+So I wouldn't miss out on learning anything that might go into building real world collaborative software.
+
+Besides, I was building a collaborative editor for *browsers* –
+applications that are ultra-optimized to render hypermedia and make network calls.
+After all, every online forum has a comment section where one I could spam rich text.
+Surely this wouldn't be too difficult, right?
+There ought to be plenty of APIs to manipulate formatted text in HTML,  *right*?
+As I later found out, I was wrong on both accounts.
+
+Building a good rich text editor that works in all major browsers is *hard*.
+Making it concurrent for multiple active users is *even harder*.
+The simplest way to decorate text in an editable HTML element –
+[execCommand](https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand) – is now deprecated 
+(Though nearly all browsers will continue to support it, lest half the internet's text inputs break).
+Worse yet, there is no alternative to `execCommand`.
+The only other way to manipulate rich text is to roll your miniature DOM that models the hierarchy of rich text elements.
+Moreover, your object model has to be built such that incorporating collaborative editing is natural, and doesn't call for a re-write.
+I won't go into all the details, but you get the idea – there be dragons.
+
+After about three weeks, It occurred to me that I had unknowingly taken up *two* projects. 
+One was to implement rich-text editing in browsers,
+and the other to design APIs and implement algorithms that allow making concurrent edits.
+I still tried to push through and build on top of my poorly designed block structure that
+didn't account for non-linear items in rich-text documents (e.g: comments, annotations in an image).
+So it should surprise no one when I say that in the following month, the project went down in flames.
+
+And just like that, another one of my private GitHub repos bites the dust.
+
+I hope to give it another try, this time with a clean slate, and the benefit of hindsight.
+We shall see in my next update. o/
 
 ### Reading
 
-Still on Words of Radiance, and I picked [Real world haskell](https://book.realworldhaskell.org/) back up.
+Mostly fiction, and a pinch of technical reading.
 
-My to-read list looks almost the same as last time:
+#### Finished:
 
-- [Docker deep dive](https://www.goodreads.com/en/book/show/36411996)
-- [The Name of the Wind](https://www.goodreads.com/book/show/186074.The_Name_of_the_Wind) (Kingkiller chronicle #1)
-- [The Blade Itself](https://www.goodreads.com/book/show/944073.The_Blade_Itself)
-- [Thinking with types](https://thinkingwithtypes.com/)
+- [Words of Radiance](https://www.goodreads.com/book/show/17332218-words-of-radiance) (8/10)
+- [Tower of Babylon](https://www.goodreads.com/book/show/29864598-tower-of-babylon) (8/10)
+- [Understand](https://en.wikipedia.org/wiki/Understand_(story)) (7/10)
+
+For me, Ted Chiang's best works are [Exhalation](https://en.wikipedia.org/wiki/Exhalation_(short_story)),
+[The Merchant at the Alchemist's Gate](https://en.wikipedia.org/wiki/The_Merchant_and_the_Alchemist%27s_Gate),
+and [What's expected of Us](https://en.wikipedia.org/wiki/What%27s_Expected_of_Us).
+
+#### Currently reading:
+
+- [Musashi](https://en.wikipedia.org/wiki/Musashi_(novel))
+- [Database Internals](https://www.databass.dev/)
+- [Oathbringer](https://www.goodreads.com/en/book/show/34002132): On hold for now.
+- [Foundation](https://en.wikipedia.org/wiki/Foundation_(Asimov_novel)): On hold.
+    It has more politics and less Sci-fi than I expected, so I cannot promise I'll pick it back up.
+
+#### Plan to read:
+
+- [Name of the wind](https://en.wikipedia.org/wiki/The_Name_of_the_Wind)
+- [Blindsight](https://en.wikipedia.org/wiki/Blindsight_(Watts_novel))
+- [Linear algebra - Gilbert Strang](https://www.amazon.in/Linear-Algebra-Applications-Gilbert-Strang/dp/8131501728): Been on hold for roughly a year. 
 
 ### Projects
 
-In a span of about 2 days, I made something cool - a Brainfuck interpreter, written entirely in TypeScript's type-system.
-The code can be found [here on GitHub](https://github.com/srijan-paul/tsfun/blob/main/src/index.ts).
-I also spoke about it in a talk about type-level programming and turing complete type systems.
-[TODO@self: add a link here once it's uploaded to YouTube].
+[Nez](https://github.com/srijan-paul/nez).
 
-Last time, I said I'll be writing an Neural Language Model.
-Well, I changed my mind.
+After my last update, I'd begun working on an NES emulator in C++.
+Few weeks into development, it ground to a halt owing to my inconsistent routine and lack of interest.
+A while back, I decided to revive the project and port it to Zig.
 
-Lately, I've been looking into the [NES](https://en.wikipedia.org/wiki/Nintendo_Entertainment_System)'s architecture.
-I want to write an emulator for it, but my current understanding of its hardware (and 6502 assembly) is far from adequate.
+Right now, its about 60% done.
+It cannot run any games just yet, but supports basic display and full CPU functionality.
+I only support one mapper, and the [PPU](https://www.nesdev.org/wiki/PPU) is still a work in progress.
 
-Everyday, after coming home from work, I've been making notes, and reading the [NESDev wiki](https://www.nesdev.org/wiki/Nesdev_Wiki).
-Perhaps I'll have something to show in my next log?
+I don't plan for it to be another Mesen or FCEUX.
+It should support a good number of NES games,
+and have mostly accurate emulation for the games it does support.
 
 ### Plans
 
-- Research the NES's hardware, and the 6502 assembly language.
-- Organize some papers and further reading for LLMs in my private notion, for later use. 
-Look into some keyboards to replace my current one.
+- Design an 8-bit CPU using basic electrical components in Logism evolution.
+- Finish the papers I've collected on CRDTs and group text editing.
 
 ### Previous
 
+- [February 2023](/current/feb-2023)
 - [January 2023](/current/jan-2023)
 - [March 2022](/current/mar-2022)
 - [January 2022](/current/jan-2022)

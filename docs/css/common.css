@@ -14,7 +14,7 @@
   --font-code: "Cousine";
   --font-weight: 300;
   --font-weight-bold: 500;
-  --font-size: 17px;
+  --font-size: 16px;
 }
 
 strong {
@@ -167,17 +167,6 @@ code {
   tab-size: 2;
 }
 
-/* bold keywords for hljs
-.hljs-type,
-.hljs-keyword,
-.hljs-title,
-.hljs-params {
-  font-weight: bold;
-}*/
-
-.hljs-comment {
-  color: #aaaaaa !important;
-}
 
 .center {
   text-align: center;

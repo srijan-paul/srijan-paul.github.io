@@ -28,49 +28,100 @@
 		</div>
 		<hr>
 
-		<h2 id="feb-2023">Feb 2023</h2>
-<p>This month, I was busy setting base in Bangalore.
-Moving is a lot of work, and I am still adjusting to the city - loads of people,
-incessant honking on roads, metros operating at twice their capacity, and a language unknown to me.</p>
-<p>I&#39;m sure there&#39;s a lot more that will be to my liking, and I&#39;m just taking my time synchronising.
-The whole moving-and-packing dance, however, has disrupted my usual schedule
-(which wasn&#39;t something to be proud of in the first place).
-I&#39;m a little behind on some personal projects, and there&#39;s no library here like there was back in college,
-but my trajectory will fix itself.</p>
+		<h2 id="november-2023">November 2023</h2>
+<h3 id="peritext">Peritext</h3>
+<p>Earlier this year, I came across <a href="https://www.inkandswitch.com/peritext/">Peritext</a> – a CRDT for collaborative rich text editing.
+I skimmed over the authors&#39; blog post, a research paper by the same team, and some related literature on distributed data structures.
+Peritext seemed simple enough that it made me want to implement it and see if I can make something useful out of it.
+With that goal in mind, I set out to build a browser-based collaborative rich text editor... <em>from scratch</em>.</p>
+<p>I&#39;ve always hated losing my zest for personal projects to a pile of third party libraries.
+With too many dependencies, an application is little more than a set of APIs calling into each other from within a murky <code>node_modules</code> directory.
+For corporate software that is supposed to be reliable and attract revenue,
+I can understand the need to ship fast and have fewer lines of code to maintain.
+But bringing this mindset home to exploratory hobby projects cheapens the experience.</p>
+<p>My approach was to only add a library only when its use-case was orthogonal to what I was building.
+So I wouldn&#39;t miss out on learning anything that might go into building real world collaborative software.</p>
+<p>Besides, I was building a collaborative editor for <em>browsers</em> –
+applications that are ultra-optimized to render hypermedia and make network calls.
+After all, every online forum has a comment section where one I could spam rich text.
+Surely this wouldn&#39;t be too difficult, right?
+There ought to be plenty of APIs to manipulate formatted text in HTML,  <em>right</em>?
+As I later found out, I was wrong on both accounts.</p>
+<p>Building a good rich text editor that works in all major browsers is <em>hard</em>.
+Making it concurrent for multiple active users is <em>even harder</em>.
+The simplest way to decorate text in an editable HTML element –
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand">execCommand</a> – is now deprecated
+(Though nearly all browsers will continue to support it, lest half the internet&#39;s text inputs break).
+Worse yet, there is no alternative to <code>execCommand</code>.
+The only other way to manipulate rich text is to roll your miniature DOM that models the hierarchy of rich text elements.
+Moreover, your object model has to be built such that incorporating collaborative editing is natural, and doesn&#39;t call for a re-write.
+I won&#39;t go into all the details, but you get the idea – there be dragons.</p>
+<p>After about three weeks, It occurred to me that I had unknowingly taken up <em>two</em> projects.
+One was to implement rich-text editing in browsers,
+and the other to design APIs and implement algorithms that allow making concurrent edits.
+I still tried to push through and build on top of my poorly designed block structure that
+didn&#39;t account for non-linear items in rich-text documents (e.g: comments, annotations in an image).
+So it should surprise no one when I say that in the following month, the project went down in flames.</p>
+<p>And just like that, another one of my private GitHub repos bites the dust.</p>
+<p>I hope to give it another try, this time with a clean slate, and the benefit of hindsight.
+We shall see in my next update. o/</p>
 <h3 id="reading">Reading</h3>
-<p>Still on Words of Radiance, and I picked <a href="https://book.realworldhaskell.org/">Real world haskell</a> back up.</p>
-<p>My to-read list looks almost the same as last time:</p>
+<p>Mostly fiction, and a pinch of technical reading.</p>
+<h4 id="finished">Finished:</h4>
 <ul>
-<li><a href="https://www.goodreads.com/en/book/show/36411996">Docker deep dive</a>
+<li><a href="https://www.goodreads.com/book/show/17332218-words-of-radiance">Words of Radiance</a> (8/10)
 </li>
-<li><a href="https://www.goodreads.com/book/show/186074.The_Name_of_the_Wind">The Name of the Wind</a> (Kingkiller chronicle #1)
+<li><a href="https://www.goodreads.com/book/show/29864598-tower-of-babylon">Tower of Babylon</a> (8/10)
 </li>
-<li><a href="https://www.goodreads.com/book/show/944073.The_Blade_Itself">The Blade Itself</a>
+<li><a href="https://en.wikipedia.org/wiki/Understand_(story)">Understand</a> (7/10)
 </li>
-<li><a href="https://thinkingwithtypes.com/">Thinking with types</a>
+</ul>
+<p>For me, Ted Chiang&#39;s best works are <a href="https://en.wikipedia.org/wiki/Exhalation_(short_story)">Exhalation</a>,
+<a href="https://en.wikipedia.org/wiki/The_Merchant_and_the_Alchemist%27s_Gate">The Merchant at the Alchemist&#39;s Gate</a>,
+and <a href="https://en.wikipedia.org/wiki/What%27s_Expected_of_Us">What&#39;s expected of Us</a>.</p>
+<h4 id="currently-reading">Currently reading:</h4>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Musashi_(novel)">Musashi</a>
+</li>
+<li><a href="https://www.databass.dev/">Database Internals</a>
+</li>
+<li><a href="https://www.goodreads.com/en/book/show/34002132">Oathbringer</a>: On hold for now.
+</li>
+<li><a href="https://en.wikipedia.org/wiki/Foundation_(Asimov_novel)">Foundation</a>: On hold.
+It has more politics and less Sci-fi than I expected, so I cannot promise I&#39;ll pick it back up.
+</li>
+</ul>
+<h4 id="plan-to-read">Plan to read:</h4>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/The_Name_of_the_Wind">Name of the wind</a>
+</li>
+<li><a href="https://en.wikipedia.org/wiki/Blindsight_(Watts_novel)">Blindsight</a>
+</li>
+<li><a href="https://www.amazon.in/Linear-Algebra-Applications-Gilbert-Strang/dp/8131501728">Linear algebra - Gilbert Strang</a>: Been on hold for roughly a year.
 </li>
 </ul>
 <h3 id="projects">Projects</h3>
-<p>In a span of about 2 days, I made something cool - a Brainfuck interpreter, written entirely in TypeScript&#39;s type-system.
-The code can be found <a href="https://github.com/srijan-paul/tsfun/blob/main/src/index.ts">here on GitHub</a>.
-I also spoke about it in a talk about type-level programming and turing complete type systems.
-[TODO@self: add a link here once it&#39;s uploaded to YouTube].</p>
-<p>Last time, I said I&#39;ll be writing an Neural Language Model.
-Well, I changed my mind.</p>
-<p>Lately, I&#39;ve been looking into the <a href="https://en.wikipedia.org/wiki/Nintendo_Entertainment_System">NES</a>&#39;s architecture.
-I want to write an emulator for it, but my current understanding of its hardware (and 6502 assembly) is far from adequate.</p>
-<p>Everyday, after coming home from work, I&#39;ve been making notes, and reading the <a href="https://www.nesdev.org/wiki/Nesdev_Wiki">NESDev wiki</a>.
-Perhaps I&#39;ll have something to show in my next log?</p>
+<p><a href="https://github.com/srijan-paul/nez">Nez</a>.</p>
+<p>After my last update, I&#39;d begun working on an NES emulator in C++.
+Few weeks into development, it ground to a halt owing to my inconsistent routine and lack of interest.
+A while back, I decided to revive the project and port it to Zig.</p>
+<p>Right now, its about 60% done.
+It cannot run any games just yet, but supports basic display and full CPU functionality.
+I only support one mapper, and the <a href="https://www.nesdev.org/wiki/PPU">PPU</a> is still a work in progress.</p>
+<p>I don&#39;t plan for it to be another Mesen or FCEUX.
+It should support a good number of NES games,
+and have mostly accurate emulation for the games it does support.</p>
 <h3 id="plans">Plans</h3>
 <ul>
-<li>Research the NES&#39;s hardware, and the 6502 assembly language.
+<li>Design an 8-bit CPU using basic electrical components in Logism evolution.
 </li>
-<li>Organize some papers and further reading for LLMs in my private notion, for later use.
-Look into some keyboards to replace my current one.
+<li>Finish the papers I&#39;ve collected on CRDTs and group text editing.
 </li>
 </ul>
 <h3 id="previous">Previous</h3>
 <ul>
+<li><a href="/current/feb-2023">February 2023</a>
+</li>
 <li><a href="/current/jan-2023">January 2023</a>
 </li>
 <li><a href="/current/mar-2022">March 2022</a>

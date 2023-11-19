@@ -3,6 +3,7 @@
   margin: auto;
   margin-bottom: 5rem;
   font-size: var(--font-size);
+  max-width: 840px;
 }
 
 .leader {
@@ -37,6 +38,13 @@ ul {
 code {
   font-size: 17px;
 }
+
+@media screen and (min-width: 1400px) {
+  .container {
+    width: 35%;
+  }
+}
+
 
 @media screen and (max-width: 900px) {
   .w,
