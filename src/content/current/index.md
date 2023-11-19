@@ -18,7 +18,7 @@ So I wouldn't miss out on learning anything that might go into building real wor
 
 Besides, I was building a collaborative editor for *browsers* –
 applications that are ultra-optimized to render hypermedia and make network calls.
-After all, every online forum has a comment section where one I could spam rich text.
+After all, every online forum has a comment section where one could spam rich text.
 Surely this wouldn't be too difficult, right?
 There ought to be plenty of APIs to manipulate formatted text in HTML,  *right*?
 As I later found out, I was wrong on both accounts.
