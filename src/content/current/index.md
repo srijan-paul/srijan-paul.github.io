@@ -13,12 +13,11 @@ For corporate software that is supposed to be reliable and attract revenue,
 I can understand the need to ship fast and have fewer lines of code to maintain.
 But bringing this mindset home to exploratory hobby projects cheapens the experience.
 
-My approach was to only add a library only when its use-case was orthogonal to what I was building.
+My approach was to add a library only when its use-case was orthogonal to what I was building.
 So I wouldn't miss out on learning anything that might go into building real world collaborative software.
 
 Besides, I was building a collaborative editor for *browsers* –
 applications that are ultra-optimized to render hypermedia and make network calls.
-After all, every online forum has a comment section where one could spam rich text.
 Surely this wouldn't be too difficult, right?
 There ought to be plenty of APIs to manipulate formatted text in HTML,  *right*?
 As I later found out, I was wrong on both accounts.
