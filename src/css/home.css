@@ -39,14 +39,14 @@ code {
   font-size: 17px;
 }
 
-@media screen and (min-width: 1400px) {
+@media screen and (min-width: 1500px) {
   .container {
     width: 35%;
   }
 }
 
 
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 1000px) {
   .w,
   .container {
     width: 85%;

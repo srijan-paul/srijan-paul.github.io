@@ -198,7 +198,7 @@ code[class*="language-"] {
   }
 }
 
-@media screen and (min-width: 1300px) {
+@media screen and (min-width: 1500px) {
   .main {
     width: 35%;
   }
