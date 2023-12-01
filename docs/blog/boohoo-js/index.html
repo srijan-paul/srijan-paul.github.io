@@ -37,21 +37,7 @@
         <span class="tags" id="tags">
         </span>
       </div>
-      <p>JavaScript is one of the most popularly criticised languages, and rightly so - it has several common pitfalls.
-Beginner programmers learning JS bashing it for being so terrible isn&#39;t uncommon.
-My gripe lies within the tendency of people to form an opinion of something based majorly on the ideas their peers hold, both in and outside of tech.
-Ever so often you&#39;ll see developers crying out loud about how <code>0.1 + 0.2 != 0.3</code> evaluates to <code>false</code>, or how <code>NaN != NaN</code> is <code>true</code>, and that these are terrible design choices by the authors of the language.
-I want to argue against a slice of this popularly held opinion.</p>
-<p>I don&#39;t mean to defend JS&#39;s design flaws, but instead to</p>
-<ol>
-<li>Take a look at popularly misplaced critiques of JavaScript.
-</li>
-<li>Provide some critiques grounded in reason.
-</li>
-</ol>
-<p>Below is a list of JavaScript expressions, along with the values they evaluate to.
-JavaScript receives a crazy amount of slack for it&#39;s design choices, however it may surprise some to know that many of these &quot;mistakes&quot; aren&#39;t JavaScript&#39;s in the first place!</p>
-<code class="language-javascript"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="fl">0.1</span> <span class="op">+</span> <span class="fl">0.2</span> <span class="op">==</span> <span class="fl">0.3</span>       <span class="co">// false</span></span>
+      <code class="language-javascript"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="fl">0.1</span> <span class="op">+</span> <span class="fl">0.2</span> <span class="op">==</span> <span class="fl">0.3</span>       <span class="co">// false</span></span>
 <span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="kw">NaN</span> <span class="op">==</span> <span class="kw">NaN</span>             <span class="co">// false</span></span>
 <span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="kw">typeof</span> <span class="kw">NaN</span>             <span class="co">// &quot;number&quot;</span></span>
 <span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a><span class="kw">true</span> <span class="op">==</span> <span class="dv">1</span>              <span class="co">// true</span></span>
@@ -132,47 +118,33 @@ If you want strict value comparison, use <code>==</code>&#39;s sister <code>===<
 <p>This is the simplest, most trivial snippet. It&#39;s just heap allocation. The two arrays are different objects living at different places in memory. When you modify one, the other doesn&#39;t change. If JavaScript had operator overloading, one could perhaps override <code>==</code> for <code>Array.prototype</code> and achieve element-by-element comparison? Who knows.</p>
 <p>Now to tackle the rest:</p>
 <h2 id="javascript-is-slow">JavaScript is slow.</h2>
-<p>Is it really? We&#39;ll discuss that.</p>
-<p>But first, I don&#39;t like using the phrase <em>&quot;&lt;<strong>Insert language</strong>&gt; is slow&quot;</em>.
-Languages are defined by their syntax + semantics + standards. It is impossible to quantify a language&#39;s speed because that depends on it&#39;s <strong>implementation</strong>.</p>
-<p><em>&quot;Python is slow!&quot;</em></p>
-<p>This statement gives rise to two obvious questions:</p>
-<ol>
-<li>Which implementation of Python? CPython? PyPy? Numba? RPython? MicroPython? Jython?
-</li>
-<li>Slow compared to what? x86 Assembly? C++? Ruby? Chuck?
-</li>
-</ol>
-<p>A better way to put it would be:</p>
-<p><em>&quot;CPython is slow&quot;</em></p>
-<p>The more context, the better:</p>
-<p><em>&quot;CPython is slower than V8 JavaScript&quot;</em>.</p>
-<p>This statement is much more meaningful, we can now write programs, run benchmarks and make real comparisons. However, we must not forget that not all languages cover the same domains. Scripting languages have a lot more reason and leeway to be slower owing to the environments they are generally embedded in. C++ vs JavaScript is simply an apples to oranges comparison.</p>
-<p>That said, is JavaScript <em>actually slow</em>?</p>
-<p>Many tend to assume that JS must be slow since it is capable of exhibiting such highly dynamic behavior.
-However, some of the most vital JavaScript engines today, V8, JSC and SpiderMonkey are extremely performant, heavily optimizing beasts. They&#39;re JIT engines, the precise inner workings of which deserve a post of their own, but perhaps taking a look at numbers may help move the argument forward.</p>
-<p>Taking a look at some benchmarks from the <a href="https://benchmarksgame-team.pages.debian.net/benchmarksgame/index.html">computer language benchmark games</a> site, it would appear that Node.js (which embeds V8) is actually not bad at all, even beating some implementations of Java and Haskell and C++ at times!</p>
-<p>Now it is true that benchmarks are nowhere close to real programs, but the JavaScript interpreter being a bottleneck in web-apps is not something you hear often. So I&#39;d say</p>
-<p><strong>&quot;JavaScript is fast enough for what it needs to do&quot;</strong></p>
+<p>Programming languages do not have performance characteristics.
+Their implementations do.
+Python isn&#39;t inherently a slow language, though its interpreter(CPython) might be.
+Using a different implementation (Numba, PyPy, Cinder, etc.) will always react differently to benchmarks.</p>
+<p>That said, the design of a language can heavily influence its general performance, across implementations.
+Languages that exhibit highly dynamic behaviour are difficult to optimize, and therefore tend to be slower than their compiled friends.</p>
+<p>Some of the most vital JavaScript engines today, V8, JSC, Hermes, and SpiderMonkey are extremely performant, optimizing beasts. They&#39;re JIT compilers, the precise inner workings of which warrant an essay of their own.</p>
+<p>Taking a look at some benchmarks from the <a href="https://benchmarksgame-team.pages.debian.net/benchmarksgame/index.html">computer language benchmark games</a> site, it would appear that Node.js (which embeds V8) is actually not bad at all, even beating some implementations of Java, Haskell, and C++ (!?).</p>
+<p>Of course, Benchmarks do not represent real world programs.
+You don&#39;t use JavaScript to crunch high volumes of data, or do automatic differentiation (If you do, I urge you to reconsider).
+You use JavaScript to color buttons on a webpage.</p>
 <h2 id="javascript-is-untyped-and-unsafe">JavaScript is untyped and unsafe.</h2>
-<p>I read this in someone&#39;s blog, and a supporting twitter thread and it&#39;s uuh... not true maybe?</p>
-<p>JavaScript is <strong>dynamically checked</strong> and <strong>safe</strong>. But I do not blame the people who make this claim at all. In fact, I believe the problem is with misnomers and poor definition of terms like &quot;loosely typed&quot;, &quot;dynamically typed&quot; and &quot;safe&quot; outside of academia.</p>
-<p>I&#39;ll take an excerpt out of Pierce&#39;s great book, <a href="https://www.cis.upenn.edu/~bcpierce/tapl/">Types and programming languages</a>:</p>
+<p>No. JavaScript is <strong>dynamically checked</strong> and <strong>safe</strong>.
+Take this excerpt out of Pierce&#39;s book, <a href="https://www.cis.upenn.edu/~bcpierce/tapl/">Types and programming languages</a>:</p>
 <blockquote>
 <p>Terms like &quot;dynamically typed&quot; are arguably misnomers and should probably be replaced by &quot;dynamically checked,&quot; but the usage is standard.</p>
 </blockquote>
 <p><strong>Dynamically checked:</strong> Variables and symbols do <strong>not</strong> have types. The types are bound to <strong>values</strong> instead.</p>
-<p><em>...What?</em></p>
 <p>Let&#39;s try with an example. The number <code>100</code>, has a type of &quot;number&quot; at runtime. However in this statement:</p>
 <code class="language-javascript"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> x <span class="op">=</span> <span class="dv">100</span><span class="op">;</span></span></code></pre></div></code></pre>
-<p>The <strong>symbol</strong> &quot;x&quot; and in it&#39;s semantic definition, does not have a type. But it&#39;s still not wrong to say <em>&quot;the type of &#39;x&#39; is <code>number</code>&quot;</em>. Why? Because when <code>x</code> is evaluated by the runtime, as a <strong>value</strong>, it does have a type (which can be seen by <code>typeof x</code>).</p>
-<p>However the <strong>name</strong> &quot;x&quot; is void of any type. So we can do <code>x = &#39;xyz&#39;</code> and still be good, law-abiding JavaScript programmers.</p>
-<p>The key is understanding the difference between the <strong>name</strong> &#39;&#39;x&quot; which can be bound to any value, and the <strong>value</strong> &quot;x&quot;, which always evaluates to whichever value the name is bound to at the time of evaluation.</p>
-<p>And now, I back my wild claim, <em>&quot;JavaScript is safe&quot;</em>.</p>
-<p>I sound like a total nutjob wo should be banned from touching a keyboard ever again, but bear with me! A very simple definition of the word <strong>safe</strong> in context of programming languages can be overly simplified to:</p>
-<p><em>A language where every code snippet always is well-defined by the standard.</em></p>
-<p>And this is indeed true of JavaScript. If you don&#39;t like that thought, pause for a second and try to come up with a JavaScript code snippet that is <strong>undefined</strong> under the ECMAScript spec. I bet you there isn&#39;t any. It may error out, or produce wonky output, but the behavior is <strong>defined</strong>, and will be the same for every standard-compliant JavaScript implementation.</p>
-<p>In fact, C++ is <strong>less safe</strong> than JavaScript, despite being statically typed (which makes sense, because the two properties aren&#39;t always locked in pair). For example, the following C++ code does not have any defined behavior:</p>
+<p>The <strong>symbol</strong> &quot;x&quot; and in it&#39;s semantic definition, does not have a type. But it&#39;s still not wrong to say <em>&quot;the type of &#39;x&#39; is <code>number</code>&quot;</em>. Why? Because when <code>x</code> is evaluated by the runtime, as a <strong>value</strong>, it does have a type (which can be seen by evaluating <code>typeof x</code>).</p>
+<p>However the <strong>name</strong> &quot;x&quot; is void of any type. So we can do <code>x = &#39;xyz&#39;</code> and the interpreter will happily run it.</p>
+<p>The key is to understand the difference between the <strong>name</strong> &#39;&#39;x&quot; which can be bound to any value, and the <strong>value</strong> &quot;x&quot;, which always evaluates to whichever value the name is bound to at the time of evaluation.</p>
+<p><strong>Safety</strong>: The most commonly accepted definition of safety is:
+<em>A language where every code snippet always is well-defined by the standard.</em></p>
+<p>And this is indeed true of JavaScript. If you don&#39;t like that thought, pause for a second and try to come up with a JavaScript code snippet that is <strong>undefined</strong> under the ECMAScript spec. You&#39;ll find that none exist. It may error out, or produce wonky output, but the behaviour is <strong>defined</strong>, and will be the same for every standard-compliant JavaScript implementation.</p>
+<p>In fact, C++ is <strong>less safe</strong> than JavaScript, despite being statically typed (which makes sense, because typing and safety are orthogonal). For example, the following C++ code does not have any defined behaviour:</p>
 <code class="language-cpp"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;iostream&gt;</span></span>
 <span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="kw">union</span> IntOrPtr <span class="op">{</span></span>
@@ -181,12 +153,11 @@ However, some of the most vital JavaScript engines today, V8, JSC and SpiderMonk
 <span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
 <span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
-<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>  IntOrPtr u <span class="op">=</span> <span class="op">{</span> <span class="op">.</span>ptr <span class="op">=</span> <span class="st">&quot;C++ gang&quot;</span> <span class="op">};</span></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>  IntOrPtr u <span class="op">=</span> <span class="op">{</span> <span class="op">.</span>ptr <span class="op">=</span> <span class="st">&quot;some string&quot;</span> <span class="op">};</span></span>
 <span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>cout<span class="op"> &lt;&lt;</span> u<span class="op">.</span>integer <span class="op">&lt;&lt;</span> <span class="ch">&#39;</span><span class="sc">\n</span><span class="ch">&#39;</span><span class="op">;</span> <span class="co">// &lt;--- Whoops!</span></span>
 <span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
 <span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></code></pre>
-<p>Accessing the uninitialized field of a union is undefined behavior, and may have different behavior on different compilers, hardware, OS or even different runs of the same executable!</p>
-<p>Relying on such behavior can be lethal for your program (and I bet you I&#39;ve seen industry codebases that relies on such behavior!).</p>
+<p>Accessing the uninitialized field of a union is undefined behavior, and may have different behavior on different compilers, hardware, OS, or different runs of the same executable.</p>
 <table>
 <thead>
 <tr>
@@ -199,39 +170,31 @@ However, some of the most vital JavaScript engines today, V8, JSC and SpiderMonk
 <tr>
 <td><strong>Dynamic checking</strong></td>
 <td>Easy to write erroneous code, but easier to debug due to well defined runtime behavior and inspection capability.</td>
-<td>Don&#39;t know of any such languages except hobby projects. Let me know if you have some in mind!</td>
+<td>Don&#39;t know of any such languages except hobby projects.</td>
 </tr>
 <tr>
 <td><strong>Static checking</strong></td>
-<td>Best of both worlds. Most languages in this bucket are functional.</td>
+<td>Best of both worlds. Most languages in this bucket are either functional, or r***-like.</td>
 <td>Easier to write correct programs, but harder to debug as there are no types and bounds at runtime.</td>
 </tr>
 </tbody>
 </table>
-<p>IMO, there is always a tradeoff. If you miss having compile time type checking, maybe checkout Typescript/Purescript? I&#39;m a huge fan of both.</p>
-<p>So what did we learn? Instead of saying:</p>
-<p><em>&quot;JavaScript is unsafe&quot;</em></p>
-<p>Say:</p>
-<p><em>&quot;JavaScript is loosely typed, dynamically checked and safe&quot;</em></p>
+<p>There is always a tradeoff.
+If you miss having compile time type checking when writing JS, maybe checkout Typescript/Purescript?</p>
 <h3 id="javascript-is-single-threaded-hence-bad">JavaScript is single threaded, hence bad.</h3>
-<p>To be honest, I wish things were different too.
-But thankfully V8 (and <del>NodeJS</del> libuv) are designed well enough that this problem is easily circumvented with asynchronous code. JavaScript&#39;s async support is commendable.
-This is one of the few design choices that I actually fully support.</p>
-<p>Threading is a bit of a gray area, some people would argue it&#39;s a part of the language, some would say it&#39;s a part of the implementation.
-I fall in the latter camp.</p>
-<p>Besides, for all of it&#39;s currently popular use-cases, JavaScript&#39;s threading facility (or the lack thereof) is circumvented to a small extent by <code>async</code> code and sometimes even available because of good design choices of the embedding application.</p>
-<p>That said, this critique has the most substance behind it so far (IMO).</p>
+<p>I don&#39;t disagree with this one.</p>
+<p>Thankfully V8 (and <del>NodeJS</del> libuv) are designed well enough that this problem is easily circumvented with asynchronous code.</p>
+<p>Some languages have built-in multithreading support,
+like atomic data types, or operators that spawn threads/processes.</p>
 <h3 id="not-all-roses">Not all roses.</h3>
-<p>Ok, now that we&#39;re done playing the devil&#39;s advocate,
+<p>Ok, now that I&#39;m done playing the devil&#39;s advocate,
 I do have my own fair share of complaints.</p>
 <ol>
 <li>
-<p>Starting off on an easier foot, the <code>var</code> keyword. ECMA&#39;s unwillingness to forsake backwards compatibility has led to some very annoying legacy cruft in JS that just won&#39;t go away. <strong>function scope</strong> is one of those.</p>
+<p>Starting off on an easier foot, the <code>var</code> keyword. ECMA&#39;s unwillingness to forsake backwards compatibility has led to some very annoying legacy cruft in JS that just won&#39;t go away. <strong>Function scope</strong> is one of those.</p>
 </li>
 <li>
-<p><strong>Too much implicit type-coercion</strong>. Yes, I did defend mis-categorization of JavaScript&#39;s typed-ness earlier, but I am still of the opinion that the JS type system is absolutely borked, and beyond saving. Some of these rules make no sense. While <code>true == 1</code> isn&#39;t that whack, this certainly is:</p>
-<code class="language-javascript"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>[] <span class="op">==</span> []<span class="op">;</span> <span class="co">// true</span></span></code></pre></div></code></pre>
-<p>That&#39;s just one of the infinitely many examples that I wish JS got right. It&#39;s one of those things that makes up for 50% of why JavaScript is popularly hated.</p>
+<p><strong>Too much implicit type-coercion</strong>. The type system is incorrigibly broken. Everything can coerce into Everything, and the runtime will jump through all kinds of hoops before throwing an error.</p>
 </li>
 <li>
 <p><strong>Wonky whitespace sensitivity.</strong>

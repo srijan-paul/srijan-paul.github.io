@@ -1,0 +1,155 @@
+{
+  "main": {
+    "id": "de44b02c7345eedc",
+    "type": "split",
+    "children": [
+      {
+        "id": "8d629107f90afcee",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "80dd2337c9ebc1c9",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "src/content/blog/bohoo-js.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "ac4c5bbae7bf4d07",
+    "type": "split",
+    "children": [
+      {
+        "id": "b255f0dfbaefa2d1",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "d80dfad01649c2e3",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "23128c405933b339",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "cc542071998740bf",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 273.50418853759766
+  },
+  "right": {
+    "id": "6b8f0c32ef1382e5",
+    "type": "split",
+    "children": [
+      {
+        "id": "323a01d4b8bd97c1",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "9e8eab4f9f8881ca",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "src/content/blog/bohoo-js.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "be2cea7004511213",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "src/content/blog/bohoo-js.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "2140839c3565a196",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "5d296bbbe51c955e",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "src/content/blog/bohoo-js.md"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "80dd2337c9ebc1c9",
+  "lastOpenFiles": [
+    "Untitled.canvas",
+    "src/content/blog/a-web3-startup.md",
+    "src/content/blog/ave-intro.md"
+  ]
+}

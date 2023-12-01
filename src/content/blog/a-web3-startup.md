@@ -13,7 +13,7 @@ For instance:
     2. Instant transactions faster than today's banking apps.
     3. Account recovery for users, _even when they'd forgotten their recovery phrases_.
 
-Of course, I'd several questions.
+Of course, I had several questions.
 If a transaction has no gas fee, why would a miner validate its checksum?
 There is no incentive for a GPU hoarder to mine their crypto over, say, 
 
