@@ -37,66 +37,55 @@
         <span class="tags" id="tags">
         </span>
       </div>
-      <code class="language-javascript"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="fl">0.1</span> <span class="op">+</span> <span class="fl">0.2</span> <span class="op">==</span> <span class="fl">0.3</span>       <span class="co">// false</span></span>
+      <p>Here&#39;s a few lines of JavaScript code that, apparently, make it a bad programming language:</p>
+<code class="language-javascript"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="fl">0.1</span> <span class="op">+</span> <span class="fl">0.2</span> <span class="op">==</span> <span class="fl">0.3</span>       <span class="co">// false</span></span>
 <span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="kw">NaN</span> <span class="op">==</span> <span class="kw">NaN</span>             <span class="co">// false</span></span>
 <span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="kw">typeof</span> <span class="kw">NaN</span>             <span class="co">// &quot;number&quot;</span></span>
 <span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a><span class="kw">true</span> <span class="op">==</span> <span class="dv">1</span>              <span class="co">// true</span></span>
 <span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>[<span class="dv">5</span><span class="op">,</span> <span class="dv">4</span><span class="op">,</span> <span class="dv">31</span>]<span class="op">.</span><span class="fu">sort</span>()      <span class="co">// [ 31, 4, 5 ]</span></span>
 <span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a><span class="bu">Math</span><span class="op">.</span><span class="fu">max</span>()             <span class="co">// -Infinity</span></span>
 <span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span><span class="op">,</span> <span class="dv">2</span><span class="op">,</span> <span class="dv">3</span>] <span class="op">==</span> [<span class="dv">1</span><span class="op">,</span> <span class="dv">2</span><span class="op">,</span> <span class="dv">3</span>] <span class="co">// false</span></span></code></pre></div></code></pre>
-<p>Moreover:</p>
-<ol>
-<li>JavaScript is slow.
-</li>
-<li>Untyped and extremely unsafe.
-</li>
-<li>Single threaded.
-</li>
-</ol>
-<p>If you&#39;re anything but a very new programmer, the above might come off as obvious to you, and you might be better of skipping half of this post! However, it really is true that the above are some of the most &quot;meme&quot;-d takes on JavaScript. Type &quot;JavaScript bad meme&quot; into your search engine of choice to convince yourself, that&#39;s how I got to the bunch above.</p>
-<p>&quot;JavaScript bad because <code>0.1 + 0.2 != 0.3</code>&quot; is tech-twitter&#39;s favorite game to play on weekends!</p>
-<p>Before we move on, Let&#39;s establish this:</p>
-<blockquote>
-<p>I want to pick on JavaScript&#39;s <strong>design</strong>, not it&#39;s <strong>ecosystem</strong>.</p>
-</blockquote>
+<p>Or at least that&#39;s what today&#39;s twitter trending page told me (yes, JavaScript was trending on twitter, probably because of Hacktoberfest).
+Unconvinced? Look up &quot;JavaScript bad meme&quot; in the search bar and see for yourself.</p>
 <h2 id="playing-the-devils-advocate">Playing the devil&#39;s advocate</h2>
 <p>First, let&#39;s briefly dissect the expressions one by one, starting with the most common:</p>
 <code class="language-javascript"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="fl">0.1</span> <span class="op">+</span> <span class="fl">0.2</span> <span class="op">==</span> <span class="fl">0.3</span><span class="op">;</span> <span class="co">// false</span></span></code></pre></div></code></pre>
 <p>This is not JavaScript&#39;s fault, but a by-product of how computers represent floating point numbers.
-You see, we can&#39;t have infinite precision decimals within finite space, so we make a trade-off. We store all floating point numbers in 64-bits of space, and loose some precision in the process. This is standardized by the <a href="https://en.wikipedia.org/wiki/Double-precision_floating-point_format">IEEE 64 bit floating point representation</a>. The Wikipedia article does a better job of explaining it than I ever could, so I refer you to that in case you want to know more.</p>
-<p>Most other languages do the same thing. C, Java, C++, Lua, Python and friends.
-Note however that some do not, <a href="https://www.raku.org/">Raku</a> (also called Perl-6 by some) for example, correctly evaluates <code>0.1 + 0.2</code> to <code>0.3</code>.
-Magic? Nope, just a different representation written in software. Instead of using IEEE floats, Raku uses rational numbers of the form <code>p/q</code> where <code>p</code> and <code>q</code> share no common factors barring 1.</p>
-<p>Why don&#39;t all languages do what Raku does?
-This has some trade-offs, speed is the very obvious first candidate, but also space. Now we have to store 2 numbers, <code>p</code> and <code>q</code>. This not only means twice the space, but the number may no longer fit in CPU registers.</p>
+You can&#39;t have infinite precision decimals within finite space, so we make a trade-off. We store all floating point numbers in 64-bits of space, and loose some precision in the process. This is standardized by the <a href="https://en.wikipedia.org/wiki/Double-precision_floating-point_format">IEEE 64 bit floating point representation</a>. The Wikipedia article does a better job of explaining it than I ever could.</p>
+<p>Most other languages do the same thing. C, Java, C++, Lua, Python, you name it.
+Note however that some do not, <a href="https://www.raku.org/">Raku</a>  for example, correctly evaluates <code>0.1 + 0.2</code> to <code>0.3</code>. Instead of using IEEE floats, Raku uses rational numbers of the form <code>p/q</code> where <code>p</code> and <code>q</code> share no common factors barring 1.</p>
+<p>So why don&#39;t all languages do what Raku does?
+For one, you now store two numbers instead of one to represent a single float.
+Secondly, most CPUs have hardware circuits that perform arithmetic on IEEE floats.
+In a sufficiently CPU intensive application, losing out on hardware accelerated arithmetic can slow things down significantly.</p>
 <p>Next up, we have:</p>
 <code class="language-javascript"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">NaN</span> <span class="op">==</span> <span class="kw">NaN</span><span class="op">;</span> <span class="co">// false</span></span></code></pre></div></code></pre>
-<p>This one is also simple, The aforementioned IEEE double precision floating point spec simply states that <code>NaN</code> must never be equal to another <code>NaN</code>. To my knowledge, this is mostly to immediately raise alarms instead of quietly passing through conditions of <code>if</code> statements and such.</p>
+<p>This one is also simple, The aforementioned IEEE double precision floating point spec blithely states that <code>NaN</code> must never be equal to another <code>NaN</code>. That way, if you have two <code>NaN</code>s as the result of logic errors in your program, they won&#39;t pass any equality checks by mistake.</p>
 <p>Moving on...</p>
 <code class="language-javascript"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">typeof</span> <span class="kw">NaN</span><span class="op">;</span> <span class="co">// number</span></span></code></pre></div></code></pre>
-<p><code>NaN</code> literally means &quot;not a number&quot;, so why does JavaScript tell me otherwise? This could have been handled differently by having a separate <code>&quot;NaN&quot;</code> type. However it does make sense when you think about it this way, the <code>NaN</code> value always appears in places where you would expect numbers. <code>Math.sqrt(-1)</code> for example.</p>
+<p><code>NaN</code> literally means &quot;not a number&quot;, so why does JavaScript tell me otherwise? This could have been handled differently by having a separate <code>NaN</code> type. However it makes sense when you think about it this way: the <code>NaN</code> value always appears in places where you would expect numbers, as the result of numeric operations, <code>Math.sqrt(-1)</code> for example.</p>
+<p>Most other languages also represent <code>NaN</code> in their floating point data types.</p>
 <p>And now:</p>
 <code class="language-javascript"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">true</span> <span class="op">==</span> <span class="dv">1</span><span class="op">;</span> <span class="co">// true</span></span></code></pre></div></code></pre>
-<p>This is debatable. Python, Ruby and C++ do what JavaScript here does, Lua however disagrees. Java rebels and throws a type error at compile time. If you ask me, all these approaches make sense. In duck typed languages, we&#39;re seldom concerned with an actual boolean value, and really care about <a href="https://developer.mozilla.org/en-US/docs/Glossary/Truthy">truthy-ness</a>.</p>
-<p>In case of JavaScript, if we complain about the above, then why not maintain the same energy for this:</p>
+<p>This is debatable. Python, Ruby and C++ do what JavaScript here does, Lua however disagrees. Java croaks and throws a type error at compile time. If you ask me, all these approaches make sense. In duck typed languages, we&#39;re seldom concerned with an actual boolean value, and really care about its <a href="https://developer.mozilla.org/en-US/docs/Glossary/Truthy">truthy-ness</a>.</p>
+<p>The following snippet passes in both C (and C++, sometimes with a compiler warning) and JavaScript:</p>
 <code class="language-javascript"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="dv">0</span>) {</span>
 <span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>  <span class="co">/* stuff */</span></span>
 <span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
-<p>Why is it okay to substitute <code>0</code> (or <code>&#39;&#39;</code>) for <code>false</code> but not <code>true</code> for <code>1</code>?</p>
-<p>The <code>==</code> operator compares <strong>truthiness</strong> of values. i.e it makes a judgement based on a <strong>property</strong> of it&#39;s operands, and not the values themselves. Take a look:</p>
+<p>The <code>==</code> operator compares <strong>truthiness</strong> of values. i.e it makes a judgement based on a <strong>property</strong> of it&#39;s operands, and not the values themselves. Consider:</p>
 <code class="language-javascript"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&quot;</span> <span class="op">==</span> <span class="kw">false</span><span class="op">;</span> <span class="co">// true</span></span>
 <span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="dv">0</span> <span class="op">==</span> <span class="st">&quot;&quot;</span><span class="op">;</span> <span class="co">// true</span></span></code></pre></div></code></pre>
-<p>Note however that it&#39;s overloaded to act differently for numbers and strings (and this weird polymorphism is a fair critique, which we&#39;ll address).
+<p>Note however that it&#39;s overloaded to act differently for numbers and strings (and this behaviour <em>is</em> bad design).
 If you want strict value comparison, use <code>==</code>&#39;s sister <code>===</code> instead.</p>
 <code class="language-javascript"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&quot;</span> <span class="op">===</span> <span class="kw">false</span><span class="op">;</span> <span class="co">// false</span></span>
 <span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="dv">0</span> <span class="op">===</span> <span class="st">&quot;&quot;</span><span class="op">;</span> <span class="co">// false</span></span></code></pre></div></code></pre>
 <p>Up next:</p>
 <code class="language-java"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="op">[</span><span class="dv">5</span><span class="op">,</span> <span class="dv">4</span><span class="op">,</span> <span class="dv">31</span><span class="op">].</span><span class="fu">sort</span><span class="op">()</span> <span class="co">// [ 31, 4, 5 ]</span></span></code></pre></div></code></pre>
-<p>Now this, is questionable API design choice. I completely agree with that. However, it doesn&#39;t tie into the semantics of JavaScript as a language in any way. In the same spirit, one could pick bones with C++&#39;s poorly named standard library entities. (<code>std::empty</code> instead of <code>std::is_empty</code>).</p>
+<p>This questionable API design.
+I don&#39;t have much to say about this, except that I&#39;d prefer <code>sort</code> either default to numeric sorting, or mandate the comparator argument.</p>
 <p>To do a number comparison-based sort, you&#39;d have to call it like so:</p>
 <code class="language-javascript"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>[<span class="dv">5</span><span class="op">,</span> <span class="dv">4</span><span class="op">,</span> <span class="dv">31</span>]<span class="op">.</span><span class="fu">sort</span>((a<span class="op">,</span> b) <span class="kw">=&gt;</span> a <span class="op">-</span> b)<span class="op">;</span> <span class="co">// [4, 5, 31]</span></span></code></pre></div></code></pre>
-<p>Just to be clear, I believe this is a completely fair and valid criticism, just not of the language, but it&#39;s standard library.</p>
-<p>Following up with:</p>
+<p>Now, <code>Math.max</code>:</p>
 <code class="language-javascript"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="bu">Math</span><span class="op">.</span><span class="fu">max</span>()<span class="op">;</span> <span class="co">// -Infinity</span></span></code></pre></div></code></pre>
 <p><code>Math.max</code> is a variadic function, meaning you can call it with 1, 2, 3 or 0 arguments. When called with 0 arguments, it returns <code>-Infinity</code>. Why? Because maximum of an empty set is negative infinity.</p>
 <p>Why not throw an arity error on 0 arguments you ask? Because there are cases where the number of arguments isn&#39;t known at compile time. For example, calling it with the spread operator like <code>Math.max(...myArgs)</code>. In fact, try implementing <code>Math.max</code> yourself, how would you do it?</p>
@@ -107,16 +96,18 @@ If you want strict value comparison, use <code>==</code>&#39;s sister <code>===<
 <span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
 <span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> maxSoFar<span class="op">;</span></span>
 <span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
-<p>What should <code>maxSoFar</code> be initialized with? What is that one value which is guaranteed to be less than anything in <code>args</code>? Why <code>-Infinity</code> of course! Note that we can&#39;t initialize it with <code>args[0]</code> here because the index may be out of bounds, when <code>args</code> is empty. Another approach could be:</p>
+<p>What should <code>maxSoFar</code> be initialized with? What is that one value which is guaranteed to be less than any number? <code>-Infinity</code>, of course. We can&#39;t initialize it with <code>args[0]</code> here because the index may be out of bounds, when <code>args</code> is empty. Another approach could be:</p>
 <code class="language-javascript"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="bu">Math</span><span class="op">.</span><span class="fu">max</span> <span class="op">=</span> (args<span class="op">...</span>) <span class="kw">=&gt;</span> {</span>
 <span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>   <span class="cf">if</span> (args<span class="op">.</span><span class="at">length</span> <span class="op">&lt;</span> <span class="dv">1</span>) <span class="cf">throw</span> <span class="kw">new</span> <span class="bu">Error</span>(<span class="st">&quot;Expected at least 1 argument&quot;</span>)<span class="op">;</span></span>
 <span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>   <span class="co">// ...</span></span>
 <span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
-<p>This is a completely valid approach as well, just different from what JavaScript does. I hope given the perspective above, you can see why neither of them are better or worse than the other. Neither is void of reason, they just have different conventions.</p>
+<p>Personally, I&#39;d prefer something like this, but I&#39;m okay with the existing <code>max</code> function too.</p>
 <p>Finally,</p>
 <code class="language-javascript"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span><span class="op">,</span> <span class="dv">2</span><span class="op">,</span> <span class="dv">3</span>] <span class="op">==</span> [<span class="dv">1</span><span class="op">,</span> <span class="dv">2</span><span class="op">,</span> <span class="dv">3</span>]<span class="op">;</span></span></code></pre></div></code></pre>
-<p>This is the simplest, most trivial snippet. It&#39;s just heap allocation. The two arrays are different objects living at different places in memory. When you modify one, the other doesn&#39;t change. If JavaScript had operator overloading, one could perhaps override <code>==</code> for <code>Array.prototype</code> and achieve element-by-element comparison? Who knows.</p>
-<p>Now to tackle the rest:</p>
+<p>This is a result of referential equality, heap allocation, and a lack of operator overriding.
+This behaviour is common across most general purpose languages (with the exception of Python).</p>
+<p>Beyond these common expressions, I&#39;ve seen other misinformed takes on the language.
+For instance:</p>
 <h2 id="javascript-is-slow">JavaScript is slow.</h2>
 <p>Programming languages do not have performance characteristics.
 Their implementations do.
@@ -129,7 +120,7 @@ Languages that exhibit highly dynamic behaviour are difficult to optimize, and t
 <p>Of course, Benchmarks do not represent real world programs.
 You don&#39;t use JavaScript to crunch high volumes of data, or do automatic differentiation (If you do, I urge you to reconsider).
 You use JavaScript to color buttons on a webpage.</p>
-<h2 id="javascript-is-untyped-and-unsafe">JavaScript is untyped and unsafe.</h2>
+<h2 id="javascript-is-untyped-and-unsafe">JavaScript is untyped, and unsafe.</h2>
 <p>No. JavaScript is <strong>dynamically checked</strong> and <strong>safe</strong>.
 Take this excerpt out of Pierce&#39;s book, <a href="https://www.cis.upenn.edu/~bcpierce/tapl/">Types and programming languages</a>:</p>
 <blockquote>
@@ -180,12 +171,13 @@ Take this excerpt out of Pierce&#39;s book, <a href="https://www.cis.upenn.edu/~
 </tbody>
 </table>
 <p>There is always a tradeoff.
-If you miss having compile time type checking when writing JS, maybe checkout Typescript/Purescript?</p>
+If you miss having compile time type checking when writing JS, maybe try Typescript/Purescript?</p>
 <h3 id="javascript-is-single-threaded-hence-bad">JavaScript is single threaded, hence bad.</h3>
 <p>I don&#39;t disagree with this one.</p>
 <p>Thankfully V8 (and <del>NodeJS</del> libuv) are designed well enough that this problem is easily circumvented with asynchronous code.</p>
-<p>Some languages have built-in multithreading support,
-like atomic data types, or operators that spawn threads/processes.</p>
+<p>Some languages have built-in multithreading support, like atomic data types, or operators that spawn threads/processes.
+Others bake threading support into their standard libraries (<code>pthread</code>).
+JavaScript falls in the second category.</p>
 <h3 id="not-all-roses">Not all roses.</h3>
 <p>Ok, now that I&#39;m done playing the devil&#39;s advocate,
 I do have my own fair share of complaints.</p>
@@ -236,30 +228,7 @@ JavaScript looks like it&#39;s not white-space sensitive at first glance. Catch 
 <p><strong>Hoisting</strong>. Not a big deal, but not WSYIWYG. I like my scripting languages WSYIWYG, thank you.</p>
 </li>
 </ol>
-<p>There&#39;s some other smaller problems like no native integers etc. But I can live with those. In contrast, I <em>have</em> to live with the above.</p>
-<h2 id="what-is-tomorrow-like">What is tomorrow like?</h2>
-<p>JS will always have to be backwards compatible, so a lot of these quirks are unfortunately here to stay.</p>
-<p>On the brighter side, newer additions to JavaScript have been fairly nice!
-Besides, we are still in the early dawn of programming languages.
-We might one day see a language that is both popularly used and popularly liked.</p>
-<blockquote>
-<p><em>&quot;There are only two kinds of languages: the ones people complain about and the ones nobody uses.&quot;</em> &gt; <strong><div style="text-align: right">- Bjarne Stroustrup </div></strong></p>
-</blockquote>
-<h2 id="faq">FAQ</h2>
-<ul>
-<li><strong>So do you like JS or not?</strong> No comments.
-</li>
-<li><strong>Why did you feel the need to write this blog post?</strong> I have time, and no job. Go figure.
-</li>
-<li><strong>Why is there an FAQ section when clearly nobody is reading this ever?</strong> Rude :(
-</li>
-<li><strong>Show me more wonky JavaScript.</strong> Go to <a href="https://wtfjs.com/">wtfjs</a> and knock yourself out.
-</li>
-<li><strong>JavaScript done right?</strong> I have searched for ages, but couldn&#39;t find anything better than PureScript or Dart (when transpiled). it is extremely difficult for scripting languages to enter browsers, unless the transpile to the unholy devilspawn.
-</li>
-<li><strong>Why are there references to Dante&#39;s inferno?</strong> That is the closest entertaining piece of literature in my recent memory and I don&#39;t want a completely bland wall of text.
-</li>
-</ul>
+<p>If you want more, try <a href="https://wtfjs.com/">wtfjs</a>.</p>
 
 
 
