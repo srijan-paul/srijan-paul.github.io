@@ -3,7 +3,7 @@ a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
 a.sourceLine:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
-div.sourceCode { margin: 1em 0; padding: 10px; background-color: #f1f1f1; }
+div.sourceCode {  margin: 1em 0; padding: 10px; background-color: #f1f1f1; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
@@ -85,7 +85,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   color: var(--diff-removed);
 }
 
-p > code {
+:not(pre) > code:not(:has(>div)) {
   background-color: #f1f1f1;
-  padding: 0px 5px;
+	padding: 0px 5px;
 }
