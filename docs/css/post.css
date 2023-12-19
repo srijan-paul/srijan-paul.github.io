@@ -149,20 +149,12 @@ blockquote p {
   text-decoration: underline;
 }
 
-/* codeblocks */
-code {
-  font-size: 16px !important;
-  font-family: var(--font-code), monospace, sans-serif;
-  /* background-color: #e9f0ee; */
-  overflow: auto;
-}
-
 h1,
 h2,
 h3,
 h4,
 h5 {
-  font-weight: bolder;
+  font-weight: 500;
 }
 
 .footer {

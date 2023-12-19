@@ -1,5 +1,5 @@
 /* @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400&family=Zilla+Slab:wght@300;400&family=Cousine:ital,wght@0,400;0,700;1,400&display=swap"); */
-@import url("https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,600;1,400;1,500;1,600&family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400&display=swap");
 
 :root {
   --clr-primary: #2c3e50;
@@ -7,12 +7,12 @@
   --clr-bold: #1e272e;
   --link-color: #0f6965;
   --link-color-hover: var(--link-color);
-  --bg-color: #fafafa;
-  /* other fonts: Cormorand, Zilla Slab, IBM Plex Serif */
-  --font-serif-2: "Space Grotesk";
-  --font-serif-1: "Space Grotesk";
+  --bg-color: white;
+  /* other fonts: Cormorand, Zilla Slab, IBM Plex Serif, Bai Jamjuree */
+  --font-body: "Rubik";
+  --font-heading: "Space Grotesk";
   --font-code: "IBM Plex Mono";
-  --font-weight: 300;
+  --font-weight: 300; 
   --font-weight-bold: 500;
   --font-size: 16px;
 }
@@ -22,10 +22,11 @@ strong {
 }
 
 body {
-  font-family: var(--font-serif-1), sans-serif;
+  font-family: var(--font-body), sans-serif;
   background-color: var(--bg-color);
   font-size: var(--font-size);
   font-weight: var(--font-weight);
+	line-height: 1.5;
 }
 
 h1,
@@ -34,7 +35,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-serif-1), sans-serif;
+  font-family: var(--font-heading), sans-serif;
 }
 
 /* a:visited,
@@ -89,6 +90,24 @@ code {
   font-weight: 400;
 }
 
+/* codeblocks */
+code {
+  font-size: 16px !important;
+  font-family: var(--font-code), monospace, sans-serif;
+  overflow: auto;
+}
+
+div[class="sourceCode"]  {
+	border-radius: 3px;
+	border: 1px solid #ccc;
+}
+
+:not(pre) > code:not([class^="language-"]) {
+	border-radius: 3px;
+	border: 1px solid #ccc;
+}
+
+
 .nav {
   margin-top: 2rem;
 }
@@ -98,7 +117,7 @@ code {
   color: var(--clr-font);
   text-decoration: none;
   font-weight: bold;
-  font-family: var(--font-serif-1);
+  font-family: var(--font-body);
 }
 
 #home-link:hover {
@@ -120,7 +139,7 @@ code {
 
 .nav-link {
   text-decoration: none !important;
-  font-family: var(--font-serif-1);
+  font-family: var(--font-body);
   opacity: 0.8;
 }
 
@@ -146,7 +165,7 @@ code {
 .post-list-date {
   color: gray;
   font-size: 15px;
-  font-family: var(--font-serif-1);
+  font-family: var(--font-body);
   float: right;
 }
 

@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "src/content/blog/boohoo-js.md",
+                "file": "src/content/blog/typing-vyse.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "src/content/blog/boohoo-js.md",
+                "file": "src/content/blog/typing-vyse.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "src/content/blog/boohoo-js.md",
+                "file": "src/content/blog/typing-vyse.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "src/content/blog/boohoo-js.md"
+                "file": "src/content/blog/typing-vyse.md"
               }
             }
           }
@@ -148,6 +148,10 @@
   },
   "active": "80dd2337c9ebc1c9",
   "lastOpenFiles": [
+    "drafts/prescience.md",
+    "src/content/blog/typing-vyse.md",
+    "drafts/[untitled].md",
+    "src/content/blog/boohoo-js.md",
     "Untitled.canvas",
     "src/content/blog/a-web3-startup.md",
     "src/content/blog/ave-intro.md"

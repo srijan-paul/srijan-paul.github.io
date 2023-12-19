@@ -74,9 +74,7 @@ and [What's expected of Us](https://en.wikipedia.org/wiki/What%27s_Expected_of_U
 
 ### Projects
 
-[Nez](https://github.com/srijan-paul/nez).
-
-After my last update, I'd begun working on an NES emulator in C++.
+After my last update, I'd begun working on an [NES emulator](https://github.com/srijan-paul/nez) in C++.
 Few weeks into development, it ground to a halt owing to my inconsistent routine and lack of interest.
 A while back, I decided to revive the project and port it to Zig.
 
