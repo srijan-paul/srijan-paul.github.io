@@ -1,23 +1,24 @@
 /* @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400&family=Zilla+Slab:wght@300;400&family=Cousine:ital,wght@0,400;0,700;1,400&display=swap"); */
-@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@300;400&family=Space+Grotesk:wght@400;500&family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400&display=swap");
 
 * {
-	box-sizing: border-box; 
+  box-sizing: border-box;
 }
 
 :root {
   --clr-primary: #2c3e50;
+  --clr-secondary: gray;
   --clr-font: #2c3a47;
   --clr-bold: #1e272e;
-  --link-color: #0f6965;
-  --link-color-hover: var(--link-color);
+  --clr-link: #106a65;
+  --clr-link-hover: var(--clr-link);
   --bg-color: white;
   /* other fonts: Cormorand, Zilla Slab, IBM Plex Serif, Bai Jamjuree */
   --font-body: "Rubik";
   --font-heading: "Space Grotesk";
   --font-code: "IBM Plex Mono";
-  --font-weight: 300; 
-  --font-weight-bold: 500;
+  --font-weight: 300;
+  --font-weight-bold: 400;
   --font-size: 16px;
 }
 
@@ -30,7 +31,7 @@ body {
   background-color: var(--bg-color);
   font-size: var(--font-size);
   font-weight: var(--font-weight);
-	line-height: 1.5;
+  line-height: 1.5;
 }
 
 h1,
@@ -59,14 +60,14 @@ a:active {
   text-decoration: underline;
   text-decoration-style: dashed;
   text-decoration-color: var(--clr-bold);
-  color: var(--link-color);
+  color: var(--clr-link);
   font-weight: 400;
 }
 
 a:hover {
   text-decoration: underline;
   text-decoration-thickness: 2px;
-  color: var(--link-color-hover);
+  color: var(--clr-link-hover);
 }
 
 .post-list a,
@@ -102,13 +103,13 @@ code {
 }
 
 div.sourceCode {
-	border-radius: 3px;
-	border: 1px solid #ccc;
+  border-radius: 3px;
+  border: 1px solid #ccc;
 }
 
-:not(pre) > code:not([class^="language-"], :has(>div)) {
-	border-radius: 3px;
-	border: 1px solid #ccc;
+:not(pre) > code:not([class^="language-"], :has(> div)) {
+  border-radius: 3px;
+  border: 1px solid #ccc;
 }
 
 .nav {
@@ -188,7 +189,6 @@ pre,
 code {
   tab-size: 2;
 }
-
 
 .center {
   text-align: center;

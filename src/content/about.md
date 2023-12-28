@@ -2,7 +2,7 @@
 
 I'm Srijan, A CS and Math enthusiast currently in Bangalore, India.
 As of January 2023, I'm reading [Oathbringer](https://www.goodreads.com/en/book/show/34002132), and learning [topology](https://en.wikipedia.org/wiki/Topology).
-You can find out more in the section titled [current](/current).
+You can find out more in the section titled [now](/now).
 
 For upkeep, I do language engineering at [DeepSource](https://deepsource.com) - a code health analysis tool.
 
