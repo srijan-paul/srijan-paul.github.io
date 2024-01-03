@@ -218,3 +218,19 @@ code {
     margin-bottom: 0.5rem;
   }
 }
+
+/* Utility classes used in markdown */
+
+.flex-row {
+	display: flex;
+	flex-direction: row;
+}
+
+.flex-gap-10 {
+	gap: 10px;
+}
+
+.flex-33 {
+	flex: 33%;
+}
+

@@ -1,100 +1,58 @@
-## November 2023
+## 3rd January, 2024
 
-### Peritext
+Happy New Year!
+Its 2024, and I want to test the limits of my ability with challenging projects.
+Here's a few things that I want to try before the year is out: 
 
-Earlier this year, I came across [Peritext](https://www.inkandswitch.com/peritext/) – a CRDT for collaborative rich text editing.
-I skimmed over the authors' blog post, a research paper by the same team, and some related literature on distributed data structures.
-Peritext seemed simple enough that I wanted to implement it and see if I can make something useful out of it.
-With that goal in mind, I set out to build a browser-based collaborative rich text editor... *from scratch*.
+- [Five faces of sybil](https://en.wikipedia.org/wiki/File:Jonas_Vinther_demonstrating_the_five_faces_of_Sybil.gif)
+- A(nother) programming language with a powerful hindley-milner type system, ADTs, typeclasses, pattern matching, etc.
+- Text editor with modal editing and LSP support. 
+    - Bonus: Collaborative editing.
+- 3D renderer on the terminal. 
+- GUI client for working with SQLite databases. 
 
-I've always hated losing my zest for personal projects to a pile of third party libraries.
-With too many dependencies, an application is little more than a set of APIs calling into each other from within a murky `node_modules` directory.
-For corporate software that is supposed to be reliable and attract revenue,
-I can understand the need to ship fast and have fewer lines of code to maintain.
-But bringing this mindset home to exploratory hobby projects cheapens the experience.
+### NES emulator update 
 
-My approach was to add a library only when its use-case was orthogonal to what I was building.
-So I wouldn't miss out on learning anything that might go into building real world collaborative software.
+<div class="flex-row flex-gap-10">
+    <div class="flex-33"> 
+        <img src="/assets/img/jan3-2023/nes-dk1.png" alt="Donkey kong background rendering"/>
+    </div>
+    <div class="flex-33">
+        <img src="/assets/img/jan3-2023/nes-dk3.png" alt="Donkey kong main screen"/>
+    </div>
+</div>
 
-Besides, I was building a collaborative editor for *browsers* –
-applications that are ultra-optimized to render hypermedia and make network calls.
-Surely this wouldn't be too difficult, right?
-There ought to be plenty of APIs to manipulate formatted text in HTML,  *right*?
-As I later found out, I was wrong on both accounts.
 
-Building a good rich text editor that works in all major browsers is *hard*.
-Making it concurrent for multiple active users is *even harder*.
-The simplest way to decorate text in an editable HTML element –
-[execCommand](https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand) – is now deprecated 
-(Though nearly all browsers will continue to support it, lest half the internet's text inputs break).
-Worse yet, there is no alternative to `execCommand`.
-The only other way to manipulate rich text is to roll your miniature DOM that models the hierarchy of rich text elements.
-Moreover, your object model has to be built such that incorporating collaborative editing is natural, and doesn't call for a rewrite.
-I won't go into all the details, but you get the idea – there be dragons.
+I've implemented background rendering in the [PPU](https://www.nesdev.org/wiki/PPU), and it can now draw Donkey Kong's background (with some glitches).
+For reasons unknown to me, the attribute table reads aren't accurate right now.
+And if you couldn't tell already, there are no foreground sprites.
 
-After about three weeks, It occurred to me that I had unknowingly taken up *two* projects.
-One was to implement rich-text editing in browsers,
-and the other to design APIs and implement algorithms that allow making concurrent edits.
-I still tried to push through and build on top of my poorly designed block structure that
-didn't account for non-linear items in rich-text documents (e.g: comments, annotations in an image).
-So it should surprise no one when I say that in the following month, the project went down in flames.
+Currently, it cannot run games that rely on background scrolling features in the hardware, and require more complex mapper circuits.
+I'll have a playable version of Donkey Kong before moving on to more complex games.
 
-And just like that, another one of my private GitHub repos bites the dust.
+### Plans for this website
 
-I hope to give it another try, this time with a clean slate and the benefit of hindsight.
-We shall see in my next update. o/
+I've always wanted my websites to be as lean as possible.
+Think lightweight pages, view-source-able markup,
+no fancy animations or loaders, no cookies or trackers,
+and no JavaScript in places where it can be avoided.
+Last year, I moved away from [highlight.js](https://highlightjs.org/), and added support for build-time syntax highlighting in my static site generator.
+This helped shed about 38kB of JS and CSS from every page that had code snippets in it.
 
-### Reading
+However, I still bundle JS with some pages on this website.
+For instance: the list of posts in [/blog](/blog) and `/tags/<tag>` is generated using a script tag 
+that uses some metadata to figure out the the HTML that should be rendered.
 
-Mostly fiction, and a pinch of technical reading.
+Furthermore, the CSS - although small - is not minified.
 
-#### Finished:
-
-- [Words of Radiance](https://www.goodreads.com/book/show/17332218-words-of-radiance) (8/10)
-- [Tower of Babylon](https://www.goodreads.com/book/show/29864598-tower-of-babylon) (8/10)
-- [Understand](https://en.wikipedia.org/wiki/Understand_(story)) (7/10)
-
-For me, Ted Chiang's best works are [Exhalation](https://en.wikipedia.org/wiki/Exhalation_(short_story)),
-[The Merchant at the Alchemist's Gate](https://en.wikipedia.org/wiki/The_Merchant_and_the_Alchemist%27s_Gate),
-and [What's expected of Us](https://en.wikipedia.org/wiki/What%27s_Expected_of_Us).
-
-#### Currently reading:
-
-- [Musashi](https://en.wikipedia.org/wiki/Musashi_(novel))
-- [Database Internals](https://www.databass.dev/)
-- [Oathbringer](https://www.goodreads.com/en/book/show/34002132): On hold for now.
-- [Foundation](https://en.wikipedia.org/wiki/Foundation_(Asimov_novel)): On hold.
-    It has more politics and less Sci-fi than I expected, so I cannot promise I'll pick it back up.
-
-#### Plan to read:
-
-- [Name of the wind](https://en.wikipedia.org/wiki/The_Name_of_the_Wind)
-- [Blindsight](https://en.wikipedia.org/wiki/Blindsight_(Watts_novel))
-- [Linear algebra - Gilbert Strang](https://www.amazon.in/Linear-Algebra-Applications-Gilbert-Strang/dp/8131501728): Been on hold for roughly a year.
-
-### Projects
-
-After my last update, I'd begun working on an [NES emulator](https://github.com/srijan-paul/nez) in C++.
-Few weeks into development, it ground to a halt owing to my inconsistent routine and lack of interest.
-A while back, I decided to revive the project and port it to Zig.
-
-Right now, its about 60% done.
-It cannot run any games just yet, but supports basic display and full CPU functionality.
-I only support one mapper, and the [PPU](https://www.nesdev.org/wiki/PPU) is still a work in progress.
-
-I don't plan for it to be another Mesen or FCEUX.
-It should support a good number of NES games,
-and have mostly accurate emulation for the games it does support.
-
-### Plans
-
-- Design an 8-bit CPU using basic electrical components in Logism evolution.
-- Finish the papers I've collected on CRDTs and group text editing.
+Both of these issues exist because of limitations in my static site generator.
+Moving forward, I want to make my SSG more general purpose.
+It will be available as a binary, and as a library.
+Binary for simple websites that need basic text, templating, and hypermedia.
+Library for websites that need more powerful build time features.
 
 ### Previous
 
+- [November 2023](/current/nov-2023)
 - [February 2023](/current/feb-2023)
-- [January 2023](/current/jan-2023)
-- [March 2022](/current/mar-2022)
-- [January 2022](/current/jan-2022)
 
