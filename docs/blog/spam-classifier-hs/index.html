@@ -35,6 +35,11 @@
         <h2> Detecting spam with Haskell and Baye&#39;s theorem </h2>
         <div class="post-date"></div>
         <span class="tags" id="tags">
+            <a class="tag" href="/posts/index.html?tag=haskell">haskell</a>
+            <a class="tag" href="/posts/index.html?tag=machine-learning">machine-learning</a>
+            <a class="tag" href="/posts/index.html?tag=math">math</a>
+            <a class="tag" href="/posts/index.html?tag=post">post</a>
+            <a class="tag" href="/posts/index.html?tag=FP">FP</a>
         </span>
       </div>
       <p><a href="https://engineering.fb.com/2015/06/26/security/fighting-spam-with-haskell/">Facebook already uses Haskell to filter spam</a>
@@ -109,17 +114,6 @@ and then removes stop words.</p>
 
     <script src="/util.js"></script>
     <script>
-      const tagsDiv = document.getElementById("tags");
-      // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
-      const tags = [["haskell","machine-learning","math","post","FP"]][0]; 
-      tags.forEach(tag => {
-              const li = document.createElement("a")
-              li.classList.add("tag")
-              li.href = `/posts/index.html?tag=${tag}`
-              li.innerHTML = tag
-              tagsDiv.appendChild(li)
-            });
-
       const dateElement = document.querySelector(".post-date");
       dateElement.innerText = dateToString(new Date("2022-07-26"), true);
     </script>

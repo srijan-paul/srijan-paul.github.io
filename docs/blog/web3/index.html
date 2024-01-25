@@ -35,6 +35,9 @@
         <h2> My many gripes with NFTs and the Web3 </h2>
         <div class="post-date"></div>
         <span class="tags" id="tags">
+            <a class="tag" href="/posts/index.html?tag=web3">web3</a>
+            <a class="tag" href="/posts/index.html?tag=blockchain">blockchain</a>
+            <a class="tag" href="/posts/index.html?tag=post">post</a>
         </span>
       </div>
       <p>During my short stint as a blockchain developer, I&#39;ve learned a lot and have met amazing people.
@@ -213,17 +216,6 @@ However the world today is in a frenzy to use it in all the places where it does
 
     <script src="/util.js"></script>
     <script>
-      const tagsDiv = document.getElementById("tags");
-      // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
-      const tags = [["web3","blockchain","post"]][0]; 
-      tags.forEach(tag => {
-              const li = document.createElement("a")
-              li.classList.add("tag")
-              li.href = `/posts/index.html?tag=${tag}`
-              li.innerHTML = tag
-              tagsDiv.appendChild(li)
-            });
-
       const dateElement = document.querySelector(".post-date");
       dateElement.innerText = dateToString(new Date("2022-01-19"), true);
     </script>

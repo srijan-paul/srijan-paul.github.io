@@ -11,7 +11,7 @@ Then, we're going to build some parsers to demonstrate the usefulness of our wor
 To give you a small flash forward, here is a parser that accepts C-style identifiers,
 written with the help of our handy combinators:
 
-```hs
+```haskell
 -- matches strings that satisfy [a-zA-Z][a-zA-Z0-9]+
 ident :: Parser String
 -- One letter or '_', followed by zero of more '_', letters or digits

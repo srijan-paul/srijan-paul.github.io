@@ -35,6 +35,9 @@
         <h2> Compiling to Brainf#ck - Meep. </h2>
         <div class="post-date"></div>
         <span class="tags" id="tags">
+            <a class="tag" href="/posts/index.html?tag=brainfuck">brainfuck</a>
+            <a class="tag" href="/posts/index.html?tag=programming-languages">programming-languages</a>
+            <a class="tag" href="/posts/index.html?tag=post">post</a>
         </span>
       </div>
       <h2 id="alternate-title-writing-a-brainfuck-interpreter-in-brainfuck-the-stupid-way">Alternate Title: Writing a brainfuck interpreter in brainfuck, the stupid way.</h2>
@@ -515,17 +518,6 @@ your way around since I commented a lot of stuff for myself.</p>
 
     <script src="/util.js"></script>
     <script>
-      const tagsDiv = document.getElementById("tags");
-      // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
-      const tags = [["brainfuck","programming-languages","post"]][0]; 
-      tags.forEach(tag => {
-              const li = document.createElement("a")
-              li.classList.add("tag")
-              li.href = `/posts/index.html?tag=${tag}`
-              li.innerHTML = tag
-              tagsDiv.appendChild(li)
-            });
-
       const dateElement = document.querySelector(".post-date");
       dateElement.innerText = dateToString(new Date("2020-11-22"), true);
     </script>

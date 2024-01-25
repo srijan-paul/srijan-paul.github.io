@@ -35,6 +35,9 @@
         <h2> TypeScript will never have fast tooling </h2>
         <div class="post-date"></div>
         <span class="tags" id="tags">
+            <a class="tag" href="/posts/index.html?tag=post">post</a>
+            <a class="tag" href="/posts/index.html?tag=typescript">typescript</a>
+            <a class="tag" href="/posts/index.html?tag=code">code</a>
         </span>
       </div>
       <p>This other day, I set out to parse some TypeScript code with Haskell.</p>
@@ -50,17 +53,6 @@
 
     <script src="/util.js"></script>
     <script>
-      const tagsDiv = document.getElementById("tags");
-      // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
-      const tags = [["post","typescript","code"]][0]; 
-      tags.forEach(tag => {
-              const li = document.createElement("a")
-              li.classList.add("tag")
-              li.href = `/posts/index.html?tag=${tag}`
-              li.innerHTML = tag
-              tagsDiv.appendChild(li)
-            });
-
       const dateElement = document.querySelector(".post-date");
       dateElement.innerText = dateToString(new Date("2023-04-05"), true);
     </script>

@@ -1,14 +1,8 @@
-In most statically typed languages, compilation offers two guarantees.
-First is the guarantee that our code is syntactically valid.
-The second guarantee is that our code is soundly typed, and does not have any semantic errors
-that may break the language's execution logic, like adding an `Int` with a `String`.
+In most statically typed languages, compilation offers the guarantee that our program is soundly typed. That we're not doing something stupid like adding an `Int` to a `String`.
 
-In this post, I'll present a way to offer a third guarantee -
-one that is surprisingly good in keeping logical errors at bay.
-With meticulous use of Haskell's type system,
-we can deter mistakes that are easy to make in imperative languages.
+With Haskell's powerful type system, we can take this further:  Use types to enforce invariants in the program's *business logic*.
 
-The core idea is to make invalid states un-representable, and use types to guide our program's business logic.
+Make invalid states un-representable, and use types to guide our program's flow.
 If that does not make sense to you now, it will after we go over an example.
 
 In a follow-up post, I will show an elegant way of building type-level proofs that ensure

@@ -79,17 +79,6 @@ What I&#39;d like to do instead, is document the changes I needed to make to my 
 
     <script src="/util.js"></script>
     <script>
-      const tagsDiv = document.getElementById("tags");
-      // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
-      const tags = [][0]; 
-      tags.forEach(tag => {
-              const li = document.createElement("a")
-              li.classList.add("tag")
-              li.href = `/posts/index.html?tag=${tag}`
-              li.innerHTML = tag
-              tagsDiv.appendChild(li)
-            });
-
       const dateElement = document.querySelector(".post-date");
       dateElement.innerText = dateToString(new Date("2022-18-01"), true);
     </script>

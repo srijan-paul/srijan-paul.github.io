@@ -35,6 +35,10 @@
         <h2> GSoC&#39;21 - Lifting lambdas &amp; Pallene [1/2] </h2>
         <div class="post-date"></div>
         <span class="tags" id="tags">
+            <a class="tag" href="/posts/index.html?tag=lua">lua</a>
+            <a class="tag" href="/posts/index.html?tag=programming-languages">programming-languages</a>
+            <a class="tag" href="/posts/index.html?tag=gsoc">gsoc</a>
+            <a class="tag" href="/posts/index.html?tag=post">post</a>
         </span>
       </div>
       <p>Well, who would&#39;ve thought? <br />
@@ -299,17 +303,6 @@ A brief rundown of the problems I faced and things I learned.</p>
 
     <script src="/util.js"></script>
     <script>
-      const tagsDiv = document.getElementById("tags");
-      // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
-      const tags = [["lua","programming-languages","gsoc","post"]][0]; 
-      tags.forEach(tag => {
-              const li = document.createElement("a")
-              li.classList.add("tag")
-              li.href = `/posts/index.html?tag=${tag}`
-              li.innerHTML = tag
-              tagsDiv.appendChild(li)
-            });
-
       const dateElement = document.querySelector(".post-date");
       dateElement.innerText = dateToString(new Date("2021-07-23"), true);
     </script>

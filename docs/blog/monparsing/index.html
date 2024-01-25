@@ -35,6 +35,9 @@
         <h2> Monadic parser combinators </h2>
         <div class="post-date"></div>
         <span class="tags" id="tags">
+            <a class="tag" href="/posts/index.html?tag=FP">FP</a>
+            <a class="tag" href="/posts/index.html?tag=programming-languages">programming-languages</a>
+            <a class="tag" href="/posts/index.html?tag=post">post</a>
         </span>
       </div>
       <p>A <a href="https://www.cs.nott.ac.uk/~pszgmh/monparsing.pdf">Parser combinator</a>, as wikipedia describes it,
@@ -46,7 +49,7 @@ Nonetheless, it is an interesting cornerstone in functional programming and <a h
 Then, we&#39;re going to build some parsers to demonstrate the usefulness of our work.</p>
 <p>To give you a small flash forward, here is a parser that accepts C-style identifiers,
 written with the help of our handy combinators:</p>
-<code class="language-hs"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">-- matches strings that satisfy [a-zA-Z][a-zA-Z0-9]+</span></span>
+<code class="language-haskell"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">-- matches strings that satisfy [a-zA-Z][a-zA-Z0-9]+</span></span>
 <span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="ot">ident ::</span> <span class="dt">Parser</span> <span class="dt">String</span></span>
 <span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="co">-- One letter or &#39;_&#39;, followed by zero of more &#39;_&#39;, letters or digits</span></span>
 <span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>ident <span class="ot">=</span> alpha_ <span class="ot">`thenList`</span> many&#39; (alpha_ <span class="op">&lt;|&gt;</span> digit)</span>
@@ -505,17 +508,6 @@ Go forth and write some killer parsers!</p>
 
     <script src="/util.js"></script>
     <script>
-      const tagsDiv = document.getElementById("tags");
-      // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
-      const tags = [["FP","programming-languages","post"]][0]; 
-      tags.forEach(tag => {
-              const li = document.createElement("a")
-              li.classList.add("tag")
-              li.href = `/posts/index.html?tag=${tag}`
-              li.innerHTML = tag
-              tagsDiv.appendChild(li)
-            });
-
       const dateElement = document.querySelector(".post-date");
       dateElement.innerText = dateToString(new Date("2022-05-05"), true);
     </script>

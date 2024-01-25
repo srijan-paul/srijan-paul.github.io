@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "src/content/blog/typing-vyse.md",
+                "file": "src/content/now/jan-3-2024.md",
                 "mode": "source",
                 "source": false
               }
@@ -69,7 +69,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 273.50418853759766
+    "width": 273.50418853759766,
+    "collapsed": true
   },
   "right": {
     "id": "6b8f0c32ef1382e5",
@@ -85,7 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "src/content/blog/typing-vyse.md",
+                "file": "src/content/now/jan-3-2024.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "src/content/blog/typing-vyse.md",
+                "file": "src/content/now/jan-3-2024.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +126,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "src/content/blog/typing-vyse.md"
+                "file": "src/content/now/jan-3-2024.md"
               }
             }
           }
@@ -148,12 +149,38 @@
   },
   "active": "80dd2337c9ebc1c9",
   "lastOpenFiles": [
+    "build/assets/video/mario-nez.mp4",
+    "build/assets/video",
+    "build/now/jan-3-2024/index.html",
+    "build/now/jan-3-2024",
+    "src/content/now/jan-3-2024.meta",
+    "src/assets/video/mario-nez.mp4",
+    "src/assets/video",
+    "src/content/now/index.md",
+    "current/jan-3-2024.md",
+    "current",
+    "src/content/now/jan-3-2024.md",
+    "src/content/now/feb-2023.md",
+    "src/content/now/jan-2023.md",
+    "src/content/now/jan-2022.md",
+    "src/content/now/mar-2022.md",
+    "src/content/about.md",
+    "src/content/notes/monadic-parsing.md",
+    "src/content/index.md",
+    "src/content/blog/bfinbf.md",
+    "src/content/blog/monparsing.md",
+    "src/content/blog/water-shader.md",
+    "src/content/blog/spam-classifier-hs.md",
+    "src/content/blog/purescript-setup.md",
+    "src/content/blog/phantom-types.md",
+    "src/content/blog/boohoo-js.md",
+    "src/content/blog/ts-tooling-is-hard.md",
+    "src/content/blog/ave-intro.md",
+    "src/content/blog/2022.md",
     "drafts/prescience.md",
     "src/content/blog/typing-vyse.md",
     "drafts/[untitled].md",
-    "src/content/blog/boohoo-js.md",
     "Untitled.canvas",
-    "src/content/blog/a-web3-startup.md",
-    "src/content/blog/ave-intro.md"
+    "src/content/blog/a-web3-startup.md"
   ]
 }

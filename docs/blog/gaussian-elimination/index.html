@@ -42,6 +42,8 @@
         <h2> A visual explanation of Gaussian Elimination </h2>
         <div class="post-date"></div>
         <span class="tags" id="tags">
+            <a class="tag" href="/posts/index.html?tag=post">post</a>
+            <a class="tag" href="/posts/index.html?tag=math">math</a>
         </span>
       </div>
       <p>To brush up some Linear Algebra, I&#39;ve been following the book &#39;<a href="https://www.goodreads.com/book/show/179699.Linear_Algebra_and_Its_Applications">Linear Algebra and its Applications</a>&#39;
@@ -265,17 +267,6 @@ This just happened to be one that I couldn&#39;t find elsewhere.</p>
 
     <script src="/util.js"></script>
     <script>
-      const tagsDiv = document.getElementById("tags");
-      // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
-      const tags = [["post","math"]][0]; 
-      tags.forEach(tag => {
-              const li = document.createElement("a")
-              li.classList.add("tag")
-              li.href = `/posts/index.html?tag=${tag}`
-              li.innerHTML = tag
-              tagsDiv.appendChild(li)
-            });
-
       const dateElement = document.querySelector(".post-date");
       dateElement.innerText = dateToString(new Date("2022-10-22"), true);
     </script>

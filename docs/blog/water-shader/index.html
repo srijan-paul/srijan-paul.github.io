@@ -35,17 +35,21 @@
         <h2> Water surface shader for 2D Pixel art games </h2>
         <div class="post-date"></div>
         <span class="tags" id="tags">
+            <a class="tag" href="/posts/index.html?tag=post">post</a>
+            <a class="tag" href="/posts/index.html?tag=games">games</a>
+            <a class="tag" href="/posts/index.html?tag=lua">lua</a>
+            <a class="tag" href="/posts/index.html?tag=love">love</a>
+            <a class="tag" href="/posts/index.html?tag=GLSL">GLSL</a>
         </span>
       </div>
       <p>While browsing the LÖVE2D forums,
-I came across a game called <a href="https://alexjgriffith.itch.io/potions">potions</a>
-where you brew potions and save your cat.
-The first thing I noticed after booting the game was the reflection effect in the game&#39;s water surfaces:</p>
+I came across <a href="https://alexjgriffith.itch.io/potions">potions</a>: A game where you brew potions to save your cat.
+As soon as I booted the game, the reflections in the water surfaces caught my attention:</p>
 <p><img src="https://img.itch.zone/aW1nLzEzNDMwMjQ4LmdpZg==/original/P7lZvp.gif" alt="Water reflections in potions"></img></p>
 <p>There are two noteworthy effects that sell the presence of water:
 real-time reflections of in-game objects close to the edges, and
 the wavy disorted appearance of the reflected image.</p>
-<p>I attempted a recreation of this effect, and was fairly successful:</p>
+<p>I attempted a recreation of this effect, and ended up with this:</p>
 <p><img src="/assets/img/water-shader/final-water-reflection.gif" alt="My recreation of the water effect from Potions"></img></p>
 <p>Here, I&#39;ll document the entire process of getting a reflection system up and running.
 I&#39;m using the Love game framework, and Lua as its scripting language (the original game is in <a href="https://fennel-lang.org/">Fennel</a>).</p>
@@ -499,17 +503,6 @@ The shader used in the game uses a mask and a noise-map to decide the amount of 
 
     <script src="/util.js"></script>
     <script>
-      const tagsDiv = document.getElementById("tags");
-      // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
-      const tags = [["post","games","lua","love","GLSL"]][0]; 
-      tags.forEach(tag => {
-              const li = document.createElement("a")
-              li.classList.add("tag")
-              li.href = `/posts/index.html?tag=${tag}`
-              li.innerHTML = tag
-              tagsDiv.appendChild(li)
-            });
-
       const dateElement = document.querySelector(".post-date");
       dateElement.innerText = dateToString(new Date("2023-09-21"), true);
     </script>

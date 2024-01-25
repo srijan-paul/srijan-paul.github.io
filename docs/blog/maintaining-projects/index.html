@@ -35,6 +35,9 @@
         <h2> Maintaining third party language tooling is difficult </h2>
         <div class="post-date"></div>
         <span class="tags" id="tags">
+            <a class="tag" href="/posts/index.html?tag=personal">personal</a>
+            <a class="tag" href="/posts/index.html?tag=post">post</a>
+            <a class="tag" href="/posts/index.html?tag=rant">rant</a>
         </span>
       </div>
       <p>Developers at Facebook have written a type checker for Python called <a href="https://github.com/facebook/pyre-check">pyre-check</a>.
@@ -195,17 +198,6 @@ Time to stash your optimizations in the backlog, and begin adding support for re
 
     <script src="/util.js"></script>
     <script>
-      const tagsDiv = document.getElementById("tags");
-      // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
-      const tags = [["personal","post","rant"]][0]; 
-      tags.forEach(tag => {
-              const li = document.createElement("a")
-              li.classList.add("tag")
-              li.href = `/posts/index.html?tag=${tag}`
-              li.innerHTML = tag
-              tagsDiv.appendChild(li)
-            });
-
       const dateElement = document.querySelector(".post-date");
       dateElement.innerText = dateToString(new Date("2023-03-21"), true);
     </script>

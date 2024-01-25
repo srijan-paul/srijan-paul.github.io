@@ -1,7 +1,6 @@
 While browsing the LÖVE2D forums,
-I came across a game called [potions](https://alexjgriffith.itch.io/potions)
-where you brew potions and save your cat.
-The first thing I noticed after booting the game was the reflection effect in the game's water surfaces:
+I came across [potions](https://alexjgriffith.itch.io/potions): A game where you brew potions to save your cat.
+As soon as I booted the game, the reflections in the water surfaces caught my attention:
 
 ![Water reflections in potions](https://img.itch.zone/aW1nLzEzNDMwMjQ4LmdpZg==/original/P7lZvp.gif)
 
@@ -9,7 +8,7 @@ There are two noteworthy effects that sell the presence of water:
 real-time reflections of in-game objects close to the edges, and
 the wavy disorted appearance of the reflected image. 
 
-I attempted a recreation of this effect, and was fairly successful:
+I attempted a recreation of this effect, and ended up with this:
 
 ![My recreation of the water effect from Potions](/assets/img/water-shader/final-water-reflection.gif)
 

@@ -35,6 +35,9 @@
         <h2> Intro to lazy evaluation and functional DP </h2>
         <div class="post-date"></div>
         <span class="tags" id="tags">
+            <a class="tag" href="/posts/index.html?tag=post">post</a>
+            <a class="tag" href="/posts/index.html?tag=haskell">haskell</a>
+            <a class="tag" href="/posts/index.html?tag=project-euler">project-euler</a>
         </span>
       </div>
       <p>Functional languages are assumed to be inferior at tackling problems
@@ -258,17 +261,6 @@ using memoization and infinite lists.</p>
 
     <script src="/util.js"></script>
     <script>
-      const tagsDiv = document.getElementById("tags");
-      // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
-      const tags = [["post","haskell","project-euler"]][0]; 
-      tags.forEach(tag => {
-              const li = document.createElement("a")
-              li.classList.add("tag")
-              li.href = `/posts/index.html?tag=${tag}`
-              li.innerHTML = tag
-              tagsDiv.appendChild(li)
-            });
-
       const dateElement = document.querySelector(".post-date");
       dateElement.innerText = dateToString(new Date("2022-08-16"), true);
     </script>

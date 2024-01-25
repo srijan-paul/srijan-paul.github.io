@@ -35,6 +35,8 @@
         <h2> An interactive guide to Fourier series </h2>
         <div class="post-date"></div>
         <span class="tags" id="tags">
+            <a class="tag" href="/posts/index.html?tag=post">post</a>
+            <a class="tag" href="/posts/index.html?tag=math">math</a>
         </span>
       </div>
       <p>Try drawing something on the first canvas, and watch two sets of mechanical alien arms retrace your sketch:</p>
@@ -358,17 +360,6 @@ It would be a shame to blunt the edge of theory by not applying it in practice.<
 
     <script src="/util.js"></script>
     <script>
-      const tagsDiv = document.getElementById("tags");
-      // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
-      const tags = [["post","math"]][0]; 
-      tags.forEach(tag => {
-              const li = document.createElement("a")
-              li.classList.add("tag")
-              li.href = `/posts/index.html?tag=${tag}`
-              li.innerHTML = tag
-              tagsDiv.appendChild(li)
-            });
-
       const dateElement = document.querySelector(".post-date");
       dateElement.innerText = dateToString(new Date("2022-10-08"), true);
     </script>

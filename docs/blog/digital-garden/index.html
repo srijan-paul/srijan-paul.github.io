@@ -35,6 +35,8 @@
         <h2> On digital gardens. </h2>
         <div class="post-date"></div>
         <span class="tags" id="tags">
+            <a class="tag" href="/posts/index.html?tag=post">post</a>
+            <a class="tag" href="/posts/index.html?tag=programming-languages">programming-languages</a>
         </span>
       </div>
       <p>Warm greetings to all zero of my readers. This blog has been fairly dead for a while now.
@@ -108,17 +110,6 @@ When I find something interesting or fun, I end up scouring the web for books, p
 
     <script src="/util.js"></script>
     <script>
-      const tagsDiv = document.getElementById("tags");
-      // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
-      const tags = [["post","programming-languages"]][0]; 
-      tags.forEach(tag => {
-              const li = document.createElement("a")
-              li.classList.add("tag")
-              li.href = `/posts/index.html?tag=${tag}`
-              li.innerHTML = tag
-              tagsDiv.appendChild(li)
-            });
-
       const dateElement = document.querySelector(".post-date");
       dateElement.innerText = dateToString(new Date("2021-04-13"), true);
     </script>

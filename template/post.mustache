@@ -47,7 +47,9 @@
         <h2> {{meta.title}} </h2>
         <div class="post-date">{{! filled in by the script}}</div>
         <span class="tags" id="tags">
-          {{! filled in by script }}
+          {{#meta.tags}}
+            <a class="tag" href="/posts/index.html?tag={{.}}">{{.}}</a>
+          {{/meta.tags}}
         </span>
       </div>
       {{&content}}
@@ -62,17 +64,6 @@
 
     <script src="/util.js"></script>
     <script>
-      const tagsDiv = document.getElementById("tags");
-      // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
-      const tags = [{{&meta.tags}}][0]; 
-      tags.forEach(tag => {
-              const li = document.createElement("a")
-              li.classList.add("tag")
-              li.href = `/posts/index.html?tag=${tag}`
-              li.innerHTML = tag
-              tagsDiv.appendChild(li)
-            });
-
       const dateElement = document.querySelector(".post-date");
       dateElement.innerText = dateToString(new Date("{{&meta.date}}"), true);
     </script>

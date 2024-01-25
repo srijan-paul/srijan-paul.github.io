@@ -1,58 +1,28 @@
-## 3rd January, 2024
+## 25th January, 2024
 
-Happy New Year!
-Its 2024, and I want to test the limits of my ability with challenging projects.
-Here's a few things that I want to try before the year is out: 
+As of today, [my NES emulator](https://github.com/srijan-paul/nez/) is fully functional!
+Well, except audio – I still haven't started on the [APU](https://www.nesdev.org/wiki/APU).
+It can run all [NROM games](https://nesdir.github.io/mapper0.html), and I plan on adding at least two more mappers before the month is out.
 
-- [Five faces of sybil](https://en.wikipedia.org/wiki/File:Jonas_Vinther_demonstrating_the_five_faces_of_Sybil.gif)
-- A(nother) programming language with a powerful hindley-milner type system, ADTs, typeclasses, pattern matching, etc.
-- Text editor with modal editing and LSP support. 
-    - Bonus: Collaborative editing.
-- 3D renderer on the terminal. 
-- GUI client for working with SQLite databases. 
+<video width="320" height="240" autoplay>
+  <source src="/assets/video/mario-nez.mp4" type="video/mp4">
+</video> 
 
-### NES emulator update 
+On the side, I've also begun a rewrite of my [SSG](https://github.com/srijan-paul/bark).
+Its will still be small, but have *just* enough build-time features that I can avoid bundling JavaScript with this website.
 
-<div class="flex-row flex-gap-10">
-    <div class="flex-33"> 
-        <img src="/assets/img/jan3-2023/nes-dk1.png" alt="Donkey kong background rendering"/>
-    </div>
-    <div class="flex-33">
-        <img src="/assets/img/jan3-2023/nes-dk3.png" alt="Donkey kong main screen"/>
-    </div>
-</div>
+### Reading
 
-
-I've implemented background rendering in the [PPU](https://www.nesdev.org/wiki/PPU), and it can now draw Donkey Kong's background (with some glitches).
-For reasons unknown to me, the attribute table reads aren't accurate right now.
-And if you couldn't tell already, there are no foreground sprites.
-
-Currently, it cannot run games that rely on background scrolling features in the hardware, and require more complex mapper circuits.
-I'll have a playable version of Donkey Kong before moving on to more complex games.
-
-### Plans for this website
-
-I've always wanted my websites to be as lean as possible.
-Think lightweight pages, view-source-able markup,
-no fancy animations or loaders, no cookies or trackers,
-and no JavaScript in places where it can be avoided.
-Last year, I moved away from [highlight.js](https://highlightjs.org/), and added support for build-time syntax highlighting in my static site generator.
-This helped shed about 38kB of JS and CSS from every page that had code snippets in it.
-
-However, I still bundle JS with some pages on this website.
-For instance: the list of posts in [/blog](/blog) and `/tags/<tag>` is generated using a script tag 
-that uses some metadata to figure out the the HTML that should be rendered.
-
-Furthermore, the CSS - although small - is not minified.
-
-Both of these issues exist because of limitations in my static site generator.
-Moving forward, I want to make my SSG more general purpose.
-It will be available as a binary, and as a library.
-Binary for simple websites that need basic text, templating, and hypermedia.
-Library for websites that need more powerful build time features.
+- Finished [Dark Matter](https://www.goodreads.com/en/book/show/27833670), Blake Crouch.
+- Currently reading: 
+	- [Age of Myth](https://www.goodreads.com/book/show/26863057-age-of-myth), Michael J Sullivan.
+	- [Database Internals](https://www.databass.dev/), Alex Petrov
+	- [Oathbringer](https://en.wikipedia.org/wiki/Oathbringer), Brandon Sanderson (on hold).
+- Plan to read:
+	- [Profunctor optics and traversals](https://arxiv.org/pdf/2001.08045.pdf)
+	- [Linear Algebra and its applications](https://www.amazon.in/Linear-Algebra-Applications-Gilbert-Strang), Glibert Strang (pick up where I left).
 
 ### Previous
 
-- [November 2023](/current/nov-2023)
-- [February 2023](/current/feb-2023)
-
+- [3rd January, 2024](/now/jan-3-2024)
+- [November 2023](/now/nov-2023)

@@ -1,10 +1,10 @@
 ## Me
 
 I'm Srijan, A CS and Math enthusiast currently in Bangalore, India.
-As of January 2023, I'm reading [Oathbringer](https://www.goodreads.com/en/book/show/34002132), and learning [topology](https://en.wikipedia.org/wiki/Topology).
+As of January 2024, I'm reading [Age of Myth](https://www.goodreads.com/en/book/show/34002132), and studying category theory. 
 You can find out more in the section titled [now](/now).
 
-For upkeep, I do language engineering at [DeepSource](https://deepsource.com) - a code health analysis tool.
+For upkeep, I do language engineering at [DeepSource](https://deepsource.com) - a code health tool.
 
 ## This site
 
@@ -24,7 +24,7 @@ Its intended for personal use only, but can easily be adapted for websites simil
 
 - <a href="https://github.com/srijan-paul/CSTriviaBot" target="_blank">CSTriviaBot</a>: A fun, general purpose discord bot.
 
-And many more on my GitHub :)
+And many more on my [GitHub](https://github.com/srijan-paul).
 
 ## Contact
 

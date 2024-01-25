@@ -35,6 +35,8 @@
         <h2> Hindsight - 2021 </h2>
         <div class="post-date"></div>
         <span class="tags" id="tags">
+            <a class="tag" href="/posts/index.html?tag=post">post</a>
+            <a class="tag" href="/posts/index.html?tag=personal">personal</a>
         </span>
       </div>
       <p>This post is a paraphrasing of a journal entry with several details redacted.
@@ -50,7 +52,7 @@ I’ve been fortunate enough to not lose anyone to <em>you-know-what</em>,
 and have learned a fair amount of things,
 although none that I actually set out to learn back in January.</p>
 <h3 id="reading">Reading</h3>
-<p>I am ashamed to admit my rapid decline in reading books ever since I started attending college.
+<p>I am ashamed to admit my rapid decline in reading ever since I started attending college.
 I’ve gone from 30 to 11 books a year in 2 years.
 Regardless, here’s the favorite books I (almost) finished in 2021:</p>
 <ol>
@@ -121,13 +123,13 @@ I managed to finish <a href="https://www.cis.upenn.edu/~cis120/archive/19fa/note
 <p>The people I worked with were smart, cooperative and capable.
 It is just a difference in perspective that made me pull back.
 I still keep an eye out for interesting chains, their contract languages, VMs and consensus methods,
-but I do not see myself working in a field where a nugget of doubt in my own ethics is unavoidable.</p>
-<p>To be honest, I see far less value in web3 than most people.
+but I do not see myself working in a field where a nugget of doubt in my own ethos is unavoidable.</p>
+<p>I see far less value in web3 than most people.
 Blockchain is an interesting engineering approach, but a non-solution to most problems they’re actually hurled at.
 I genuinely appreciate that this technology played a very important role in discussing the valuation of digital assets,
 just as we value real and tangible items.
 If a majority of this role wasn’t million dollar edgy monkey JPEGs,
-I might still have been working in this field.
+I might have had higher regard for it.
 I much prefer the ad economy over paying gas fees to send texts.</p>
 <h3 id="games">Games</h3>
 <p>Apart from random <a href="http://itch.io">itch.io</a> jam submissions, I played Nuclear Throne for the most part.
@@ -161,17 +163,6 @@ Have a wonderful new year :)</p>
 
     <script src="/util.js"></script>
     <script>
-      const tagsDiv = document.getElementById("tags");
-      // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
-      const tags = [["post","personal"]][0]; 
-      tags.forEach(tag => {
-              const li = document.createElement("a")
-              li.classList.add("tag")
-              li.href = `/posts/index.html?tag=${tag}`
-              li.innerHTML = tag
-              tagsDiv.appendChild(li)
-            });
-
       const dateElement = document.querySelector(".post-date");
       dateElement.innerText = dateToString(new Date("2021-12-31"), true);
     </script>

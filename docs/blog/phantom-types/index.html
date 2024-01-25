@@ -35,17 +35,15 @@
         <h2> Of Phantoms, witches, and type driven design in Haskell </h2>
         <div class="post-date"></div>
         <span class="tags" id="tags">
+            <a class="tag" href="/posts/index.html?tag=FP">FP</a>
+            <a class="tag" href="/posts/index.html?tag=programming-languages">programming-languages</a>
+            <a class="tag" href="/posts/index.html?tag=post">post</a>
+            <a class="tag" href="/posts/index.html?tag=haskell">haskell</a>
         </span>
       </div>
-      <p>In most statically typed languages, compilation offers two guarantees.
-First is the guarantee that our code is syntactically valid.
-The second guarantee is that our code is soundly typed, and does not have any semantic errors
-that may break the language&#39;s execution logic, like adding an <code>Int</code> with a <code>String</code>.</p>
-<p>In this post, I&#39;ll present a way to offer a third guarantee -
-one that is surprisingly good in keeping logical errors at bay.
-With meticulous use of Haskell&#39;s type system,
-we can deter mistakes that are easy to make in imperative languages.</p>
-<p>The core idea is to make invalid states un-representable, and use types to guide our program&#39;s business logic.
+      <p>In most statically typed languages, compilation offers the guarantee that our program is soundly typed. That we&#39;re not doing something stupid like adding an <code>Int</code> to a <code>String</code>.</p>
+<p>With Haskell&#39;s powerful type system, we can take this further:  Use types to enforce invariants in the program&#39;s <em>business logic</em>.</p>
+<p>Make invalid states un-representable, and use types to guide our program&#39;s flow.
 If that does not make sense to you now, it will after we go over an example.</p>
 <p>In a follow-up post, I will show an elegant way of building type-level proofs that ensure
 logical correctness of programs.</p>
@@ -306,17 +304,6 @@ Until then, I leave you with some resources to study type-driven design.</p>
 
     <script src="/util.js"></script>
     <script>
-      const tagsDiv = document.getElementById("tags");
-      // the [foo][0] is a hack for when `foo` evaluates to nothing in mustache
-      const tags = [["FP","programming-languages","post","haskell"]][0]; 
-      tags.forEach(tag => {
-              const li = document.createElement("a")
-              li.classList.add("tag")
-              li.href = `/posts/index.html?tag=${tag}`
-              li.innerHTML = tag
-              tagsDiv.appendChild(li)
-            });
-
       const dateElement = document.querySelector(".post-date");
       dateElement.innerText = dateToString(new Date("2023-03-07"), true);
     </script>
