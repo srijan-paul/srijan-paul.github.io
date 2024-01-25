@@ -9,7 +9,7 @@ It can run all [NROM games](https://nesdir.github.io/mapper0.html), and I plan o
 </video> 
 
 On the side, I've also begun a rewrite of my [SSG](https://github.com/srijan-paul/bark).
-Its will still be small, but have *just* enough build-time features that I can avoid bundling JavaScript with this website.
+It will still be small, but have *just* enough build-time features so that I can avoid bundling JavaScript with this website.
 
 ### Reading
 
