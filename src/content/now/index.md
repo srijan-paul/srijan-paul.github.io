@@ -4,7 +4,7 @@ As of today, [my NES emulator](https://github.com/srijan-paul/nez/) is fully fun
 Well, except audio – I still haven't started on the [APU](https://www.nesdev.org/wiki/APU).
 It can run all [NROM games](https://nesdir.github.io/mapper0.html), and I plan on adding at least two more mappers before the month is out.
 
-<video width="320" height="240" autoplay>
+<video width="320" height="240" autoplay controls>
   <source src="/assets/video/mario-nez.mp4" type="video/mp4">
 </video> 
 

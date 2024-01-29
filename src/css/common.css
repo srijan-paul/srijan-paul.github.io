@@ -1,9 +1,17 @@
 /* @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400&family=Zilla+Slab:wght@300;400&family=Cousine:ital,wght@0,400;0,700;1,400&display=swap"); */
-@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@300;400&family=Space+Grotesk:wght@400;500&family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&family=Space+Grotesk:wght@400;500&family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400&display=swap");
 
 * {
   box-sizing: border-box;
 }
+
+hr {
+  height: 2px;
+  border: none;
+  color: #ccc;
+  background-color: #ccc;
+}
+
 
 :root {
   --clr-primary: #2c3e50;
@@ -14,9 +22,9 @@
   --clr-link-hover: var(--clr-link);
   --bg-color: white;
   /* other fonts: Cormorand, Zilla Slab, IBM Plex Serif, Bai Jamjuree */
-  --font-body: "Rubik";
-  --font-heading: "Space Grotesk";
-  --font-code: "IBM Plex Mono";
+  --font-body: Poppins, sans-serif; 
+  --font-heading: "Space Grotesk", Arial;
+  --font-code: "IBM Plex Mono", monospace;
   --font-weight: 300;
   --font-weight-bold: 400;
   --font-size: 16px;
@@ -59,7 +67,8 @@ a:link,
 a:active {
   text-decoration: underline;
   text-decoration-style: dashed;
-  text-decoration-color: var(--clr-bold);
+  text-decoration-color: var(--clr-link);
+	text-underline-offset: 4px;
   color: var(--clr-link);
   font-weight: 400;
 }
@@ -178,12 +187,6 @@ div.sourceCode {
   max-width: 840px;
 }
 
-hr {
-  height: 1px;
-  border: none;
-  color: #333;
-  background-color: #333;
-}
 
 pre,
 code {
