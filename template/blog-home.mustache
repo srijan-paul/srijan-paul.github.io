@@ -44,9 +44,9 @@
 				{{#meta.is_blog_post}}
 					{
 						tags: [{{#meta.tags}}"{{.}}",{{/meta.tags}}],
-						date: new Date("{{meta.date}}"),
+						date: new Date("{{&meta.date}}"),
 						url: "/{{dstPath}}",
-						title: `{{meta.title}}`
+						title: `{{&meta.title}}`
 					},
 				{{/meta.is_blog_post}}
 			{{/posts}}
