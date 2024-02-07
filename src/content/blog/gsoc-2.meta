@@ -1,8 +1,0 @@
-{
-  template: "post"
-  tags: ["lua" "programming-languages" "gsoc" "post"]
-  title: "GSoC'21 - Lifting lambdas & Pallene [2/2]"
-  date: "2021-08-16"
-  meta: "implementing closures in a compiled language during GSoC at LabLua"
-  is_blog_post: "true"
-}

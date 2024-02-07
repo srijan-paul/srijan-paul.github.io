@@ -5,8 +5,8 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="/css/common.css">
-	<link rel="stylesheet" href="/css/post.css">
+	<link rel="stylesheet" href="/assets/css/common.css">
+	<link rel="stylesheet" href="/assets/css/post.css">
 	<title>injuly / Blog</title>
 </head>
 
@@ -41,17 +41,18 @@
 		// Get all the post data.
 		const posts =  [
 			{{#posts}}
-				{{#data.is_blog_post}}
+				{{#meta.is_blog_post}}
 					{
-						tags: {{&data.tags}},
-						date: new Date("{{&data.date}}"),
-						name: "{{name}}",
-						title: `{{&data.title}}`
-					} ,
-				{{/data.is_blog_post}}
+						tags: [{{#meta.tags}}"{{.}}",{{/meta.tags}}],
+						date: new Date("{{meta.date}}"),
+						url: "/{{dstPath}}",
+						title: `{{meta.title}}`
+					},
+				{{/meta.is_blog_post}}
 			{{/posts}}
 		];
 		
+	
 		// sort the posts by date
 		posts.sort((a, b) => b.date - a.date)
 
@@ -62,7 +63,7 @@
 			
 			const a = document.createElement("a");
 			a.innerText = post.title;
-			a.href = `/blog/${post.name}`;
+			a.href = post.url;
 			li.appendChild(a);
 
 			const date = document.createElement("span");

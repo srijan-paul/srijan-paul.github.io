@@ -1,9 +1,0 @@
-{
-  template: "post"
-  tags: ["FP" "programming-languages" "purescript"]
-  title: "How I set up PureScript projects with ESBuild and Spago"
-  date: "2023-07-29"
-  meta: "Setting up a PureScript project with dev-server and JS interop"
-  is_blog_post: "true"
-}
-

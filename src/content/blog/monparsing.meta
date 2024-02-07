@@ -1,8 +1,0 @@
-{
-  template: "post"
-  tags: ["FP" "programming-languages" "post"]
-  title: "Monadic parser combinators"
-  date: "2022-05-05"
-  meta: "Using monads to write parser combinators in Haskell"
-  is_blog_post: "true"
-} 

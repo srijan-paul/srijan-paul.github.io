@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "src/content/now/jan-3-2024.md",
+                "file": "_hidden/The Snap programming language (standard).md",
                 "mode": "source",
                 "source": false
               }
@@ -86,7 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "src/content/now/jan-3-2024.md",
+                "file": "_hidden/The Snap programming language (standard).md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "src/content/now/jan-3-2024.md",
+                "file": "_hidden/The Snap programming language (standard).md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +126,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "src/content/now/jan-3-2024.md"
+                "file": "_hidden/The Snap programming language (standard).md"
               }
             }
           }
@@ -149,6 +149,10 @@
   },
   "active": "80dd2337c9ebc1c9",
   "lastOpenFiles": [
+    "src/content/now/jan-3-2024.md",
+    "_hidden/The Snap programming language (standard).md",
+    "_hidden/Untitled",
+    "_hidden",
     "docs/assets/video/mario-nez.mp4",
     "docs/assets/video",
     "docs/now/jan-3-2024/index.html",
@@ -157,12 +161,8 @@
     "build/assets/video",
     "build/now/jan-3-2024/index.html",
     "build/now/jan-3-2024",
-    "src/content/now/jan-3-2024.meta",
-    "src/assets/video/mario-nez.mp4",
-    "src/assets/video",
     "src/content/now/index.md",
     "current/jan-3-2024.md",
-    "src/content/now/jan-3-2024.md",
     "src/content/now/feb-2023.md",
     "src/content/now/jan-2023.md",
     "src/content/now/jan-2022.md",
