@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/common.css">
-    <link rel="stylesheet" href="/css/post.css">
-    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/assets/css/common.css">
+    <link rel="stylesheet" href="/assets/css/post.css">
+    <link rel="stylesheet" href="/assets/css/theme.css">
     <meta name="description" content="JavaScript may be terrible, but it&#39;s not as bad as you think">
     
 
@@ -148,7 +148,7 @@ Take this excerpt out of Pierce&#39;s book, <a href="https://www.cis.upenn.edu/~
 <span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
 <span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>  IntOrPtr u <span class="op">=</span> <span class="op">{</span> <span class="op">.</span>ptr <span class="op">=</span> <span class="st">&quot;some string&quot;</span> <span class="op">};</span></span>
-<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>cout<span class="op"> &lt;&lt;</span> u<span class="op">.</span>integer <span class="op">&lt;&lt;</span> <span class="ch">&#39;</span><span class="sc">\n</span><span class="ch">&#39;</span><span class="op">;</span> <span class="co">// &lt;--- Whoops!</span></span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> u<span class="op">.</span>integer <span class="op">&lt;&lt;</span> <span class="ch">&#39;</span><span class="sc">\n</span><span class="ch">&#39;</span><span class="op">;</span> <span class="co">// &lt;--- Whoops!</span></span>
 <span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
 <span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></code></pre>
 <p>Accessing the uninitialized field of a union is undefined behavior, and may have different behavior on different compilers, hardware, OS, or different runs of the same executable.</p>

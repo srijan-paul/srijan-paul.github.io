@@ -33,10 +33,10 @@
 
 		<ul id="post-list" class="post-list">
 		{{#posts}}
-		{{#data.title}}
-			<li id="{{name}}"><a href="/blog/{{name}}">{{data.title}}</a></li>
+		{{#meta.title}}
+		<li id="{{name}}"><a href="{{dstPath}}">{{data.title}}</a></li>
 			<br/>
-		{{/data.title}}
+		{{/meta.title}}
 		{{/posts}}
 		</ul>
 	</div>
@@ -60,9 +60,9 @@
 		// Though it can get wild sometimes.
 		const tagsOfPost =  {
 			{{#posts}}
-				{{#data.is_blog_post}}
-		 			"{{name}}" : 	{{&data.tags}} ,
-				{{/data.is_blog_post}}
+				{{#meta.is_blog_post}}
+		 			"{{name}}" : 	{{&meta.tags}} ,
+				{{/meta.is_blog_post}}
 			{{/posts}}
 		};
 

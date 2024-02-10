@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "_hidden/The Snap programming language (standard).md",
+                "file": "src/blog/give-up-github.md",
                 "mode": "source",
                 "source": false
               }
@@ -69,8 +69,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 273.50418853759766,
-    "collapsed": true
+    "width": 273.50418853759766
   },
   "right": {
     "id": "6b8f0c32ef1382e5",
@@ -86,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "_hidden/The Snap programming language (standard).md",
+                "file": "src/blog/give-up-github.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "_hidden/The Snap programming language (standard).md",
+                "file": "src/blog/give-up-github.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "_hidden/The Snap programming language (standard).md"
+                "file": "src/blog/give-up-github.md"
               }
             }
           }
@@ -149,20 +148,34 @@
   },
   "active": "80dd2337c9ebc1c9",
   "lastOpenFiles": [
-    "src/content/now/jan-3-2024.md",
-    "_hidden/The Snap programming language (standard).md",
-    "_hidden/Untitled",
-    "_hidden",
-    "docs/assets/video/mario-nez.mp4",
-    "docs/assets/video",
-    "docs/now/jan-3-2024/index.html",
-    "docs/now/jan-3-2024",
-    "build/assets/video/mario-nez.mp4",
-    "build/assets/video",
-    "build/now/jan-3-2024/index.html",
-    "build/now/jan-3-2024",
-    "src/content/now/index.md",
+    "docs/copy/js/common/util.js",
+    "docs/copy/js/gaussian-elimination/index.js",
+    "docs/copy/js/fourier-series/util.js",
+    "docs/copy/js/fourier-series/rabbit-epicycles.js",
+    "docs/copy/js/fourier-series/rabbit-coords.js",
+    "docs/copy/js/fourier-series/piegon-coords.js",
+    "docs/copy/js/fourier-series/index.js",
+    "docs/copy/js/fourier-series/graph.js",
+    "docs/copy/js/fourier-series/fourier.js",
+    "docs/assets/img/brainfuck/5.png",
+    "docs/assets/img/brainfuck/4.png",
+    "docs/assets/img/brainfuck/3.png",
+    "docs/assets/img/brainfuck/2.png",
+    "docs/assets/img/brainfuck/1.png",
+    "docs/assets/img/jan3-2023/nes-dk3.png",
+    "docs/assets/img/jan3-2023/nes-dk2.png",
+    "docs/assets/img/jan3-2023/nes-dk1.png",
+    "docs/assets/img/water-shader/waterless-void.png",
+    "docs/assets/img/water-shader/water-with-border.gif",
+    "docs/now/mar-2022/index.html",
+    "docs/now/nov-2023/index.html",
+    "src/blog/gsoc.md",
+    "src/blog/give-up-github.md",
+    "src/blog/gaussian-elimination.md",
     "current/jan-3-2024.md",
+    "_hidden/The Snap programming language (standard).md",
+    "src/content/now/jan-3-2024.md",
+    "src/content/now/index.md",
     "src/content/now/feb-2023.md",
     "src/content/now/jan-2023.md",
     "src/content/now/jan-2022.md",
@@ -181,9 +194,6 @@
     "src/content/blog/ave-intro.md",
     "src/content/blog/2022.md",
     "drafts/prescience.md",
-    "src/content/blog/typing-vyse.md",
-    "drafts/[untitled].md",
-    "Untitled.canvas",
-    "src/content/blog/a-web3-startup.md"
+    "Untitled.canvas"
   ]
 }

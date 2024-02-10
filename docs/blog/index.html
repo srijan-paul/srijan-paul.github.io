@@ -5,8 +5,8 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="/css/common.css">
-	<link rel="stylesheet" href="/css/post.css">
+	<link rel="stylesheet" href="/assets/css/common.css">
+	<link rel="stylesheet" href="/assets/css/post.css">
 	<title>injuly / Blog</title>
 </head>
 
@@ -46,97 +46,104 @@ And while I still have your attention, here&#39;s some of what I&#39;ve managed 
 		// Get all the post data.
 		const posts =  [
 					{
-						tags: ["FP","programming-languages","post"],
+						tags: ["FP","programming-languages","post",],
 						date: new Date("2022-05-05"),
-						name: "monparsing",
+						url: "/blog/monparsing/index.html",
 						title: `Monadic parser combinators`
-					} ,
+					},
 					{
-						tags: ["web3","blockchain","post"],
+						tags: ["web3","blockchain","post",],
 						date: new Date("2022-01-19"),
-						name: "web3",
+						url: "/blog/web3/index.html",
 						title: `My many gripes with NFTs and the Web3`
-					} ,
+					},
 					{
-						tags: ["lua","programming-languages","gsoc","post"],
+						tags: ["lua","programming-languages","gsoc","post",],
 						date: new Date("2021-08-16"),
-						name: "gsoc-2",
+						url: "/blog/gsoc-2/index.html",
 						title: `GSoC'21 - Lifting lambdas & Pallene [2/2]`
-					} ,
+					},
 					{
-						tags: ["brainfuck","programming-languages","post"],
+						tags: ["brainfuck","programming-languages","post",],
 						date: new Date("2020-11-22"),
-						name: "bfinbf",
+						url: "/blog/bfinbf/index.html",
 						title: `Compiling to Brainf#ck - Meep.`
-					} ,
+					},
 					{
-						tags: ["lua","programming-languages","gsoc","post"],
+						tags: ["lua","programming-languages","gsoc","post",],
 						date: new Date("2021-07-23"),
-						name: "gsoc",
+						url: "/blog/gsoc/index.html",
 						title: `GSoC'21 - Lifting lambdas & Pallene [1/2]`
-					} ,
+					},
 					{
-						tags: ["post","haskell","project-euler"],
+						tags: ["post","haskell","project-euler",],
 						date: new Date("2022-08-16"),
-						name: "lazy-fib",
+						url: "/blog/lazy-fib/index.html",
 						title: `Intro to lazy evaluation and functional DP`
-					} ,
+					},
 					{
-						tags: ["FP","programming-languages","post","haskell"],
+						tags: ["FP","programming-languages","post","haskell",],
 						date: new Date("2023-03-07"),
-						name: "phantom-types",
+						url: "/blog/phantom-types/index.html",
 						title: `Of Phantoms, witches, and type driven design in Haskell`
-					} ,
+					},
 					{
-						tags: ["javascript","programming-languages","post"],
+						tags: ["javascript","programming-languages","post",],
 						date: new Date("2021-07-18"),
-						name: "boohoo-js",
+						url: "/blog/boohoo-js/index.html",
 						title: `BoOHoO JaVaScRiPT!!`
-					} ,
+					},
 					{
-						tags: ["post","math"],
+						tags: ["post","math",],
 						date: new Date("2022-10-08"),
-						name: "fourier-series",
+						url: "/blog/fourier-series/index.html",
 						title: `An interactive guide to Fourier series`
-					} ,
+					},
 					{
-						tags: ["post","math"],
+						tags: ["post","math",],
 						date: new Date("2022-10-22"),
-						name: "gaussian-elimination",
+						url: "/blog/gaussian-elimination/index.html",
 						title: `A visual explanation of Gaussian Elimination`
-					} ,
+					},
 					{
-						tags: ["post","programming-languages"],
+						tags: ["post","programming-languages",],
 						date: new Date("2021-04-13"),
-						name: "digital-garden",
+						url: "/blog/digital-garden/index.html",
 						title: `On digital gardens.`
-					} ,
+					},
 					{
-						tags: ["post","personal"],
+						tags: ["post","personal",],
 						date: new Date("2021-12-31"),
-						name: "2022",
+						url: "/blog/2022/index.html",
 						title: `Hindsight - 2021`
-					} ,
+					},
 					{
-						tags: ["post","games","lua","love","GLSL"],
+						tags: ["personal","miscellaneous","software",],
+						date: new Date("2024-02-09"),
+						url: "/blog/give-up-github/index.html",
+						title: `But can you give up GitHub?`
+					},
+					{
+						tags: ["post","games","lua","love","GLSL",],
 						date: new Date("2023-09-21"),
-						name: "water-shader",
+						url: "/blog/water-shader/index.html",
 						title: `Water surface shader for 2D Pixel art games`
-					} ,
+					},
 					{
-						tags: ["FP","programming-languages","purescript"],
+						tags: ["FP","programming-languages","purescript",],
 						date: new Date("2023-07-29"),
-						name: "purescript-setup",
+						url: "/blog/purescript-setup/index.html",
 						title: `How I set up PureScript projects with ESBuild and Spago`
-					} ,
+					},
 					{
-						tags: ["ave","programming-languages","type-system","post"],
+						tags: ["ave","programming-languages","type-system","post",],
 						date: new Date("2020-10-01"),
-						name: "ave-intro",
+						url: "/blog/ave-intro/index.html",
 						title: `Ave - JS with static types`
-					} ,
+					},
 		];
 		
+	
 		// sort the posts by date
 		posts.sort((a, b) => b.date - a.date)
 
@@ -147,7 +154,7 @@ And while I still have your attention, here&#39;s some of what I&#39;ve managed 
 			
 			const a = document.createElement("a");
 			a.innerText = post.title;
-			a.href = `/blog/${post.name}`;
+			a.href = post.url;
 			li.appendChild(a);
 
 			const date = document.createElement("span");

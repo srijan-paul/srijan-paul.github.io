@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/assets/css/common.css">
+    <link rel="stylesheet" href="/assets/css/post.css">
+    <link rel="stylesheet" href="/assets/css/theme.css">
+    <meta name="description" content="If GitHub is so good, why isn&#39;t there a GitHub 2?">
+    
+
+    <title>But can you give up GitHub?</title>
+  </head>
+
+  <body>
+    <div class="main">
+      <div class="nav">
+        <div class="nav-left">
+          <a id="home-link" href="/">injuly</a>
+        </div>
+
+        <div class="nav-right">
+          <a href="/" class="nav-link">index</a>
+          <a href="/about" class="nav-link">about</a>
+          <a href="/blog" class="nav-link">blog</a>
+          <a href="/now" class="nav-link">now</a>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="leader">
+        <h2> But can you give up GitHub? </h2>
+        <div class="post-date"></div>
+        <span class="tags" id="tags">
+            <a class="tag" href="/posts/index.html?tag=personal">personal</a>
+            <a class="tag" href="/posts/index.html?tag=miscellaneous">miscellaneous</a>
+            <a class="tag" href="/posts/index.html?tag=software">software</a>
+        </span>
+      </div>
+      <p><em>&quot;Those who forget history often inadvertently repeat it&quot;</em>,
+reads the opening line of <a href="https://sfconservancy.org/blog/2022/jun/30/give-up-github-launch/">Give Up GitHub</a>&#39;s launch page – an open manifesto by the software freedom conservancy that calls for leaving GitHub, and taking the next generation of FOSS elsewhere.</p>
+<p>The write-up is very strongly worded, and makes points that many will disagree with.
+The mention of copilot, however, stands out.
+Microsoft has been subject to several controversies since Copilot&#39;s launch.
+But if GitHub is so good, it shouldn&#39;t matter, right? In a fair market everyone is allowed to compete, and the consumers get to choose whats best for them.</p>
+<p>So, what&#39;s my problem?</p>
+<h2 id="microsoft-is-making-money-off-your-code">Microsoft is making money off your code</h2>
+<p>GitHub used <em>every</em> public repository to train an AI model,
+then released it as a for-profit product.
+Their training data includes projects that have <a href="https://en.wikipedia.org/wiki/Copyleft">copy-left licenses</a>,
+AKA: licenses that make it illegal for corporations to use your code in commercial software.
+But... Copilot <em>is</em> commercial.
+So what&#39;s Microsoft&#39;s excuse?
+Their defense is that they only use your code for <em>training</em>,
+and do not directly redistribute it, thereby eliding any license infringement.
+This argument is complete nonsense, of course.</p>
+<p>Generative AI models, by nature, regurgitate permutations of their training data.
+<a href="https://twitter.com/Dr_Gingerballs/status/1755063988268798187">They do not create new information</a>.
+Copilot can regurgitate your code, token-for-token, into someone else&#39;s project.
+You might have seen this happen when copilot nimbly autocompletes a function body with comments and links that are directly taken from somebody else&#39;s repository.</p>
+<p>This behavior is typical of Gen-AI tools, diffusion models, and LLMs.
+ChatGPT has been found to <a href="https://www.nytimes.com/2023/12/27/business/media/new-york-times-open-ai-microsoft-lawsuit.html">spit out paywalled NYT articles</a> word-for-word.
+As a matter of fact, DALL-E, Midjourney, GPT,
+and just about every generative AI model <em>does</em> store your data,
+just not in a way that you can explain to a court.
+They compress datasets and mangle them into weights,
+which are then used to shuffle some random noise until it becomes legible.</p>
+<p>Clearly, this is antithetical to FOSS and shareware licensing.
+GitHub is (ab)using its leading position in the VCS hosting market to
+curtail your ownership of programs that <em>you have written</em>.</p>
+<h2 id="own-what-you-write">Own what you write</h2>
+<p>Proprietary LLMs scrape the entire internet – your blog, LinkedIn, Twitter, everything.</p>
+<p>They break into your kitchen, steal your recipe, and give nothing back.
+No references in generated answers.
+No credits on their product page.
+No ingress to your website.
+Your traffic is stolen and monetized [<a href="#backmatter">1</a>].</p>
+<p>As explained in <a href="https://twitter.com/GergelyOrosz/status/1688829094249615360">this tweet</a>,
+You can (try to) stop OpenAI from training on your code by adding this snippet to your website&#39;s <code>robots.txt</code> file [<a href="#backmatter">2</a>]:</p>
+<code><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>User-agent: GPTBot</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>Disallow: /</span></code></pre></div></code></pre>
+<p>This only works against scrapers using the <code>GPTBot</code> user-agent, and is no harder to bypass than a &quot;This website is for adults. Are you 18 or older?&quot; pop-up. [<a href="#backmatter">3</a>]</p>
+<p>That&#39;s nearly all you can do to protect your essays so long as you keep them open.
+But what about code?</p>
+<h2 id="the-cost-of-leaving-github">The cost of leaving GitHub</h2>
+<p>Unfortunately, quitting GitHub is harder than banging out <code>git remote set-url origin</code> into your shell.</p>
+<p>Apart from repository hosting, GitHub has pull requests, issue tracking, <a href="https://github.com/features/issues">project management</a>, <a href="https://github.dev">a web IDE</a>, organization-wide <a href="https://github.com/features/code-search">code search</a>, <a href="https://docs.github.com/en/discussions/collaborating-with-your-community-using-discussions/about-discussions">discussions</a>, <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages">site hosting</a>, <a href="https://github.com/security">vulnerability detection</a>, <a href="https://github.com/dependabot">dependency scanning</a>, and the hero product – GitHub actions [<a href="#backmatter">4</a>].</p>
+<p>If you move to a different host today, you need alternatives to all of these.
+You may not need the entire cocktail of features, but you&#39;ll always want more than one,  and this is by design.</p>
+<p>GitHub is deeply interwoven into the workflows of millions of developers.
+Far too many are used to opening pull requests, rather than sending out email patches.
+And thus, there is considerable friction in moving to a different host.</p>
+<p>MS has created the Facebook of software development, a bazaar of projects and maintainers.
+As Drew DeVault puts it:</p>
+<blockquote>
+<p>GitHub optimizes for the end-user and the drive-by contributor. sr.ht optimizes for the maintainers and core contributors instead. [<a href="https://drewdevault.com/2018/06/05/Should-you-move-to-sr.ht.html">source</a>]</p>
+</blockquote>
+<p>If you&#39;re used to GitHub, and like using it (like myself), leaving is rough.</p>
+<h2 id="can-i-give-up-github">Can I give up GitHub?</h2>
+<p>Despite my moral disagreements with Microsoft and Copilot, I love GitHub.
+I write all my code on it, and host this website on it.
+I seldom find hitches that make me second-guess my choice in a VCS provider. There are some rough edges and downtimes, but the overall experience is refined.</p>
+<p>With Microsoft&#39;s massive push to put Copilot on every platform,  it is evident that AI models are going to continue feeding off of everyone&#39;s GH repos.
+Me leaving GH won&#39;t so much as make a scratch in Copilot&#39;s training data.
+Moving to a different VCS provider is more of an ethical stand than anything else – against the upcoming oligopoly of AI merchants.
+So, it all comes down to this:</p>
+<blockquote>
+<p>Is your craft important enough for you to bear the cost of moving to a lesser-known and less polished VCS Provider, to support shareware and free software?</p>
+</blockquote>
+<p>Depending on where this question falls on your compass, you&#39;re either unbothered by it, or already searching for alternatives.
+As for myself, I&#39;m torn, and can&#39;t quit GitHub right away.</p>
+<ul>
+<li>An organization that I&#39;m a part of is exclusive to GitHub.
+</li>
+<li>My workplace uses GitHub.
+</li>
+<li>A GH profile is more easily recognized by potential employers.
+</li>
+</ul>
+<p>So while I continue to use GitHub for work and existing personal projects,
+I&#39;m now actively looking for alternatives to host my future projects on.</p>
+<h2 id="alternatives">Alternatives</h2>
+<p>The two options that I&#39;m evaluating are <a href="https://codeberg.org/">codeberg</a> and <a href="https://sr.ht/">sourcehut</a>.
+Each represents a different style of collaborative work.
+While Codeberg follows GitHub&#39;s style of PR based workflows,
+SourceHut builds on top of email patches.</p>
+<p>I&#39;m going to try both and settle on one to host larger personal projects, and eventually this website. If you&#39;re reading, then I encourage you to give other git hosts a chance, and see if makes sense for you to migrate [<a href="#backmatter">5</a>].</p>
+<p>I&#39;m not particularly pleased with the way things are going, but I&#39;m also unsure if I&#39;m going to move just yet.
+Perhaps Microsoft&#39;s next announcement will be the day I take this site off of GH pages, and <a href="https://world.hey.com/dhh/dare-to-connect-a-server-to-the-internet-01d25a07">dare to connect a server to the internet</a>.</p>
+<h2 id="backmatter">Backmatter</h2>
+<ol>
+<li>While I&#39;m heavily in favor of using LLMs for assisted learning, document summaries, and seeking answers; enabling this technology bears the dire cost of <a href="https://x.com/GergelyOrosz/status/1753141251631706474">stifling the human incentive behind sharing information</a>.
+</li>
+<li>While my website does have a <code>robots.txt</code> now, it is still hosted on GitHub. No, the irony isn&#39;t lost on me.
+</li>
+<li>The only other way that I know of is to hide your content behind captchas or paywalls. And at that point, a link to my website is a flaming rage bait.
+</li>
+<li>And if that wasn&#39;t enough, GitHub has an an entire marketplace of apps that integrate with your repos. Even the company I work for is <a href="https://github.com/marketplace/deepsource-io">an app on GitHub</a>.
+</li>
+<li>Often, it won&#39;t – and that&#39;s okay. A GH profile is touted a better resume by many employers. Moving several years of commits to a different host isn&#39;t easy for someone looking to land a job.
+</li>
+</ol>
+<p>Also related: <a href="https://www.hanselman.com/blog/your-words-are-wasted">Your words are wasted</a>, Scott Hanselman.</p>
+
+
+
+      <div class="footer">
+        <hr>
+        Questions, suggestions or comments? <br />
+        Shoot me an <a href="mailto:srijannr1@gmail.com">email</a>, or <a href="https://twitter.com/_injuly">tweet@me</a>.
+      </div>
+    </div>
+
+    <script src="/util.js"></script>
+    <script>
+      const dateElement = document.querySelector(".post-date");
+      dateElement.innerText = dateToString(new Date("2024-02-09"), true);
+    </script>
+  </body>
+</html>
+
