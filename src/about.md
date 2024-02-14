@@ -1,7 +1,6 @@
 ---
 template: about
 ---
-
 ## Me
 
 I'm Srijan, A CS and Math enthusiast currently in Bangalore, India.

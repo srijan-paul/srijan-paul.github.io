@@ -12,13 +12,12 @@ meta: If GitHub is so good, why isn't there a GitHub 2?
 *"Those who forget history often inadvertently repeat it"*,
 reads the opening line of [Give Up GitHub](https://sfconservancy.org/blog/2022/jun/30/give-up-github-launch/)'s launch page – an open manifesto by the software freedom conservancy that calls for leaving GitHub, and taking the next generation of FOSS elsewhere. 
 
-The write-up is very strongly worded, and makes points that many will disagree with.
+The write-up is strongly worded, and makes points that many will disagree with.
 The mention of copilot, however, stands out.
 Microsoft has been subject to several controversies since Copilot's launch.
 But if GitHub is so good, it shouldn't matter, right? In a fair market everyone is allowed to compete, and the consumers get to choose whats best for them.
 
 So, what's my problem?
-
 ## Microsoft is making money off your code 
 
 GitHub used *every* public repository to train an AI model,
@@ -33,12 +32,12 @@ This argument is complete nonsense, of course.
 
 Generative AI models, by nature, regurgitate permutations of their training data.
 [They do not create new information](https://twitter.com/Dr_Gingerballs/status/1755063988268798187).
-Copilot can regurgitate your code, token-for-token, into someone else's project.
-You might have seen this happen when copilot nimbly autocompletes a function body with comments and links that are directly taken from somebody else's repository.
+Copilot can recite your code, token-for-token, into someone else's project.
+You might have seen this happen when copilot nimbly autocompletes a function body with comments and links directly taken from somebody else's repository.
 
 This behavior is typical of Gen-AI tools, diffusion models, and LLMs.
 ChatGPT has been found to [spit out paywalled NYT articles](https://www.nytimes.com/2023/12/27/business/media/new-york-times-open-ai-microsoft-lawsuit.html) word-for-word.
-As a matter of fact, DALL-E, Midjourney, GPT,
+In fact, DALL-E, Midjourney, GPT,
 and just about every generative AI model *does* store your data,
 just not in a way that you can explain to a court.
 They compress datasets and mangle them into weights,
@@ -69,7 +68,6 @@ This only works against scrapers using the `GPTBot` user-agent, and is no harder
 
 That's nearly all you can do to protect your essays so long as you keep them open.
 But what about code?
-
 ## The cost of leaving GitHub
 
 Unfortunately, quitting GitHub is harder than banging out `git remote set-url origin` into your shell.
@@ -111,7 +109,7 @@ So while I continue to use GitHub for work and existing personal projects,
 I'm now actively looking for alternatives to host my future projects on.
 ## Alternatives
 
-The two options that I'm evaluating are [codeberg](https://codeberg.org/) and [sourcehut](https://sr.ht/).
+The two options that I'm evaluating are [Codeberg](https://codeberg.org/) and [SourceHut](https://sr.ht/).
 Each represents a different style of collaborative work.
 While Codeberg follows GitHub's style of PR based workflows,
 SourceHut builds on top of email patches.
@@ -119,13 +117,13 @@ SourceHut builds on top of email patches.
 I'm going to try both and settle on one to host larger personal projects, and eventually this website. If you're reading, then I encourage you to give other git hosts a chance, and see if makes sense for you to migrate [[5](#backmatter)].
 
 I'm not particularly pleased with the way things are going, but I'm also unsure if I'm going to move just yet.
-Perhaps Microsoft's next announcement will be the day I take this site off of GH pages, and [dare to connect a server to the internet](https://world.hey.com/dhh/dare-to-connect-a-server-to-the-internet-01d25a07).
+Perhaps when Microsoft makes their next announcement for GitHub, I'll take this site off of GH pages, and [dare to connect a server to the internet](https://world.hey.com/dhh/dare-to-connect-a-server-to-the-internet-01d25a07).
 ## Backmatter
 
-1.  While I'm heavily in favor of using LLMs for assisted learning, document summaries, and seeking answers; enabling this technology bears the dire cost of [stifling the human incentive behind sharing information](https://x.com/GergelyOrosz/status/1753141251631706474).
-2. While my website does have a `robots.txt` now, it is still hosted on GitHub. No, the irony isn't lost on me.
-3. The only other way that I know of is to hide your content behind captchas or paywalls. And at that point, a link to my website is a flaming rage bait.
-4. And if that wasn't enough, GitHub has an an entire marketplace of apps that integrate with your repos. Even the company I work for is [an app on GitHub](https://github.com/marketplace/deepsource-io).
-5. Often, it won't – and that's okay. A GH profile is touted a better resume by many employers. Moving several years of commits to a different host isn't easy for someone looking to land a job.
+1.  While I'm heavily in favor of using LLMs for assisted learning, document summaries, and seeking answers; enabling this technology bears the dire cost of [stifling the human incentive behind sharing information](https://x.com/GergelyOrosz/status/1753141251631706474). [⏎](#own-what-you-write)
+2. While my website does have a `robots.txt` now, it is still hosted on GitHub. No, the irony isn't lost on me. [⏎](#own-what-you-write)
+3. The only other way that I know of is to hide your content behind captchas or paywalls. And at that point, a link to my website is a flaming rage bait.  [⏎](#own-what-you-write)
+4. And if that wasn't enough, GitHub has an an entire marketplace of apps that integrate with your repos. Even the company I work for is [an app on GitHub](https://github.com/marketplace/deepsource-io).  [⏎](#the-cost-of-leaving-github)
+5. Often, it won't – and that's okay. A GH profile is touted a better resume by many employers. Moving several years of commits to a different host isn't easy for someone looking to land a job.  [⏎](#alternatives)
    
 Also related: [Your words are wasted](https://www.hanselman.com/blog/your-words-are-wasted), Scott Hanselman.

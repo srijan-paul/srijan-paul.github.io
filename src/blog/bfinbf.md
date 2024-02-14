@@ -6,7 +6,6 @@ date: "2020-11-22"
 meta: "Writing a brainfuck interpreter in brainfuck, using a language that compiles down to brainfuck"
 is_blog_post: true
 ---
-
 ## Alternate Title: Writing a brainfuck interpreter in brainfuck, the stupid way.
 
 Brainfuck is one of the most popular esoteric programming languages.
