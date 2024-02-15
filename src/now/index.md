@@ -1,5 +1,6 @@
 ---
 template: now
+date: Jan 2024
 ---
 
 ## 25th January, 2024
