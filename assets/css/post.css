@@ -75,7 +75,8 @@ ol li {
 }
 
 /* images */
-img, video {
+img,
+video {
   /*border-radius: 1.5%;*/
   /*box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5), 0 2px 4px 0 rgba(0, 0, 0, 0.5);*/
   display: block;
@@ -84,7 +85,6 @@ img, video {
   margin-bottom: 2%;
   max-width: 100%;
 }
-
 
 /* Blockquotes */
 
@@ -148,14 +148,6 @@ blockquote p {
 
 .tag:hover {
   text-decoration: underline;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5 {
-  font-weight: 500;
 }
 
 .footer {

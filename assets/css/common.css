@@ -1,5 +1,6 @@
-/* @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400&family=Zilla+Slab:wght@300;400&family=Cousine:ital,wght@0,400;0,700;1,400&display=swap"); */
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&family=Space+Grotesk:wght@400;500&family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Zilla+Slab:ital,wght@0,400;0,500&family=Space+Grotesk:wght@300;400;500&family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400&display=swap");
+
+/* Cherry Swash, Zilla Slab */
 
 * {
   box-sizing: border-box;
@@ -12,22 +13,24 @@ hr {
   background-color: #ccc;
 }
 
-
 :root {
   --clr-primary: #2c3e50;
   --clr-secondary: gray;
   --clr-font: #2c3a47;
   --clr-bold: #1e272e;
-  --clr-link: #106a65;
-  --clr-link-hover: var(--clr-link);
+  --clr-primary: #4e2cbf;
+  --clr-highlight: #952cbf;
+  --clr-highlight-bg: #1dd3b0;
+  --clr-link: var(--clr-primary);
+  --clr-link-hover: var(--clr-highlight);
   --bg-color: white;
   /* other fonts: Cormorand, Zilla Slab, IBM Plex Serif, Bai Jamjuree */
-  --font-body: Poppins, sans-serif; 
-  --font-heading: "Space Grotesk", Arial;
+  --font-body: "Space Grotesk", sans-serif;
+  --font-heading: "Zilla Slab", Arial;
   --font-code: "IBM Plex Mono", monospace;
   --font-weight: 300;
   --font-weight-bold: 400;
-  --font-size: 15px;
+  --font-size: 16px;
 }
 
 strong {
@@ -40,6 +43,10 @@ body {
   font-size: var(--font-size);
   font-weight: var(--font-weight);
   line-height: 1.5;
+}
+
+::selection {
+  background-color: var(--clr-highlight-bg);
 }
 
 h1,
@@ -68,7 +75,7 @@ a:active {
   text-decoration: underline;
   text-decoration-style: dashed;
   text-decoration-color: var(--clr-link);
-	text-underline-offset: 4px;
+  text-underline-offset: 4px;
   color: var(--clr-link);
   font-weight: 400;
 }
@@ -77,6 +84,7 @@ a:hover {
   text-decoration: underline;
   text-decoration-thickness: 2px;
   color: var(--clr-link-hover);
+  transition-duration: 0.2s;
 }
 
 .post-list a,
@@ -106,7 +114,6 @@ code {
 
 /* codeblocks */
 code {
-  font-size: 16px !important;
   font-family: var(--font-code), monospace, sans-serif;
   overflow: auto;
 }
@@ -114,6 +121,7 @@ code {
 div.sourceCode {
   border-radius: 3px;
   border: 1px solid #ccc;
+  font-size: calc(var(--font-size) - 1px);
 }
 
 :not(pre) > code:not([class^="language-"], :has(> div)) {
@@ -130,7 +138,7 @@ div.sourceCode {
   color: var(--clr-font);
   text-decoration: none;
   font-weight: bold;
-  font-family: var(--font-body);
+  font-family: var(--font-heading);
 }
 
 #home-link:hover {
@@ -187,7 +195,6 @@ div.sourceCode {
   max-width: 840px;
 }
 
-
 pre,
 code {
   tab-size: 2;
@@ -225,15 +232,14 @@ code {
 /* Utility classes used in markdown */
 
 .flex-row {
-	display: flex;
-	flex-direction: row;
+  display: flex;
+  flex-direction: row;
 }
 
 .flex-gap-10 {
-	gap: 10px;
+  gap: 10px;
 }
 
 .flex-33 {
-	flex: 33%;
+  flex: 33%;
 }
-
