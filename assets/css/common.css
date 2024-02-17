@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Zilla+Slab:ital,wght@0,400;0,500&family=Space+Grotesk:wght@300;400;500&family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cherry+Swash:ital,wght@0,400;0,500&family=Space+Grotesk:wght@300;400;500&family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400&display=swap");
 
 /* Cherry Swash, Zilla Slab */
 
@@ -15,18 +15,18 @@ hr {
 
 :root {
   --clr-primary: #2c3e50;
-  --clr-secondary: gray;
+  --clr-grey: rgb(107, 107, 107);
   --clr-font: #2c3a47;
   --clr-bold: #1e272e;
   --clr-primary: #4e2cbf;
   --clr-highlight: #952cbf;
-  --clr-highlight-bg: #1dd3b0;
+  --clr-highlight-bg: #fde3227a;
   --clr-link: var(--clr-primary);
   --clr-link-hover: var(--clr-highlight);
   --bg-color: white;
   /* other fonts: Cormorand, Zilla Slab, IBM Plex Serif, Bai Jamjuree */
   --font-body: "Space Grotesk", sans-serif;
-  --font-heading: "Zilla Slab", Arial;
+  --font-heading: "Cherry Swash", Arial;
   --font-code: "IBM Plex Mono", monospace;
   --font-weight: 300;
   --font-weight-bold: 400;
@@ -58,32 +58,18 @@ h6 {
   font-family: var(--font-heading), sans-serif;
 }
 
-/* a:visited,
-a:focus,
-a {
-  color: var(--clr-highlight);
-}
-
-a:hover {
-  color: var(--clr-highlight-dark);
-} */
-
 a,
 a:visited,
 a:link,
 a:active {
-  text-decoration: underline;
-  text-decoration-style: dashed;
   text-decoration-color: var(--clr-link);
-  text-underline-offset: 4px;
   color: var(--clr-link);
   font-weight: 400;
 }
 
 a:hover {
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  color: var(--clr-link-hover);
+  /* color: var(--clr-link-hover); */
+  background-color: var(--clr-highlight-bg);
   transition-duration: 0.2s;
 }
 

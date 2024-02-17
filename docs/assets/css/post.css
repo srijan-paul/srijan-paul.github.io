@@ -14,9 +14,36 @@ body {
   font-size: var(--font-size);
 }
 
-.post-date {
-  color: gray;
+/* Notes */
+
+.note {
+  background-color: #f8f6ff;
+  color: var(--clr-primary);
+  font-weight: 400;
+  border-radius: 12px;
+  border: 1px solid var(--clr-highlight);
+  padding: 2px 10px 12px 10px;
+  font-size: calc(var(--font-body) - 1px);
 }
+
+.note h1,
+.note h2,
+.note h3,
+.note h4,
+.note h5 {
+  font-family: var(--font-body);
+  margin: 5px 0px;
+}
+
+.note strong {
+  font-weight: 500;
+}
+
+.post-date {
+  color: var(--clr-grey);
+}
+
+/* latex */
 
 .tex {
   text-align: center;
@@ -45,7 +72,7 @@ body {
 
 .tags > a {
   display: inline-block;
-  padding-right: 0.8rem;
+  margin-right: 0.8rem;
 }
 
 /* lists */
