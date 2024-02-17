@@ -17,7 +17,7 @@ This is a spoiler-free review.
 Try to avoid spoilers in the comments!
 </div>
 
-I was idling in an aisle of a local bookstore on a lazy evening,
+On a lazy evening, I was strolling past an aisle of a local bookstore
 when an intriguing book caught my attention.
 I'd gone with a friend who wanted to explore the city,
 and had no intention of making a purchase myself,
