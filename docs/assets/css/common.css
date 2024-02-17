@@ -159,6 +159,14 @@ div.sourceCode {
   vertical-align: baseline;
 }
 
+.post-list > li > a {
+  text-decoration: none;
+}
+
+.post-list > li > a:visited {
+  text-decoration: none;
+}
+
 .post-list-date {
   color: gray;
   font-size: 15px;
