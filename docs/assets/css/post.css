@@ -177,11 +177,6 @@ blockquote p {
   text-decoration: underline;
 }
 
-.footer {
-  margin-top: 2rem;
-  text-align: center;
-}
-
 /* hljs override */
 
 code[class*="language-"] {

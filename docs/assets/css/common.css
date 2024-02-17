@@ -73,16 +73,6 @@ a:hover {
   transition-duration: 0.2s;
 }
 
-.post-list a,
-a:visited {
-  text-decoration: none;
-}
-
-.post-list a:hover {
-  text-decoration: underline;
-  text-decoration-style: dashed;
-}
-
 .navbar {
   display: flex;
   gap: 2rem;
