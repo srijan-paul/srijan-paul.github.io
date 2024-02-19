@@ -8,6 +8,7 @@ date: 2024-02-14
 title: Solving The Honjin Murders
 is_blog_post: true
 meta: A couple is killed on the night of their wedding, and I tried to find the culprit.
+image: /assets/img/honjin-murders/honjin_cover.webp
 ---
 ![The Honjin Murders Cover art](/assets/img/honjin-murders/honjin_cover.webp)
 
