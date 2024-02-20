@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "src/about.md",
+                "file": "src/blog/the-master-key.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "src/about.md",
+                "file": "src/blog/the-master-key.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "src/about.md",
+                "file": "src/blog/the-master-key.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "src/about.md"
+                "file": "src/blog/the-master-key.md"
               }
             }
           }
@@ -148,10 +148,6 @@
   },
   "active": "61fd13f72d5eea5f",
   "lastOpenFiles": [
-    "src/index.md",
-    "src/about.md",
-    "src/blog/honjin-murders.md",
-    "README.md",
     "docs/js/gaussian-elimination/index.js",
     "docs/js/fourier-series/util.js",
     "docs/js/fourier-series/rabbit-epicycles.js",
@@ -162,9 +158,7 @@
     "docs/js/fourier-series/fourier.js",
     "docs/js/common/util.js",
     "docs/js/gaussian-elimination",
-    "docs/assets/img/jan3-2023/nes-dk1.png",
-    "docs/assets/img/jan3-2023/nes-dk3.png",
-    "docs/assets/img/jan3-2023/nes-dk2.png",
+    "docs/js/fourier-series",
     "docs/assets/img/water-shader/waterless-void.png",
     "docs/assets/img/water-shader/water-with-border.gif",
     "docs/assets/img/water-shader/water-tile.gif",
@@ -172,8 +166,17 @@
     "docs/assets/img/water-shader/reflection-no-shader.gif",
     "docs/assets/img/water-shader/reflection-blue-tint.gif",
     "docs/assets/img/water-shader/incorrect-reflection.png",
-    "src/blog/gsoc-2.md",
+    "docs/assets/img/water-shader/final-water-reflection.gif",
+    "docs/assets/img/water-shader/bland-water.gif",
+    "docs/assets/img/water-shader/all-ground-tiles.png",
+    "src/blog/honjin-murders.md",
+    "src/blog/the-master-key.md",
     "src/blog/give-up-github.md",
+    "src/blog/digital-garden.md",
+    "src/about.md",
+    "src/index.md",
+    "README.md",
+    "src/blog/gsoc-2.md",
     "src/blog/gaussian-elimination.md",
     "src/blog/water-shader.md",
     "src/blog/purescript-setup.md",
@@ -181,7 +184,6 @@
     "src/blog/lazy-fib.md",
     "src/blog/gsoc.md",
     "src/blog/fourier-series.md",
-    "src/blog/digital-garden.md",
     "src/blog/ave-intro.md",
     "src/blog/bfinbf.md",
     "src/posts.md",
@@ -192,8 +194,6 @@
     "src/content/now/jan-3-2024.md",
     "src/content/now/index.md",
     "src/content/now/feb-2023.md",
-    "src/content/now/jan-2023.md",
-    "src/content/now/jan-2022.md",
-    "src/content/now/mar-2022.md"
+    "src/content/now/jan-2023.md"
   ]
 }

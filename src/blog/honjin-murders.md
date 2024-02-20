@@ -5,9 +5,9 @@ tags:
   - miscellaneous
   - book-review
 date: 2024-02-14
-title: Solving The Honjin Murders
+title: "Solving Honkakus: The Honjin Murders"
 is_blog_post: true
-meta: A couple is killed on the night of their wedding, and I tried to find the culprit.
+meta: A couple is killed on the night of their wedding, and I try to find the culprit.
 image: /assets/img/honjin-murders/honjin_cover.webp
 ---
 ![The Honjin Murders Cover art](/assets/img/honjin-murders/honjin_cover.webp)
@@ -27,6 +27,7 @@ The book was small too – at about 200 pages.
 It was [The Honjin Murders](https://en.wikipedia.org/wiki/The_Honjin_Murders):  the debut novel of Kosuke Kindaichi, Japan's Sherlock Holmes. 
 
 I thought it'd make for a fun Honkaku mystery solving game, and picked it up.
+
 ## The Puzzle
 
 The challenge is a classic locked room puzzle:
@@ -38,6 +39,7 @@ and a katana plunged into the snow.
 
 The book revolves around the family of the bridegroom, the Koto,
 a mysterious three-fingered man, and private investigator Kosuke.
+
 ##  The Review
 
 While I didn't like the solution – more on that below – I thoroughly enjoyed the atmosphere,
@@ -52,6 +54,7 @@ The harsh winters of post war Japan with several traditional Japanese elements s
 All of this is delivered under 200 pages.
 I'm impressed by writers who write without cruft.
 What I'm less impressed by, is the solution to the puzzle...
+
 ## Did I solve it?
 
 Nope.
@@ -80,7 +83,8 @@ Perhaps, I'd have felt differently if it dragged on for longer before the reveal
 But it didn't.
 It was short.
 
-Similarly short is my current attempt at solving a honkaku – [The Master Key](https://www.goodreads.com/en/book/show/1143506).
+Similarly short is my current attempt at solving a honkaku – [The Master Key](/blog/the-master-key).
+
 ## Backmatter
 
 1. The translator, Louise Heal Kawai, deserves equal credit. [⏎](#the-review)

@@ -18,6 +18,7 @@ Microsoft has been subject to several controversies since Copilot's launch.
 But if GitHub is so good, it shouldn't matter, right? In a fair market everyone is allowed to compete, and the consumers get to choose whats best for them.
 
 So, what's my problem?
+
 ## Microsoft is making money off your code 
 
 GitHub used *every* public repository to train an AI model,
@@ -46,6 +47,7 @@ which are then used to shuffle some random noise until it becomes legible.
 Clearly, this is antithetical to FOSS and shareware licensing.
 GitHub is (ab)using its leading position in the VCS hosting market to
 curtail your ownership of programs that *you have written*.
+
 ## Own what you write
 
 Proprietary LLMs scrape the entire internet – your blog, LinkedIn, Twitter, everything.
@@ -68,6 +70,7 @@ This only works against scrapers using the `GPTBot` user-agent, and is no harder
 
 That's nearly all you can do to protect your essays so long as you keep them open.
 But what about code?
+
 ## The cost of leaving GitHub
 
 Unfortunately, quitting GitHub is harder than banging out `git remote set-url origin` into your shell.
@@ -86,6 +89,7 @@ As Drew DeVault puts it:
 >GitHub optimizes for the end-user and the drive-by contributor. sr.ht optimizes for the maintainers and core contributors instead. [[source](https://drewdevault.com/2018/06/05/Should-you-move-to-sr.ht.html)]
 
 If you're used to GitHub, and like using it (like myself), leaving is rough.
+
 ## Can I give up GitHub?
 
 Despite my moral disagreements with Microsoft and Copilot, I love GitHub.
@@ -107,6 +111,7 @@ As for myself, I'm torn, and can't quit GitHub right away.
 
 So while I continue to use GitHub for work and existing personal projects,
 I'm now actively looking for alternatives to host my future projects on.
+
 ## Alternatives
 
 The two options that I'm evaluating are [Codeberg](https://codeberg.org/) and [SourceHut](https://sr.ht/).
@@ -118,6 +123,7 @@ I'm going to try both and settle on one to host larger personal projects, and ev
 
 I'm not particularly pleased with the way things are going, but I'm also unsure if I'm going to move just yet.
 Perhaps when Microsoft makes their next announcement for GitHub, I'll take this site off of GH pages, and [dare to connect a server to the internet](https://world.hey.com/dhh/dare-to-connect-a-server-to-the-internet-01d25a07).
+
 ## Backmatter
 
 1.  While I'm heavily in favor of using LLMs for assisted learning, document summaries, and seeking answers; enabling this technology bears the dire cost of [stifling the human incentive behind sharing information](https://x.com/GergelyOrosz/status/1753141251631706474). [⏎](#own-what-you-write)

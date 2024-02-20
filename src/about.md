@@ -8,7 +8,6 @@ As of January 2024, I'm reading [Age of Myth](https://www.goodreads.com/en/book/
 To see what I'm upto right now, see [the now page](/now).
 
 For upkeep, I do language engineering at [DeepSource](https://deepsource.com) - a code health tool.
-
 ## This site
 
 This website is compiled with <a href="https://github.com/srijan-paul/bark" target="_blank">bark</a>: A static site generator in Haskell by yours truly.
