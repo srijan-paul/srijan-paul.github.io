@@ -24,7 +24,7 @@ I hoped for better luck with [The Master Key](https://en.wikipedia.org/wiki/The_
 
 The story revolves around the K apartment for ladies – 
 a housing complex inhabited by forlorn elderly women with seemingly boring lives.
-The "puzzle" is a terrible secret lying underneath the building's concrete, soon to be revealed by a construction project.
+The "puzzle" is a blood curdling secret lying under the building's concrete, soon to be revealed by a construction project.
 
 Right from the opening, we're handed three mysteries – 
 a dead woman later discovered to be a male in disguise, 
