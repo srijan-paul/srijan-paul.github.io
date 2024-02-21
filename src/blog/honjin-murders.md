@@ -5,7 +5,7 @@ tags:
   - miscellaneous
   - book-review
 date: 2024-02-14
-title: "Solving Honkakus: The Honjin Murders"
+title: Solving the Honjin murders
 is_blog_post: true
 meta: A couple is killed on the night of their wedding, and I try to find the culprit.
 image: /assets/img/honjin-murders/honjin_cover.webp

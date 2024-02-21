@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "e67868e92784551b",
+        "id": "9a44527ecb0262a1",
         "type": "tabs",
         "children": [
           {
-            "id": "61fd13f72d5eea5f",
+            "id": "87f9527da7e243c1",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -146,8 +146,12 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "61fd13f72d5eea5f",
+  "active": "87f9527da7e243c1",
   "lastOpenFiles": [
+    "src/blog/honjin-murders.md",
+    "src/blog/the-master-key.md",
+    "blog/honjin-murders.md",
+    "blog",
     "docs/js/gaussian-elimination/index.js",
     "docs/js/fourier-series/util.js",
     "docs/js/fourier-series/rabbit-epicycles.js",
@@ -157,8 +161,6 @@
     "docs/js/fourier-series/graph.js",
     "docs/js/fourier-series/fourier.js",
     "docs/js/common/util.js",
-    "docs/js/gaussian-elimination",
-    "docs/js/fourier-series",
     "docs/assets/img/water-shader/waterless-void.png",
     "docs/assets/img/water-shader/water-with-border.gif",
     "docs/assets/img/water-shader/water-tile.gif",
@@ -169,8 +171,6 @@
     "docs/assets/img/water-shader/final-water-reflection.gif",
     "docs/assets/img/water-shader/bland-water.gif",
     "docs/assets/img/water-shader/all-ground-tiles.png",
-    "src/blog/honjin-murders.md",
-    "src/blog/the-master-key.md",
     "src/blog/give-up-github.md",
     "src/blog/digital-garden.md",
     "src/about.md",
