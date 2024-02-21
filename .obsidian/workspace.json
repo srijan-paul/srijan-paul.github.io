@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "src/blog/the-master-key.md",
+                "file": "src/blog/gaussian-elimination.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "src/blog/the-master-key.md",
+                "file": "src/blog/gaussian-elimination.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "src/blog/the-master-key.md",
+                "file": "src/blog/gaussian-elimination.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "src/blog/the-master-key.md"
+                "file": "src/blog/gaussian-elimination.md"
               }
             }
           }
@@ -148,8 +148,9 @@
   },
   "active": "87f9527da7e243c1",
   "lastOpenFiles": [
-    "src/blog/honjin-murders.md",
+    "src/posts.md",
     "src/blog/the-master-key.md",
+    "src/blog/honjin-murders.md",
     "blog/honjin-murders.md",
     "blog",
     "docs/js/gaussian-elimination/index.js",
@@ -186,7 +187,6 @@
     "src/blog/fourier-series.md",
     "src/blog/ave-intro.md",
     "src/blog/bfinbf.md",
-    "src/posts.md",
     "2024-02-11.md",
     "Untitled.canvas",
     "current/jan-3-2024.md",
