@@ -7,7 +7,9 @@ meta: "Drawing with the Fourier Series"
 is_blog_post: true
 ---
 
-Try drawing something on the first canvas, and watch two sets of mechanical alien arms retrace your sketch:
+Try drawing something on the first canvas,
+and watch two sets of mechanical alien arms retrace your sketch
+(no touch screen support yet):
 
 <div class="center fourier-canvas-pair">
    <canvas id="draw-canvas"  width="350" height="350" style="border: 1px solid black;"></canvas>
