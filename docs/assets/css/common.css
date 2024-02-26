@@ -68,9 +68,9 @@ a:active {
 }
 
 a:hover {
-  /* color: var(--clr-link-hover); */
-  background-color: var(--clr-highlight-bg);
-  transition-duration: 0.2s;
+  color: white;
+  background-color: var(--clr-link);
+  transition-duration: 0.3s;
 }
 
 .navbar {
@@ -189,26 +189,24 @@ code {
 }
 
 details {
-	background-color: #f8f6ff;
+  background-color: #f8f6ff;
   color: var(--clr-primary);
   font-weight: 300;
   border-radius: 12px;
   border: 1px solid var(--clr-highlight);
-  padding: 10px; 
+  padding: 10px;
   font-size: calc(var(--font-body) - 1px);
 }
 
 details > summary {
   font-family: var(--font-body);
   margin: 5px 0px;
-	font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-bold);
 }
 
 details[open] > summary {
-	color: var(--clr-highlight);
+  color: var(--clr-highlight);
 }
-
-
 
 @media screen and (max-width: 730px) {
   .post-list > li {

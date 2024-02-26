@@ -68,13 +68,18 @@ function initDrawCanvas(canvasElement, width, height, sketchObj) {
   space.bindMouse();
 
   let isMousePressed = false;
-  space.bindCanvas("mousedown", () => {
+  const startDraw = () => {
     isMousePressed = true;
     space.clear();
     sketchObj.points = [];
-  });
+  }
+  const endDraw = () => (isMousePressed = false);
 
-  space.bindCanvas("mouseup", () => (isMousePressed = false));
+  space.bindCanvas("mousedown", startDraw);
+  space.bindCanvas("touchstart", startDraw);
+
+  space.bindCanvas("touchend", endDraw);
+  space.bindCanvas("mouseup", endDraw);
 
   let prevTime = -Infinity;
   const captureIntervalMs = 25;
