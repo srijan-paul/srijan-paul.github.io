@@ -352,10 +352,11 @@ If you follow the page I linked, you'll realize that the proof only uses basic c
 
 You'll be surprised to learn that the idea behind the series predates Fourier himself.
 
-2 centuries before Fourier, [Carl Friedrich Gauss](https://en.wikipedia.org/wiki/Carl_Friedrich_Gauss) created several algorithms to aid his study of astronomy.
-He was one of the many applied mathematicians who wanted to predict the position of Ceres in the night sky.
-One of the algorithms he discovered in this quest, was the [Fast Fourier Transform](https://en.wikipedia.org/wiki/Fast_Fourier_transform) - a function that is very closely related with the Fourier Series.
-However, he never published his work because he believed his method to be an unimportant detail in his achievement of estimating Ceres' position.
+[Carl Friedrich Gauss](https://en.wikipedia.org/wiki/Carl_Friedrich_Gauss)
+was one of the many applied mathematicians who wanted to predict the position of Ceres in the night sky.
+To attain this goal, he created several algorithms to aid his study of astronomy.
+One of them was the [Fast Fourier Transform](https://en.wikipedia.org/wiki/Fast_Fourier_transform) - a function that is very closely related with the Fourier Series.
+However, he never published his work because he believed his method to be an unimportant detail in the overall process.
 
 In the 1700s, Euler had found applications for decomposing periodic functions with Fourier Series.
 

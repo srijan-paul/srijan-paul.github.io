@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "src/blog/the-master-key.md",
+                "file": "src/blog/fourier-series.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "src/blog/the-master-key.md",
+                "file": "src/blog/fourier-series.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "src/blog/the-master-key.md",
+                "file": "src/blog/fourier-series.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "src/blog/the-master-key.md"
+                "file": "src/blog/fourier-series.md"
               }
             }
           }
@@ -148,6 +148,7 @@
   },
   "active": "87f9527da7e243c1",
   "lastOpenFiles": [
+    "src/blog/the-master-key.md",
     "src/blog/purescript-setup.md",
     "src/blog/phantom-types.md",
     "src/blog/monparsing.md",
@@ -157,7 +158,6 @@
     "src/blog/give-up-github.md",
     "src/blog/gaussian-elimination.md",
     "src/posts.md",
-    "src/blog/the-master-key.md",
     "blog/honjin-murders.md",
     "blog",
     "docs/js/gaussian-elimination/index.js",
