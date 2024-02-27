@@ -1,33 +1,26 @@
 ---
 template: now
-date: Jan 2024
+date: 27-02-2024
 ---
+## 27th Feb, 2024
 
-## 25th January, 2024
+I was unable to tend to my [NES emulator](https://github.com/srijan-paul/nez) this month.<br>
+My [static site generator](https://github.com/srijan-paul/bark), however, has seen a complete re-write. <br>
+In the coming week, I plan to release it as a hackage library, and move some more features of this site from runtime JavaScript to build-time Haskell.
 
-As of today, [my NES emulator](https://github.com/srijan-paul/nez/) is fully functional!
-Well, except audio – I still haven't started on the [APU](https://www.nesdev.org/wiki/APU).
-It can run all [NROM games](https://nesdir.github.io/mapper0.html), and I plan on adding at least two more mappers before the month is out.
+## Reading
 
-<video width="320" height="240" autoplay controls>
-  <source src="/assets/video/mario-nez.mp4" type="video/mp4">
-</video> 
+I was reading some Japanese murder mysteries this month.
 
-On the side, I've also begun a rewrite of my [SSG](https://github.com/srijan-paul/bark).
-It will still be small, but have *just* enough build-time features so that I can avoid bundling JavaScript with this website.
-
-### Reading
-
-- Finished [Dark Matter](https://www.goodreads.com/en/book/show/27833670), Blake Crouch.
-- Currently reading: 
-	- [Age of Myth](https://www.goodreads.com/book/show/26863057-age-of-myth), Michael J Sullivan.
-	- [Database Internals](https://www.databass.dev/), Alex Petrov
-	- [Oathbringer](https://en.wikipedia.org/wiki/Oathbringer), Brandon Sanderson (on hold).
-- Plan to read:
-	- [Profunctor optics and traversals](https://arxiv.org/pdf/2001.08045.pdf)
-	- [Linear Algebra and its applications](https://www.amazon.in/Linear-Algebra-Applications-Gilbert-Strang), Glibert Strang (pick up where I left).
-
-### Previous
-
-- [3rd January, 2024](/now/jan-3-2024)
-- [November 2023](/now/nov-2023)
+- **Finished**:
+	- [The Master Key](https://en.wikipedia.org/wiki/The_Master_Key_(Togawa_novel)), Masako Togawa ([review](/blog/the-master-key)).
+	- [The Honjin Murders](https://en.wikipedia.org/wiki/The_Honjin_Murders), Seishi Yokomizo ([review](/blog/the-honjin-murders)).
+	- [The Inugami Curse](https://en.wikipedia.org/wiki/The_Inugami_Curse), Seishi Yokomizo.
+- **Currently reading**:
+	- [Mistborn: The Final Empire](https://en.wikipedia.org/wiki/Mistborn:_The_Final_Empire), Brandon Sanderson.
+- **On hold**:
+	- [Database Internals](https://www.databass.dev/), Alex Petrov.
+	- [Age of Myth](https://en.wikipedia.org/wiki/Age_of_Myth), Michael Sullivan.
+## Previous
+- [January 25, 2024](/now/jan-25-2024)
+- [January 3, 2024](/now/jan-3-2024)

@@ -6,8 +6,15 @@
   box-sizing: border-box;
 }
 
+.main {
+  width: 47%;
+  margin: auto;
+  margin-bottom: 5rem;
+  font-size: var(--font-size);
+}
+
 hr {
-  height: 2px;
+  height: 1px;
   border: none;
   color: #ccc;
   background-color: #ccc;
@@ -24,24 +31,21 @@ hr {
   --clr-link: var(--clr-primary);
   --clr-link-hover: var(--clr-highlight);
   --bg-color: white;
-  /* other fonts: Cormorand, Zilla Slab, IBM Plex Serif, Bai Jamjuree */
-  --font-body: "Space Grotesk", sans-serif;
+  /* other fonts: Rethink Sans, Open Sans,
+	 * Inter, Cormorand, Zilla Slab, IBM Plex Serif, Bai Jamjuree */
+  --font-body: "Space Grotesk", Avenir, -apple-system, sans-serif;
   --font-heading: "Cherry Swash", Arial;
   --font-code: "IBM Plex Mono", monospace;
-  --font-weight: 300;
-  --font-weight-bold: 400;
+	--font-weight: 400;
+	--font-weight-bold: 500;
   --font-size: 16px;
 }
 
-strong {
-  font-weight: var(--font-weight-bold);
-}
-
 body {
-  font-family: var(--font-body), sans-serif;
+  font-family: var(--font-body);
   background-color: var(--bg-color);
   font-size: var(--font-size);
-  font-weight: var(--font-weight);
+	color: #2f3237;
   line-height: 1.5;
 }
 
@@ -64,7 +68,7 @@ a:link,
 a:active {
   text-decoration-color: var(--clr-link);
   color: var(--clr-link);
-  font-weight: 400;
+  font-weight: var(--font-weight-bold);
 }
 
 a:hover {
@@ -73,19 +77,9 @@ a:hover {
   transition-duration: 0.3s;
 }
 
-.navbar {
-  display: flex;
-  gap: 2rem;
-}
-
-.navlink {
-  color: black;
-  font-weight: bold;
-}
-
 pre,
 code {
-  font-weight: 400;
+  font-weight: var(--font-weight-bold);
 }
 
 /* codeblocks */
@@ -105,30 +99,22 @@ div.sourceCode {
   border: 1px solid #ccc;
 }
 
-.nav {
-  margin-top: 2rem;
-}
-
-#home-link {
+.website-name {
   font-size: 1.5rem;
   color: var(--clr-font);
   text-decoration: none;
-  font-weight: bold;
+  font-weight: var(--font-weight-bold);
   font-family: var(--font-heading);
 }
 
-#home-link:hover {
-  cursor: pointer;
+.nav-container {
+	margin-top: 2.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 }
 
-.nav {
-  display: flex;
-  align-items: center;
-  text-align: center;
-  justify-content: space-between;
-}
-
-.nav-right {
+nav {
   display: flex;
   gap: 1rem;
   font-weight: bold;
@@ -137,7 +123,6 @@ div.sourceCode {
 .nav-link {
   text-decoration: none !important;
   font-family: var(--font-body);
-  opacity: 0.8;
 }
 
 .active-nav-link {
@@ -191,7 +176,6 @@ code {
 details {
   background-color: #f8f6ff;
   color: var(--clr-primary);
-  font-weight: 300;
   border-radius: 12px;
   border: 1px solid var(--clr-highlight);
   padding: 10px;
@@ -208,6 +192,43 @@ details[open] > summary {
   color: var(--clr-highlight);
 }
 
+/* lists */
+
+ol {
+	list-style-type: inside;
+	padding: 0px 2px;
+	margin: 0;
+}
+
+ul {
+	margin: 0;
+	padding: 0px 15px;
+}
+
+ul li {
+	padding: 0px 2px;
+	margin: 0;
+}
+
+ul > li::marker {
+	color: var(--clr-grey);
+}
+
+ol {
+  list-style: none;
+  list-style-position: inside;
+  padding-left: 1rem;
+}
+
+ol li {
+  list-style: decimal;
+  list-style-position: initial;
+  margin: 0;
+  padding: 0;
+  padding-bottom: 1%;
+}
+
+
 @media screen and (max-width: 730px) {
   .post-list > li {
     padding: 1rem 0rem;
@@ -223,15 +244,41 @@ details[open] > summary {
     float: none;
   }
 
-  .nav {
+  .nav-container {
     display: inline-block;
     text-align: left;
   }
 
-  .nav-left {
+  .nav-container:first-child {
     margin-bottom: 0.5rem;
   }
 }
+
+@media screen and (max-width: 1000px) {
+  .main {
+    width: 70%;
+  }
+}
+
+@media screen and (min-width: 1500px) {
+  .main {
+    width: 35%;
+  }
+}
+
+@media screen and (max-width: 740px) {
+  .main {
+    width: 94%;
+  }
+
+  .fourier-canvas-pair {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+}
+
+
 
 /* Utility classes used in markdown */
 

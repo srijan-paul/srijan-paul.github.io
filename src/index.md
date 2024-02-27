@@ -2,6 +2,8 @@
 template: home
 ---
 
+# Srijan Paul ~
+
 A **programmer**, hobbyist **game-dev**, and **math enthusiast**.
 On this website I document my projects, interests, and research endeavours.
 

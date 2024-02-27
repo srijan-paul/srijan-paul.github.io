@@ -11,23 +11,23 @@
 </head>
 
 <body>
-  <div class="container">
+  <div class="main">
+		{{! The navbar }}
+		<div class="nav-container">
+			<div class="website-name">
+				injuly
+			</div>
 
-    <div class="leader">
-      <h1>Srijan Paul ~</h1>
-      <div class="leader-links">
-        <a href="/blog">Blog</a>
-        <a href="https://github.com/srijan-paul" target="_blank">Github</a>
-        <a href="https://drive.google.com/file/d/1IldqwSE6BwVvcMj2DOscFnrrE7ftZ-86/view" target="_blank">Resume</a>
-        <a href="/now">Now*</a>
-      </div>
-    </div>
-
-    <div class="main">
+			<nav>
+				<a href="/" class="nav-link active-nav-link">index</a>
+				<a href="/about" class="nav-link">about</a>
+				<a href="/blog" class="nav-link">blog</a>
+				<a href="/now" class="nav-link">now</a>
+			</nav>
+		</div>
+		<hr>
       {{&content}}
     </div>
-
-  </div>
 </body>
 
 </html>
