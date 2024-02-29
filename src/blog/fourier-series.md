@@ -7,6 +7,8 @@ meta: "Drawing with the Fourier Series"
 is_blog_post: true
 ---
 
+*See discussion on [HackerNews](https://news.ycombinator.com/item?id=39509414).*
+
 Try drawing something on the first canvas,
 and watch two sets of mechanical alien arms retrace your sketch
 (no touch screen support yet):

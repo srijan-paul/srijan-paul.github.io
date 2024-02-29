@@ -2,17 +2,18 @@
 template: home
 ---
 
-## Srijan Paul
+## Ahoy, sailor. 
 
-By trade, I'm a programmer. <br>
-This website is an archive of my thoughts, projects, interests, and research.
+This website is an archive of my thoughts, musings, projects, and research.
 
-Most recently, I'm into haskell, compilers, linear algebra, and [honkaku mysteries](http://honkaku.com/english.html).
-I'm almost always working on something or the other, and maintain [a monthly log](/now).
+I have several interests, and with time they change.
+As of late though, I'm into haskell, compilers, linear algebra, and [honkaku mysteries](http://honkaku.com/english.html).
+I'm almost always working on something, and maintain [a monthly log](/now).
 
-Learn more on [/about](/about).
 
-<div class="buttons">
+If you fancy a longer introduction, try the [/about](/about) page.
+
+<p class="buttons">
     <a class="button" href="https://github.com/srijan-paul" target="_blank">
         <i class="lni lni-github"></i>
         <span>Code</span>
@@ -28,11 +29,11 @@ Learn more on [/about](/about).
         <i class="lni lni-twitter"></i>
         <span>Twitter</span>
     </a>
-</div>
+</p>
 
 ## Most viewed pages
 
 1. [An interactive guide to Fourier series](/blog/fourier-series)
 2. [But can you give up GitHub?](/blog/gaussian-elimination)
-3. [Visual explanation of Gassian elimination](/blog/gaussian-elimination)
+3. [A visual explanation of Gassian elimination](/blog/gaussian-elimination)
 
