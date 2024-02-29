@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Cherry+Swash:ital,wght@0,400;0,500&family=Space+Grotesk:wght@300;400;500&family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:ital,wght@0,400;0,500&family=Rethink+Sans:wght@300;400;500&family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400&display=swap");
 
 /* Cherry Swash, Zilla Slab */
 
@@ -7,7 +7,7 @@
 }
 
 .main {
-  width: 47%;
+  width: 45%;
   margin: auto;
   margin-bottom: 5rem;
   font-size: var(--font-size);
@@ -21,20 +21,22 @@ hr {
 }
 
 :root {
+	--clr-black: #2f3237;
   --clr-primary: #2c3e50;
   --clr-grey: rgb(107, 107, 107);
   --clr-font: #2c3a47;
   --clr-bold: #1e272e;
   --clr-primary: #4e2cbf;
-  --clr-highlight: #952cbf;
-  --clr-highlight-bg: #fde3227a;
+	--clr-secondary: #952cbf;
+	--clr-accent: #f8f6ff;
   --clr-link: var(--clr-primary);
-  --clr-link-hover: var(--clr-highlight);
+  --clr-link-hover: var(--clr-secondary);
   --bg-color: white;
   /* other fonts: Rethink Sans, Open Sans,
 	 * Inter, Cormorand, Zilla Slab, IBM Plex Serif, Bai Jamjuree */
-  --font-body: "Space Grotesk", Avenir, -apple-system, sans-serif;
-  --font-heading: "Cherry Swash", Arial;
+	--font-family-fallback: Times New Roman, Avenir, -apple-system, sans-serif;
+  --font-body: 'Rethink Sans', var(--font-family-fallback);
+  --font-heading: "Space Grotesk", Arial;
   --font-code: "IBM Plex Mono", monospace;
 	--font-weight: 400;
 	--font-weight-bold: 500;
@@ -45,13 +47,15 @@ body {
   font-family: var(--font-body);
   background-color: var(--bg-color);
   font-size: var(--font-size);
-	color: #2f3237;
+	color: var(--clr-black);
   line-height: 1.5;
 }
 
-::selection {
-  background-color: var(--clr-highlight-bg);
+strong {
+	font-weight: var(--font-weight-bold);
 }
+
+
 
 h1,
 h2,
@@ -68,7 +72,6 @@ a:link,
 a:active {
   text-decoration-color: var(--clr-link);
   color: var(--clr-link);
-  font-weight: var(--font-weight-bold);
 }
 
 a:hover {
@@ -108,16 +111,15 @@ div.sourceCode {
 }
 
 .nav-container {
+	margin: auto;
 	margin-top: 2.5rem;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
+	text-align: center;
 }
 
 nav {
-  display: flex;
+	display: flex;
+	justify-content: center;
   gap: 1rem;
-  font-weight: bold;
 }
 
 .nav-link {
@@ -161,7 +163,7 @@ nav {
 
 .main {
   margin-bottom: 5rem;
-  max-width: 840px;
+  max-width: 800px;
 }
 
 pre,
@@ -177,7 +179,7 @@ details {
   background-color: #f8f6ff;
   color: var(--clr-primary);
   border-radius: 12px;
-  border: 1px solid var(--clr-highlight);
+  border: 1px solid var(--clr-secondary);
   padding: 10px;
   font-size: calc(var(--font-body) - 1px);
 }
@@ -189,7 +191,7 @@ details > summary {
 }
 
 details[open] > summary {
-  color: var(--clr-highlight);
+  color: var(--clr-secondary);
 }
 
 /* lists */
@@ -262,7 +264,7 @@ ol li {
 
 @media screen and (min-width: 1500px) {
   .main {
-    width: 35%;
+    width: 33%;
   }
 }
 

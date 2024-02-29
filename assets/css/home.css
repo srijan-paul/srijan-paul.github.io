@@ -1,14 +1,50 @@
+ol > li > a {
+	text-decoration: none;
+}
+
 :root {
-  --clr-faded: #5e5e5e;
-  --clr-regular: #000;
+	--btn-bezel: 3px;
+	--btn-bezel-pressed: 1px;
 }
 
-.main {
-	color: var(--clr-faded);
+.buttons {
+	display: flex;
+	gap: 10px;
 }
 
-.main strong {
-	color: var(--clr-regular);
-	font-weight: normal;
+a.button {
+	text-decoration: none;
+
+	width: fit-content;
+	height: fit-content;
+	padding: 0px 4px;
+	display: flex;
+	gap: 5px;
+	align-items: center;
+	justify-content: center;
+
+	color: var(--clr-primary);
+	background-color: var(--clr-accent);
+	border: 1px solid var(--clr-primary);
+	border-bottom-width: var(--btn-bezel);
+	border-left-width: var(--btn-bezel);
+	border-radius: 8px; 
+
+	transition-duration: 0.1s;
 }
 
+a.button:hover {
+	cursor: pointer;
+
+	color: var(--clr-secondary);
+	border-color: var(--clr-secondary);
+	
+	transform: translate(1px, -2px);
+	transform: 2px;
+}
+
+a.button:active {
+	border-bottom-width: var(--btn-bezel-pressed);
+	border-left-width: var(--btn-bezel-pressed);
+	transform: translateY(var(--btn-bezel));
+}

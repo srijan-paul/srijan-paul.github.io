@@ -6,6 +6,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="/assets/css/common.css">
+	<link rel="stylesheet" href="/assets/css/blog.css">
 	<link rel="stylesheet" href="/assets/css/post.css">
 	{{! analytics }}
 	<script data-goatcounter="https://injuly.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -69,7 +70,7 @@
 			li.appendChild(a);
 
 			const date = document.createElement("span");
-			date.innerHTML = ` ${dateToString(post.date)}`;
+			date.innerHTML = `${dateToString(post.date)}`;
 			date.classList.add("post-list-date");
 			li.appendChild(date);
 
