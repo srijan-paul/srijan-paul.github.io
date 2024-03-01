@@ -30,20 +30,19 @@
 
   <body>
     <div class="main">
-      <div class="nav">
-        <div class="nav-left">
-          <a id="home-link" href="/">injuly</a>
+      <div class="nav-container">
+        <div class="website-name">
+          injuly
         </div>
 
-        <div class="nav-right">
+        <nav>
           <a href="/" class="nav-link">index</a>
           <a href="/about" class="nav-link">about</a>
-          <a href="/blog" class="nav-link">blog</a>
+          <a href="/blog" class="nav-link active-nav-link">blog</a>
           <a href="/now" class="nav-link">now</a>
-        </div>
+        </nav>
       </div>
-
-      <hr>
+			<hr>
 
       <div class="leader">
         <h2> An interactive guide to Fourier series </h2>
@@ -53,7 +52,8 @@
             <a class="tag" href="/posts/index.html?tag=math">math</a>
         </span>
       </div>
-      <p>Try drawing something on the first canvas,
+      <p><em>See discussion on <a href="https://news.ycombinator.com/item?id=39509414">HackerNews</a>.</em></p>
+<p>Try drawing something on the first canvas,
 and watch two sets of mechanical alien arms retrace your sketch
 (no touch screen support yet):</p>
 <div class="center fourier-canvas-pair">
@@ -367,9 +367,9 @@ It would be a shame to blunt the edge of theory by not applying it in practice.<
 <script type="module" src="/js/fourier-series/index.js"></script>
 
 
-      <script src="https://utteranc.es/client.js" repo="srijan-paul/srijan-paul.github.io" label="blog-comments" issue-term="pathname" theme="github-light" crossorigin="anonymous" async>
-      </script>
-    </div>
+			<script src="https://giscus.app/client.js" data-repo="srijan-paul/srijan-paul.github.io" data-repo-id="MDEwOlJlcG9zaXRvcnkzMTY0MTg0NTk=" data-category="Announcements" data-category-id="DIC_kwDOEtwpm84Cdokt" data-mapping="title" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" async>
+			</script>
+		</div>
 
     <script src="/util.js"></script>
     <script>

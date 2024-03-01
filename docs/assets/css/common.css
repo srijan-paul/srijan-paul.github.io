@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Cherry+Swash:ital,wght@0,400;0,500&family=Space+Grotesk:wght@300;400;500&family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:ital,wght@0,400;0,500&family=Rethink+Sans:wght@300;400;500&family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400&display=swap");
 
 /* Cherry Swash, Zilla Slab */
 
@@ -6,47 +6,53 @@
   box-sizing: border-box;
 }
 
+.main {
+  width: 45%;
+  margin: auto;
+  margin-bottom: 5rem;
+  font-size: var(--font-size);
+}
+
 hr {
-  height: 2px;
+  height: 1px;
   border: none;
   color: #ccc;
   background-color: #ccc;
 }
 
 :root {
+	--clr-black: #2f3237;
   --clr-primary: #2c3e50;
   --clr-grey: rgb(107, 107, 107);
   --clr-font: #2c3a47;
   --clr-bold: #1e272e;
   --clr-primary: #4e2cbf;
-  --clr-highlight: #952cbf;
-  --clr-highlight-bg: #fde3227a;
+	--clr-secondary: #952cbf;
+	--clr-accent: #f8f6ff;
   --clr-link: var(--clr-primary);
-  --clr-link-hover: var(--clr-highlight);
+  --clr-link-hover: var(--clr-secondary);
   --bg-color: white;
-  /* other fonts: Cormorand, Zilla Slab, IBM Plex Serif, Bai Jamjuree */
-  --font-body: "Space Grotesk", sans-serif;
-  --font-heading: "Cherry Swash", Arial;
+  /* other fonts: Rethink Sans, Open Sans,
+	 * Inter, Cormorand, Zilla Slab, IBM Plex Serif, Bai Jamjuree */
+	--font-family-fallback: Times New Roman, Avenir, -apple-system, sans-serif;
+  --font-body: 'Rethink Sans', var(--font-family-fallback);
+  --font-heading: "Space Grotesk", Arial;
   --font-code: "IBM Plex Mono", monospace;
-  --font-weight: 300;
-  --font-weight-bold: 400;
+	--font-weight: 400;
+	--font-weight-bold: 500;
   --font-size: 16px;
 }
 
-strong {
-  font-weight: var(--font-weight-bold);
-}
-
 body {
-  font-family: var(--font-body), sans-serif;
+  font-family: var(--font-body);
   background-color: var(--bg-color);
   font-size: var(--font-size);
-  font-weight: var(--font-weight);
+	color: var(--clr-black);
   line-height: 1.5;
 }
 
-::selection {
-  background-color: var(--clr-highlight-bg);
+strong {
+	font-weight: var(--font-weight-bold);
 }
 
 h1,
@@ -56,6 +62,7 @@ h4,
 h5,
 h6 {
   font-family: var(--font-heading), sans-serif;
+	margin-bottom: 0.67em 0;
 }
 
 a,
@@ -64,7 +71,6 @@ a:link,
 a:active {
   text-decoration-color: var(--clr-link);
   color: var(--clr-link);
-  font-weight: 400;
 }
 
 a:hover {
@@ -73,19 +79,9 @@ a:hover {
   transition-duration: 0.3s;
 }
 
-.navbar {
-  display: flex;
-  gap: 2rem;
-}
-
-.navlink {
-  color: black;
-  font-weight: bold;
-}
-
 pre,
 code {
-  font-weight: 400;
+  font-weight: var(--font-weight-bold);
 }
 
 /* codeblocks */
@@ -105,39 +101,29 @@ div.sourceCode {
   border: 1px solid #ccc;
 }
 
-.nav {
-  margin-top: 2rem;
-}
-
-#home-link {
+.website-name {
   font-size: 1.5rem;
   color: var(--clr-font);
   text-decoration: none;
-  font-weight: bold;
+  font-weight: var(--font-weight-bold);
   font-family: var(--font-heading);
 }
 
-#home-link:hover {
-  cursor: pointer;
+.nav-container {
+	margin: auto;
+	margin-top: 2.5rem;
+	text-align: center;
 }
 
-.nav {
-  display: flex;
-  align-items: center;
-  text-align: center;
-  justify-content: space-between;
-}
-
-.nav-right {
-  display: flex;
+nav {
+	display: flex;
+	justify-content: center;
   gap: 1rem;
-  font-weight: bold;
 }
 
 .nav-link {
   text-decoration: none !important;
   font-family: var(--font-body);
-  opacity: 0.8;
 }
 
 .active-nav-link {
@@ -176,7 +162,7 @@ div.sourceCode {
 
 .main {
   margin-bottom: 5rem;
-  max-width: 840px;
+  max-width: 800px;
 }
 
 pre,
@@ -191,9 +177,8 @@ code {
 details {
   background-color: #f8f6ff;
   color: var(--clr-primary);
-  font-weight: 300;
   border-radius: 12px;
-  border: 1px solid var(--clr-highlight);
+  border: 1px solid var(--clr-secondary);
   padding: 10px;
   font-size: calc(var(--font-body) - 1px);
 }
@@ -202,11 +187,55 @@ details > summary {
   font-family: var(--font-body);
   margin: 5px 0px;
   font-weight: var(--font-weight-bold);
+	transition-duration: 0.2s;
 }
 
-details[open] > summary {
-  color: var(--clr-highlight);
+details > summary:hover {
+	cursor: pointer;
+  color: var(--clr-secondary);
 }
+
+details[open] > summary::before {
+	transform: rotate(90deg);
+}
+
+
+/* lists */
+
+ol {
+	list-style-type: inside;
+	padding: 0px 2px;
+	margin: 0;
+}
+
+ul {
+	margin: 0;
+	padding: 0px 15px;
+}
+
+ul li {
+	padding: 0px 2px;
+	margin: 0;
+}
+
+ul > li::marker {
+	color: var(--clr-grey);
+}
+
+ol {
+  list-style: none;
+  list-style-position: inside;
+  padding-left: 1rem;
+}
+
+ol li {
+  list-style: decimal;
+  list-style-position: initial;
+  margin: 0;
+  padding: 0;
+  padding-bottom: 1%;
+}
+
 
 @media screen and (max-width: 730px) {
   .post-list > li {
@@ -223,13 +252,37 @@ details[open] > summary {
     float: none;
   }
 
-  .nav {
+  .nav-container {
     display: inline-block;
     text-align: left;
   }
 
-  .nav-left {
+  .nav-container:first-child {
     margin-bottom: 0.5rem;
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  .main {
+    width: 70%;
+  }
+}
+
+@media screen and (min-width: 1500px) {
+  .main {
+    width: 33%;
+  }
+}
+
+@media screen and (max-width: 740px) {
+  .main {
+    width: 94%;
+  }
+
+  .fourier-canvas-pair {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
   }
 }
 
@@ -247,3 +300,53 @@ details[open] > summary {
 .flex-33 {
   flex: 33%;
 }
+
+/* Custom theme for giscus.app */
+
+:root {
+	--btn-bezel: 3px;
+	--btn-bezel-pressed: 1px;
+}
+
+.buttons {
+	display: flex;
+	gap: 10px;
+}
+
+a.button, button {
+	text-decoration: none;
+
+	width: fit-content;
+	height: fit-content;
+	padding: 0px 4px;
+	display: flex;
+	gap: 5px;
+	align-items: center;
+	justify-content: center;
+
+	color: var(--clr-primary);
+	background-color: var(--clr-accent);
+	border: 1px solid var(--clr-primary);
+	border-bottom-width: var(--btn-bezel);
+	border-left-width: var(--btn-bezel);
+	border-radius: 8px; 
+
+	transition-duration: 0.1s;
+}
+
+a.button:hover {
+	cursor: pointer;
+
+	color: var(--clr-secondary);
+	border-color: var(--clr-secondary);
+	
+	transform: translate(1px, -2px);
+	transform: 2px;
+}
+
+a.button:active {
+	border-bottom-width: var(--btn-bezel-pressed);
+	border-left-width: var(--btn-bezel-pressed);
+	transform: translateY(var(--btn-bezel));
+}
+

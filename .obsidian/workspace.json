@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "src/blog/fourier-series.md",
+                "file": "src/blog/water-shader.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "src/blog/fourier-series.md",
+                "file": "src/blog/water-shader.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "src/blog/fourier-series.md",
+                "file": "src/blog/water-shader.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "src/blog/fourier-series.md"
+                "file": "src/blog/water-shader.md"
               }
             }
           }
@@ -146,29 +146,40 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "87f9527da7e243c1",
+  "active": "d80dfad01649c2e3",
   "lastOpenFiles": [
+    "docs/assets/css/blog.css",
+    "assets/css/blog.css",
+    "foo.html",
+    "src/blog/the-inugami-curse.md",
+    "docs/blog/the-inugami-curse/index.html",
+    "docs/blog/the-inugami-curse",
+    "src/now/index.md",
+    "docs/assets/fonts/ProximaNova-Regular.ttf",
+    "docs/assets/fonts/ProximaNovaT-Thin.ttf",
+    "docs/assets/fonts/ProximaNova-Extrabld.ttf",
+    "docs/assets/fonts/ProximaNova-Semibold.ttf",
+    "docs/assets/fonts/ProximaNova-Bold.ttf",
+    "docs/assets/fonts/ProximaNova-Light.ttf",
+    "src/blog/honjin-murders.md",
+    "src/now/jan-3-2024.md",
+    "src/now/jan-25-2024.md",
+    "src/now/feb-2023.md",
+    "src/now/jan-2022.md",
+    "src/now/jan-2023.md",
+    "src/now/mar-2022.md",
+    "src/now/nov-2023.md",
     "src/blog/the-master-key.md",
-    "src/blog/purescript-setup.md",
     "src/blog/phantom-types.md",
+    "src/blog/fourier-series.md",
+    "src/blog/purescript-setup.md",
     "src/blog/monparsing.md",
     "src/blog/lazy-fib.md",
     "src/blog/index.md",
-    "src/blog/honjin-murders.md",
     "src/blog/give-up-github.md",
     "src/blog/gaussian-elimination.md",
     "src/posts.md",
     "blog/honjin-murders.md",
-    "blog",
-    "docs/js/gaussian-elimination/index.js",
-    "docs/js/fourier-series/util.js",
-    "docs/js/fourier-series/rabbit-epicycles.js",
-    "docs/js/fourier-series/rabbit-coords.js",
-    "docs/js/fourier-series/piegon-coords.js",
-    "docs/js/fourier-series/index.js",
-    "docs/js/fourier-series/graph.js",
-    "docs/js/fourier-series/fourier.js",
-    "docs/js/common/util.js",
     "docs/assets/img/water-shader/waterless-void.png",
     "docs/assets/img/water-shader/water-with-border.gif",
     "docs/assets/img/water-shader/water-tile.gif",
@@ -183,17 +194,6 @@
     "src/about.md",
     "src/index.md",
     "README.md",
-    "src/blog/gsoc-2.md",
-    "src/blog/water-shader.md",
-    "src/blog/gsoc.md",
-    "src/blog/fourier-series.md",
-    "src/blog/ave-intro.md",
-    "src/blog/bfinbf.md",
-    "2024-02-11.md",
-    "Untitled.canvas",
-    "current/jan-3-2024.md",
-    "_hidden/The Snap programming language (standard).md",
-    "src/content/now/jan-3-2024.md",
-    "src/content/now/index.md"
+    "Untitled.canvas"
   ]
 }

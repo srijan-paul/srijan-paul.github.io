@@ -9,9 +9,9 @@ Having spent a full year in Bangalore's smog, my lungs declared it was time for 
 So, I flew back to my hometown for a week to breathe in air that didn't come with a side of soot.
 
 The night before leaving,
-I'd made sure to stash in my bag a honkaku mystery book next to my trusty E-reader.
+I'd made sure to stash in my bag a laptop, a honkaku mystery book, and my trusty E-reader.
 And so, lounging in my room back home,
-I kept busy by trying to solve the murder in the Inugami clan,
+I kept busy trying to solve the murder in the Inugami clan,
 and reading the two RFCs that standardized the DNS for today's internet.
 
 My goal is to deeply understand the protocol such that I can write my own DNS resolver (and name server).
@@ -25,11 +25,10 @@ Nez now supports MMC1 and UnROM, enabling classics like Contra, Castlevania, Zel
 ![Contra running on my emulator!](/assets/img/feb-29-2024/contra-ss.webp)
 
 My [static site generator](https://github.com/srijan-paul/bark), however, underwent a complete re-write. <br>
-In the coming week, I plan to release it as a hackage library, and move some more features of this site from runtime JavaScript to build-time Haskell.
+In the coming week, I plan to release it as a hackage library, and move some features from runtime JavaScript to build-time Haskell.
 
-I also managed to set some time aside to apply a fresh coat of paint to this site.
-No major changes,
-just a few color and typography tweaks.
+I also managed to set some time aside and apply a fresh coat of paint to this site.
+Every post now has a comment section, and the typography is more consistent.
 I've settled on a style that I think will serve me well for the remainder of this website's life.
 
 Lastly, I've been planning to write a long-form educational resource.
@@ -37,9 +36,9 @@ If things go as planned, I'll elaborate in my next update.
 
 ## Reading
 
-Publishers at [the Pushkin Press](https://pushkinpress.com/) have recently been
+Recently, publishers at [the Pushkin Press](https://pushkinpress.com/) have been
 translating the Kindaichi series by Seishi Yokomizo, and I've liked every book so far.
-Enough that I'm trying to review every honkaku I attempt on my blog.
+I'm trying to review every honkaku I attempt on my blog.
 
 - **Finished**:
 	- [The Master Key](https://en.wikipedia.org/wiki/The_Master_Key_(Togawa_novel)), Masako Togawa ([review](/blog/the-master-key)).

@@ -6,7 +6,7 @@ template: home
 
 This website is an archive of my thoughts, musings, projects, and research.
 
-I have several interests, and with time they change.
+I have several interests, and with time they tend to change. <br>
 As of late though, I'm into haskell, compilers, linear algebra, and [honkaku mysteries](http://honkaku.com/english.html).
 I'm almost always working on something, and maintain [a monthly log](/now).
 

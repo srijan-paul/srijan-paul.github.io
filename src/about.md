@@ -5,33 +5,42 @@ template: about
 ## Me 
 
 I'm Srijan, A CS and math enthusiast currently in Bangalore, India. <br>
-By trade, I'm a programmer.
-I work at [DeepSource](https://deepsource.com) – a code health monitoring platform. 
+By trade, I'm a programmer,
+and work at [DeepSource](https://deepsource.com) – a code health monitoring platform.
 
-As of February 2024, I'm reading [Mistborn: The final empire](https://www.goodreads.com/en/book/show/34002132),
-and studying category theory.
-To know about what I'm upto *right now*, check the [now page](/now).
+As of 2024, My interests lie in:
+
+- **Programming**: Compilers, computer networks, functional programming.
+- **Reading**: High fantasy, shin honkaku (golden age japanese mysteries), sci-fi.
+- **Math**: Category theory, linear algebra.
+- **Technology**: Retro console architecture (NES, Gameboy, PlayStation), game development.
+- **Miscellaneous**: Pixel art, typography.
+
+I don't actively play as many video games anymore,
+but have grown up playing Warcraft 3, DotA 2, and Nuclear Throne – in that order.
+
+To see what I'm doing *right now*, check the [now page](/now). <br>
+To start a conversation, [hit me up](#contact).
 
 ## This site
 
 This website is compiled with <a href="https://github.com/srijan-paul/bark" target="_blank">bark</a> – my own static site generator.
 There are no trackers, and all analytics are privacy friendly (courtesy of [GoatCounter](https://www.goatcounter.com)).
-The comments on my blog posts are powered by [utterances](https://utteranc.es).
+The comments on my blog posts are powered by [giscus](https://giscus.app).
 
 Hosted on GitHub pages.
 
 <details>
   <summary> Driving philosophy </summary>
 
-I *love* lightweight and performant websites.
-I have a sincere appreciation for pages with intentful design, view-sourcable markup, and minimal runtime JS footprint.
+I have a sincere appreciation for lightweight and performant websites.
+I love pages with intentful design, view-sourcable markup, and minimal runtime JS footprint.
 No visual clutter, no clunky gimmicks that tear through the DOM, no third party cookies or trackers unless necessary.
 
 This site is deliberately structured so that the page contents and URLs mirror the source.
 At its core, all posts and logs are just a stack of files; and a bespoke SSG handles code generation. 
 You can share the source files in a tarball, and the receiver can browse the whole thing in a text editor (even this collapsible section).
 </details>
-
 
 ## Projects
 
@@ -46,4 +55,6 @@ And many more on my [GitHub](https://github.com/srijan-paul).
 
 ## Contact
 
-Send me a discord message (to **@injuly.**), or an e-mail to [srijannr1@gmail.com](mailto:srijannr1@gmail.com).
+I'm always open to discourse, chit-chat, or helping a fellow human out. <br>
+Feel free to message me on discord (**@injuly.**), [twitter](https://twitter.com/_injuly), or send an e-mail to [srijannr1@gmail.com](mailto:srijannr1@gmail.com).
+
