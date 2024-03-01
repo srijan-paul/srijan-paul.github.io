@@ -5,7 +5,7 @@ date: 27-02-2024
 
 ## 27th Feb, 2024
 
-Having spent a full year in Bangalore's smog, my lungs declared it was time for a breather – literally. 
+After spending a full year in Bangalore's smog, my lungs declared it was time for a breather – literally. 
 So, I flew back to my hometown for a week to breathe in air that didn't come with a side of soot.
 
 The night before leaving,
