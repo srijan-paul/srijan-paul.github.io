@@ -17,8 +17,19 @@ extra-source-files:
 executable site
     main-is:          Main.hs
 
+    ghc-options:
+      -Wall
+      -fwarn-duplicate-exports
+      -fwarn-incomplete-patterns
+      -fwarn-missing-fields
+      -fwarn-name-shadowing
+      -fwarn-overlapping-patterns
+      -fwarn-tabs
+      -fwarn-unused-binds
+
     -- Modules included in this executable, other than Main.
-    -- other-modules:
+    other-modules:
+      Internal.Date
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:

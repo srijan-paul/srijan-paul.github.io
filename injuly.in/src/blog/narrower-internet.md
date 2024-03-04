@@ -5,7 +5,7 @@ tags:
   - technology
 title: Is the internet getting narrower?
 meta: TODO
-is_blog_post: true
+is_blog_post: false
 date: 2024-03-04
 ---
 

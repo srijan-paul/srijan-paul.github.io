@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+    <meta name="description" content="implementing closures in a compiled language during GSoC at LabLua"></meta>
+    <meta property="og:title" content="GSoC&#39;21 - Lifting lambdas &amp; Pallene [2/2]"></meta>
+    <meta property="twitter:title" content="GSoC&#39;21 - Lifting lambdas &amp; Pallene [2/2]"></meta>
+    <meta property="twitter:description" content="implementing closures in a compiled language during GSoC at LabLua"></meta>
+
+     
+    <meta property="og:image" content></meta>
+		<meta name="twitter:image" content>
+    
+
+    <meta property="og:site_name" content="InJuly"></meta>
+
+    <link rel="stylesheet" href="/assets/css/common.css">
+    <link rel="stylesheet" href="/assets/css/post.css">
+    <link rel="stylesheet" href="/assets/css/theme.css">
+    
+
+    <script data-goatcounter="https://injuly.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+
+    <title>GSoC&#39;21 - Lifting lambdas &amp; Pallene [2/2]</title>
+  </head>
+
+  <body>
+    <div class="main">
+      <div class="nav-container">
+        <div class="website-name">
+          injuly
+        </div>
+
+        <nav>
+          <a href="/" class="nav-link">index</a>
+          <a href="/about" class="nav-link">about</a>
+          <a href="/blog" class="nav-link active-nav-link">blog</a>
+          <a href="/now" class="nav-link">now</a>
+        </nav>
+      </div>
+			<hr>
+
+      <div class="leader">
+        <h2> GSoC&#39;21 - Lifting lambdas &amp; Pallene [2/2] </h2>
+				<div class="post-date"> Aug 16 </div>
+        <span class="tags" id="tags">
+            <a class="tag" href="/posts/index.html?tag=lua">lua</a>
+            <a class="tag" href="/posts/index.html?tag=programming-languages">programming-languages</a>
+            <a class="tag" href="/posts/index.html?tag=gsoc">gsoc</a>
+            <a class="tag" href="/posts/index.html?tag=post">post</a>
+        </span>
+      </div>
+      <p>In the <a href="../gsoc/">last post</a>,
+I went over the Pallene project and explained some parts of it that concerned my GSoC project.
+In this one, I&#39;ll briefly go over our approach to the problem, and some relevant details.</p>
+<div class="toc">
+<table>
+<thead>
+<tr>
+<th>Table of Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#get-code">Get The Code</a></td>
+</tr>
+<tr>
+<td><a href="#first-contact">First Contact</a></td>
+</tr>
+<tr>
+<td><a href="#before-gsoc">Before GSoC</a></td>
+</tr>
+<tr>
+<td><a href="#idea">The Idea</a></td>
+</tr>
+<tr>
+<td><a href="#coding">Coding Period</a></td>
+</tr>
+<tr>
+<td><a href="#tomorrow">In Tomorrow&#39;s news</a></td>
+</tr>
+<tr>
+<td><a href="#backmatter">Backmatter</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="get-the-code">Get The Code.</h2>
+<p>Let&#39;s get the obvious out of the way first.<br>
+A list of all the PRs I made over the summer can be found on
+<a href="https://github.com/pallene-lang/pallene/pulls?q=is%3Apr+is%3Aclosed+author%3Asrijan-paul+created%3A%3E2021-04-27+merged%3A%3C2021-08-23">this</a> link.</p>
+<h2 id="first-contact-">First contact. <a name="first-contact"></a></h2>
+<p>(Flashback to how I came across Pallene, skip if not interested in misc. background stories).</p>
+<p>I used Pallene for the first time around September (I think?) of 2020.
+Around this time, I was making games with the <a href="https://love2d.org/">LÖVE</a> game framework, which uses Lua for scripting.
+I&#39;ve made a <a href="https://github.com/srijan-paul/horror-game">couple</a> - <a href="https://github.com/srijan-paul/Bonkyon">of</a> - <a href="https://github.com/srijan-paul/bullet_hell">games</a>
+with it, but I realized one thing.
+Every time the codebase started beefing up (4-6k LoC),
+keeping track of different moving parts of a game started getting difficult.</p>
+<p>One small choice made in the entity management system caused wonky behavior
+of physics code written a couple thousand lines down,
+scene transitions would mess up lighting effects,
+field accesses on <code>nil</code> would show up every 5 minutes when prototyping new features, and the list goes on.</p>
+<p>I realized that getting a static analyzer, or a statically typed language can probably help me manage my projects better.
+So I started looking and found a <a href="https://srijan-paul.github.io/blog/gsoc/#luas_sister_languages">whole bunch of tools</a>
+that could serve the purpose.
+Unfortunately, dialects of Lua aren&#39;t as mature as say, JavaScript.
+JS devs enjoy the benefits of Typescript, Babel, Purescript, ReasonML and the like.
+The Lua equivalent of these tools aren&#39;t as mature as one would like them to be.
+I tried using Teal, but ran into problems with it&#39;s VSCode tooling, which sometimes froze my entire computer.
+Which is unfortunate, because it&#39;s a solid language.</p>
+<p>I was too fond of LOVE to use a different framework like Heaps or SFML.
+At this point, I saw two drastically different choices in front of me:</p>
+<ol>
+<li>Write my own statically typed dialect of Lua.
+</li>
+<li>Help improve upon existing open source tooling for the language.
+</li>
+</ol>
+<p>Knowing myself, I would have taken the first route.
+Fortunately however, this was around the time someone on discord had shown me this xkcd:</p>
+<p><img src="https://imgs.xkcd.com/comics/standards_2x.png" alt="XKCD"></img></p>
+<p>So I decided against taking the blame for a 15th standard and started looking for tools that I could contribute to.
+My first instinctive choice was to go with Teal or <a href="https://typescripttolua.github.io/">TS2Lua</a>.
+However, both tools had their own problems:</p>
+<ol>
+<li>
+<p><strong>Teal</strong>: I was excited to dig in - and I cloned the <a href>repo</a> -
+only to see the whole codebase is a single file 6k+LoC (<a href="#backmatter">1</a>)<a name="1"></a>.
+At the time, this was a deal breaker for me sadly. I couldn&#39;t possibly edit a file that huge without losing my mind.
+It takes my editor and LSP an entire minute or two just to parse the file! Unfortunate.</p>
+</li>
+<li>
+<p><strong>TS2Lua</strong>: It was all roses in the beginning,
+but I soon realized retrofitting a JS dialect to Lua isn&#39;t as pretty as it sounds. There exist weird issues like:</p>
+<ol>
+<li>Inconsistency of 0-indexed JS arrays vs 1-indexed Lua tables. I asked the developers and they wanted to keep things that way (Understandably so, there is no good solution for this that I can think of either).
+</li>
+<li>Operator overloading, which I deem a must-have for working with vectors is achieved via weird hacks, and doesn&#39;t type-check as neatly.
+</li>
+<li>Debugging the generated Lua source can sometimes be painful.
+</li>
+</ol>
+</li>
+</ol>
+<p>This was unfortunate.
+Other than these caveats, TS2L&#39;s quality absolutely amazes me,
+and Teal is the closest thing Lua has to it&#39;s own Typescript.</p>
+<p>This made me look towards Pallene, a compiled language that makes some use of Lua&#39;s C-API.
+It can optionally transpile to Lua and be used to author libraries for Lua!
+The repo also got a good amount of activity, had a good installation guide and several open issues.</p>
+<p>Unfortunately though, the language wasn&#39;t  completely ready for production use yet.
+Meaning if I was going into it, I was comitting to it for a very long  term.
+Since I was starting to dip my feet into type theory at the time anyway, this could have made for an interesting run.</p>
+<h2 id="before-gsoc-">Before GSoC. <a name="before-gsoc"></a></h2>
+<p>From fiddling around with Pallene in the past,
+I knew there are some big enhancements that the project could benefit from (my wishlist, of sorts).
+However, it would be a big undertaking to start with something sizeable for my first attempt at hacking on it.</p>
+<p>It only took a day or two of surfing the internet to find out some
+interesting <a href="http://www.inf.puc-rio.br/~hgualandi/papers/Gualandi-2018-SBLP.pdf">papers</a> about Pallene,
+and a <a href="https://summerofcode.withgoogle.com/archive/2020/projects/5667973756354560/">past GSoC project</a>.
+I had heard of Google Summer of Code before, but I had no idea how the event  worked, or what it was exactly.</p>
+<p>Usually  when an organization frequents to GSoC, it means the project is friendly open to outsiders.
+That&#39;s obviously good news!</p>
+<p>And so I started off with <a href="https://github.com/pallene-lang/pallene/issues/225">issue 225</a>, which basically said:</p>
+<blockquote>
+<p><em>&quot;When there is an internal error in the compiler, we get a not-so-tasteful &#39;impossible&#39; crash message.</em>
+<em>It&#39;d be nice to know more about the object that caused the crash.</em>&quot;</p>
+</blockquote>
+<p>A perfect issue for several reasons-
+minor enough to approach for a first-time contributor and touches several parts of the codebase,
+so I can get familiar with it in the process. And so - with the help of the maintainer -  it led me to spawn
+<a href="https://github.com/pallene-lang/pallene/pull/329">PR 329</a>.
+Of course, my code wasn&#39;t very courteous to the rest of the codebase,
+so it took some rounds of review before it could get merged (<a href="#backmatter">2</a>) <a name="2"></a>.</p>
+<p>There were a total of 4 PRs merged before GSoC. All of them can be viewed <a href="https://github.com/pallene-lang/pallene/pulls?q=is%3Apr+is%3Aclosed+author%3Asrijan-paul+created%3A%3C2021-04-27+">here</a>.
+Moving on to GSoC...</p>
+<h2 id="the-idea-">The Idea. <a name="idea"></a></h2>
+<p>The proposal was to have higher order functions in Pallene.
+Lua has support for lexical capturing and closures,
+so it would make sense for Pallene to base it&#39;s semantics off of those set by Lua.
+It all started with <a href="https://github.com/pallene-lang/pallene/issues/174">issue 174</a>, which discusses this very feature.</p>
+<p>I briefly went over higher order functions and Pallene&#39;s calling convention in part 1 of the series -
+so I&#39;ll be providing an eagle&#39;s eye view of the experience.
+Of course, you don&#39;t necessarily have to read the first one to understand everything here.</p>
+<p>You could follow the conversation in the aforementioned issue,
+but being the ever so rightful and courteous gentleman I am, here is a summary:</p>
+<ul>
+<li>Closures require a blob of code encoding the logic + a bag of data representing the captured variables/upvalues.
+</li>
+<li>There are two widely popular ways to represent closures in memory: Flat closures and Linked closures.
+</li>
+<li>The representation of closures in memory can have implications on garbage collection.
+</li>
+<li>For optimality, it might be a good idea to treat immutable captured vars separately. (immutable = captured variables that are referenced after declaration but not updated).
+</li>
+<li>We could pass the read-only upvalues  as extra parameters to their C-entry points (discussed in last post).
+</li>
+<li>For the mutable upvalues, we could put them on the heap, and use a &quot;box&quot; to refer to to them.
+</li>
+</ul>
+<p>For example, consider this simple Pallene snippet:</p>
+<code class="language-lua"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Returns a closure that increments a number by a fixed amount every call.</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> make_counter<span class="op">(</span><span class="va">x</span><span class="op">:</span> <span class="va">integer</span><span class="op">,</span> <span class="va">dx</span><span class="op">:</span> <span class="va">integer</span><span class="op">):</span> <span class="op">(</span><span class="va">integer</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">integer</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>	<span class="cf">return</span> <span class="kw">function</span> <span class="op">()</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>		<span class="va">x</span> <span class="op">=</span> <span class="va">x</span> <span class="op">+</span> <span class="va">dx</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>		<span class="cf">return</span> <span class="va">x</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>	<span class="kw">end</span></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code></pre></div></code></pre>
+<p>According to our plan, it should turn into something like this (oversimplified for brevity):</p>
+<code class="language-c"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">// </span><span class="al">NOTE</span><span class="co">: I&#39;ve intentionally left out a lot of details for simplicity&#39;s</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="co">// sake. You&#39;ll see descriptive function names that don&#39;t exist. Eg-</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="co">// `as_int` -&gt; converts a dynamic lua value to a C integer.</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a><span class="co">// `push` -&gt; pushes a lua value to the lua stack.</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a><span class="co">// `get_func` -&gt; returns the currently executing lua function.</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a><span class="co">// An upvalue box that surrounds an integer.</span></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> <span class="op">{</span> <span class="dt">int</span> x<span class="op">;</span> <span class="op">}</span> Box<span class="op">;</span></span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a><span class="co">// takes an integer and makes a box surrounding it.</span></span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>Box<span class="op">*</span> make_Box<span class="op">(</span><span class="dt">int</span><span class="op">*</span> x<span class="op">);</span></span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a><span class="co">// C entry point for the closure returned by `make_counter`.</span></span>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">int</span> closure_0_c<span class="op">(</span>Box<span class="op">*</span> upvalue_x<span class="op">,</span> <span class="dt">int</span> upvalue_dx<span class="op">)</span> <span class="op">{</span></span>
+<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a>	upvalue_x<span class="op">-&gt;</span>x <span class="op">=</span> upvalue<span class="op">-&gt;</span>x <span class="op">+</span> upvalue_dx<span class="op">;</span></span>
+<span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a>	<span class="cf">return</span> upvalue<span class="op">-&gt;</span>x<span class="op">;</span></span>
+<span id="17"><a href="#17" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="18"><a href="#18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="19"><a href="#19" aria-hidden="true" tabindex="-1"></a><span class="co">// Lua entry point for the closure returned by `make_counter`.</span></span>
+<span id="20"><a href="#20" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">int</span> closure_0_lua<span class="op">(</span>lua_State<span class="op">*</span> L<span class="op">)</span> <span class="op">{</span></span>
+<span id="21"><a href="#21" aria-hidden="true" tabindex="-1"></a>	CClosure<span class="op">*</span> current_func <span class="op">=</span> get_func<span class="op">(</span>L<span class="op">);</span></span>
+<span id="22"><a href="#22" aria-hidden="true" tabindex="-1"></a>	<span class="co">// 1. Grab the upvalues</span></span>
+<span id="23"><a href="#23" aria-hidden="true" tabindex="-1"></a>	Box<span class="op">*</span> x  <span class="op">=</span> as_box<span class="op">(</span>current_func<span class="op">-&gt;</span>upvalue<span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="24"><a href="#24" aria-hidden="true" tabindex="-1"></a>	<span class="dt">int</span>  dx <span class="op">=</span> as_int<span class="op">(</span>current_func<span class="op">-&gt;</span>upvalue<span class="op">[</span><span class="dv">1</span><span class="op">]);</span></span>
+<span id="25"><a href="#25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="26"><a href="#26" aria-hidden="true" tabindex="-1"></a>	<span class="co">// 2. Pass them as additional parameters to the</span></span>
+<span id="27"><a href="#27" aria-hidden="true" tabindex="-1"></a>	<span class="co">// C entry point.</span></span>
+<span id="28"><a href="#28" aria-hidden="true" tabindex="-1"></a>	<span class="dt">int</span> ret_val <span class="op">=</span> closure_0_c<span class="op">(</span>x<span class="op">,</span> dx<span class="op">);</span></span>
+<span id="29"><a href="#29" aria-hidden="true" tabindex="-1"></a>	</span>
+<span id="30"><a href="#30" aria-hidden="true" tabindex="-1"></a>	<span class="co">// 3. Push the result computed by the C entry point</span></span>
+<span id="31"><a href="#31" aria-hidden="true" tabindex="-1"></a>	<span class="co">// over the stack.</span></span>
+<span id="32"><a href="#32" aria-hidden="true" tabindex="-1"></a>	push<span class="op">(</span>L<span class="op">,</span> lua_value<span class="op">(</span>ret_val<span class="op">));</span></span>
+<span id="33"><a href="#33" aria-hidden="true" tabindex="-1"></a>	</span>
+<span id="34"><a href="#34" aria-hidden="true" tabindex="-1"></a>	<span class="co">// we are returning one value.</span></span>
+<span id="35"><a href="#35" aria-hidden="true" tabindex="-1"></a>	<span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="36"><a href="#36" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="37"><a href="#37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="38"><a href="#38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="39"><a href="#39" aria-hidden="true" tabindex="-1"></a><span class="co">// Lua entry point for `make_counter`. In real compiled code, it would</span></span>
+<span id="40"><a href="#40" aria-hidden="true" tabindex="-1"></a><span class="co">// defer execution to it&#39;s own C entry point, but to keep this snippet short, </span></span>
+<span id="41"><a href="#41" aria-hidden="true" tabindex="-1"></a><span class="co">// I&#39;ve omitted it.</span></span>
+<span id="42"><a href="#42" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">int</span> make_counter<span class="op">(</span>lua_State<span class="op">*</span> L<span class="op">)</span> <span class="op">{</span></span>
+<span id="43"><a href="#43" aria-hidden="true" tabindex="-1"></a>	<span class="co">// 1. get the arguments and cast them down to C</span></span>
+<span id="44"><a href="#44" aria-hidden="true" tabindex="-1"></a>	<span class="co">// data types.</span></span>
+<span id="45"><a href="#45" aria-hidden="true" tabindex="-1"></a>	<span class="dt">int</span> unboxed_x  <span class="op">=</span> as_int<span class="op">(</span>get_first_arg<span class="op">());</span></span>
+<span id="46"><a href="#46" aria-hidden="true" tabindex="-1"></a>	<span class="dt">int</span> dx         <span class="op">=</span> as_int<span class="op">(</span>get_second_arg<span class="op">());</span></span>
+<span id="47"><a href="#47" aria-hidden="true" tabindex="-1"></a>	</span>
+<span id="48"><a href="#48" aria-hidden="true" tabindex="-1"></a>	<span class="co">// 2. Make a &#39;box&#39; around &#39;x&#39;.</span></span>
+<span id="49"><a href="#49" aria-hidden="true" tabindex="-1"></a>	Box<span class="op">*</span> x <span class="op">=</span> make_Box<span class="op">(</span>unboxed_x<span class="op">);</span></span>
+<span id="50"><a href="#50" aria-hidden="true" tabindex="-1"></a>	</span>
+<span id="51"><a href="#51" aria-hidden="true" tabindex="-1"></a>	<span class="co">// 3. create a closure that uses &#39;closure_0_lua&#39; as the </span></span>
+<span id="52"><a href="#52" aria-hidden="true" tabindex="-1"></a>	<span class="co">// &quot;code&quot; part, and has two captured variables.</span></span>
+<span id="53"><a href="#53" aria-hidden="true" tabindex="-1"></a>	CClosure<span class="op">*</span> closure <span class="op">=</span> lua_new_cclosure<span class="op">(</span>L<span class="op">,</span> closure_0_lua<span class="op">);</span></span>
+<span id="54"><a href="#54" aria-hidden="true" tabindex="-1"></a>	closure<span class="op">-&gt;</span>upvalue<span class="op">[</span><span class="dv">0</span><span class="op">]</span> <span class="op">=</span> lua_value<span class="op">(</span>x<span class="op">);</span> <span class="co">// first captured var</span></span>
+<span id="55"><a href="#55" aria-hidden="true" tabindex="-1"></a>	closure<span class="op">-&gt;</span>upvalue<span class="op">[</span><span class="dv">1</span><span class="op">]</span> <span class="op">=</span> lua_value<span class="op">(</span>dx<span class="op">);</span> <span class="co">// second captured var</span></span>
+<span id="56"><a href="#56" aria-hidden="true" tabindex="-1"></a>	</span>
+<span id="57"><a href="#57" aria-hidden="true" tabindex="-1"></a>	<span class="co">// 4. Push the return value onto the stack (The closure).</span></span>
+<span id="58"><a href="#58" aria-hidden="true" tabindex="-1"></a>	push<span class="op">(</span>as_lua_integer<span class="op">(</span>lua_value<span class="op">(</span>closure<span class="op">));</span></span>
+<span id="59"><a href="#59" aria-hidden="true" tabindex="-1"></a>	</span>
+<span id="60"><a href="#60" aria-hidden="true" tabindex="-1"></a>	<span class="co">// 5. We are returning one value to the lua runtime via</span></span>
+<span id="61"><a href="#61" aria-hidden="true" tabindex="-1"></a>	<span class="co">// the previous call to &quot;push&quot;.</span></span>
+<span id="62"><a href="#62" aria-hidden="true" tabindex="-1"></a>	<span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="63"><a href="#63" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></code></pre>
+<p>Here is a very neat diagram from <a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.87.7741">this</a> paper that my mentor, Hugo posted in the issue:</p>
+<p><img src="https://user-images.githubusercontent.com/1452192/108609751-d6ca0680-73ae-11eb-83a6-568aa5e6fe14.png" alt="code-for-closure"></img></p>
+<p>And if you find closures interesting, <a href="https://sci-hub.se/10.1145/2661103.2661106">this</a> was a great read for me personally :D</p>
+<p>Ooookay, so what does GSoC look like for a student?</p>
+<ol>
+<li><strong>Write a proposal:</strong> Once the organization list for GSoC was announced - and LabLua was one of the organizations this year - I wrote the skeleton of a proposal summarizing the ideas Hugo and me  had discussed in the issue. Once the draft started to take shape - I shared a google doc with him  so  that he could edit and suggest changes. In about 2-3 weeks, we managed to put together a proposal ready for submission.
+</li>
+<li><strong>Cross fingers and wait:</strong> Now we wait for the organization and Google to review the proposal. If everything goes well - I should get a green signal via mail. And everything did go well, so I did :)
+</li>
+<li><strong>Community bonding:</strong> The actual &quot;summer of code&quot; is padded with a period where we get our feet wet with the organizations, our mentors and the codebase.
+</li>
+<li><strong>Start coding:</strong> And this is where the interesting work finally starts.
+</li>
+</ol>
+<p>In addition to the above, it helps to have a clear plan and some know-hows about the project you want to
+work on. Getting in touch with the organization prior to GSoC and getting familiar can be a good step 0 :).</p>
+<h2 id="coding-period-">Coding Period. <a name="coding"></a></h2>
+<p>(Note: I use the terms &quot;upvalue&quot; and &quot;captured variable&quot; interchangeably).</p>
+<p><strong>Support closures on the front-end.</strong>
+This meant parsing closures from source text to an AST- and then type checking the AST.</p>
+<p>This was less work than we initially anticipated, and ended up saving us a lot of time!
+Pallene was already capable of parsing top-level function statements.
+So a slight tweaking of the grammar and the parser&#39;s code was all it took.
+The type checker didn&#39;t require any changes!</p>
+<p><strong>Implement closures that don&#39;t  capture any variables</strong> (yes, just lambda functions).
+This was my first time tinkering with the Pallene IR. I had touched on it briefly in an attempt to introduce <code>ipairs</code> loops, but not in detail. We ended up having to add a new IR instruction called <code>NewClosure</code>, that -- when compiled -- would create a new closure object by calling a function from the Lua C-API, appropriately named <a href="https://www.lua.org/source/5.1/lfunc.c.html#luaF_newCClosure">luaF_newCclosure</a>.</p>
+<p><strong>Implement read-only captured upvalues.</strong>
+This took some more changes to the IR. Here, we introduced yet another instruction called <code>Upvalue &lt;id&gt;</code> -
+where <code>&lt;id&gt;</code> is a number assigned by the compiler to an upvalue to identify it uniquely.
+Using this IR- nested closures could now refer to non-local variables
+(which - as described above - are just function parameters once compiled down to C).</p>
+<p><strong>Implement mutable upvalues.</strong>
+For this, we had to introduce an entirely new compiler pass that fit between the type-checking pass and the IR generation pass.
+This pass would inspect the AST and perform four main tasks:</p>
+<ol>
+<li>Separate captured variables from regular  variables.
+</li>
+<li>Separate mutable captured variables from read-only captured variables.
+</li>
+<li>Encode record types needed for the upvalue boxes in the AST.
+</li>
+<li>Modify the AST to represent captured variables as boxed values instead of  regular values. (<a href="#backmatter">3</a>) <a name="3"></a>
+</li>
+</ol>
+<p>After this compiler pass, the IR generator could easily transform an AST into IR -
+and the code generator required fairly minimal changes too.</p>
+<p><strong>First evaluation.</strong> We were ahead of schedule! The first evaluation went well.</p>
+<p><strong>Uh-oh!</strong> Now my college decided to conduct exams at a weird time of the year, so development had to take a break for a while. Thanks to the progress made earlier, I shift focus and take some time off from coding.</p>
+<p><strong>Deciding the milestones for second evaluation.</strong>
+The most beefy changes had been made at this point,
+so we could use the remaining weeks to polish the changes introduced to the codebase.
+There are 3 main facets to cover:</p>
+<ol>
+<li>Optimizing closures by merging multiple upvalue boxes into one.
+</li>
+<li>Fixing bugs (if any).
+</li>
+<li>Getting rid of global variables altogether and representing them as captured variables.
+</li>
+</ol>
+<p>For <strong>1</strong>, we had multiple meetings to discuss strategies and tradeoffs.
+We realized that this might require several changes to the compiler and some not very trivial lifetime analysis of symbols.
+There were several questions to answer such as:</p>
+<ul>
+<li>What criteria would we use to determine mergeability?
+</li>
+<li>What kind of performance gains are we looking at?
+</li>
+<li>Is the performance gain worth the investment?
+</li>
+<li>How likely is it for optimize-able code to occur in real codebases?
+</li>
+<li>From the closures that <em>can</em> be optimized, how many are called often enough to be performance critical?
+</li>
+<li>How do the benefits of merging boxes scale with regards to:
+<ul>
+<li>Number of closures made.
+</li>
+<li>The number of variables captured.
+</li>
+</ul>
+</li>
+</ul>
+<p>At the time of writing this blog post, some of these questions are still unanswered.
+However, we have some numbers to chew on in the mean time. We used two ways to collect some benchmark data:</p>
+<ul>
+<li>
+<p>Find popular Lua repositories on Github and run their source code through a hacky script to find out the number of upvalues referenced by closures in these codebases.
+Once we have that data- we eyeball the codebase to check how often we&#39;d be able to make box-merge optimizations.</p>
+</li>
+<li>
+<p>Use the Pallene compiler to generate C files from Pallene source code that uses higher order functions.
+Then &quot;optimize&quot; the generated C code by hand. Once done, run both the compiler generated and hand-edited code through a benchmark tool like Hyperfine, and compare the results.</p>
+</li>
+</ul>
+<p>Some of the benchmark data that we gathered can be seen on the gist <a href="https://gist.github.com/srijan-paul/06d640db0b08086757687dbebffb7f1f">here</a> and this issue <a href="https://github.com/pallene-lang/pallene/issues/426">here</a>.
+From what we know right now, there exist places where it&#39;s possible to gain a speed up of 110-120%</p>
+<p>Coming to <strong>2</strong>, we found 2-3 bugs of varying severities.
+For example, Lua uses byte sized unsigned integers to index upvalues (and local variables).
+This means we must restrict the number of upvalues a function can have in pallene.
+We set this limit to 200.</p>
+<p>As for the last bit, Pallene used to have a slightly odd representation for global variables.
+There used to be big table named <code>G</code> which would hold all the global variables and constant values.
+The <code>G</code> would then be passed around from function to function so that the functions could access the globals they need.
+Now that we have upvalues, functions could simply capture the upvalues they need upon initialization.
+So we decided to remove the <code>G</code> table and instead use a new table called <code>K</code> which would only contain constant values like strings.</p>
+<p>In summary, we made some the following changes to Pallene&#39;s calling convention:</p>
+<ul>
+<li>Local functions are treated uniformly regardless of the style of declaration.
+(<code>local f = function() end</code> vs <code>local function f() end</code>).
+The only difference being function statements cannot be re-assigned.
+</li>
+<li>Global varibales are treated as regular upvalues that can be captured by toplevel functions that need them (similar to Lua).
+</li>
+<li>Reduce the number of instructions in the IR.
+</li>
+<li>Remove the global-var table <code>G</code>, and replace it with a constant-pool table <code>K</code>, containing constants like strings.
+</li>
+</ul>
+<p>You can view the PRs made during GSoC by clicking <a href="https://github.com/pallene-lang/pallene/pulls?q=is%3Apr+is%3Aclosed+author%3Asrijan-paul+created%3A%3E2021-04-27+merged%3A%3C2021-08-23">here</a>.</p>
+<h2 id="in-tomorrows-news-">In Tomorrow&#39;s news <a name="tomorrow"></a></h2>
+<p>Higher order functions are a much welcomed addition to Pallene. But there are some long term goals that I&#39;d personally like the language to achieve. I&#39;ve been trying to get it to a point where I can use it to write libraries for a WIP game framework of mine called <a href="https://github.com/cpp-gamedev/wex/tree/dev">Wex</a> (<a href="#backmatter">4</a>).<a name="4"></a></p>
+<ol>
+<li><strong>Better Embeddability</strong>.  While it&#39;s possible to embed Pallene into C applications, the experience isn&#39;t exactly the easiest.  I want to see what we can do about the making the language more easily accessible into real applications. Note that all C applications that embed Pallene are essentially embedding a Lua interpreter. The Pallene compiler itself is called independently - which generates shared object files to be linked dynamically.
+</li>
+<li><strong>Maps</strong>. Passing structured data from a C script to a Pallene script is something that I believe should be feasible via tables. The problem here is Pallene represents table-like data as records, which compile down to C-structs. Whereas, Lua tables are basically separate chained hash maps.
+</li>
+<li><strong>Union types</strong>. This is an idea that I&#39;ve thought about the least, however I believe it <em>should</em> be possible. If not union types, I&#39;d like to have nilable ones! (<code>int?</code> vs <code>int</code>). In fact, nilable types could probably be implemented as unions (<code>T | nil</code>).
+</li>
+<li><strong>Editor support</strong>. For some colors and autocomplete. Hacking together an extension for VSCode shouldn&#39;t be too tough, but consistently covering multiple editors is painstaking.
+</li>
+<li><strong>Modules</strong>. Fortunately, this is already being considered and worked on! But I have no clue how they work :D
+</li>
+</ol>
+<p>It is possible that by the time you&#39;re reading this, some stuff has already been marked off the list!</p>
+<h2 id="on-that-note-">On that note... <a name="end-note"></a></h2>
+<p>Pallene is an interesting project that is different from the standard ways of evaluating programs (interpreters, JITs and AoT compilers). If you managed to stick around so far, then it&#39;s likely that it is of interest to you.</p>
+<p>I hope I could give a very hand-wavy idea of the workflow. I should have said it earlier - but if some of what&#39;s explained above comes off as confusing and complicated, it&#39;s really not. I&#39;ve tried to compress <em>a lot</em> of information into two blog posts, so this result is natural. I highly encourage you to check it out! Who knows, you may end up becoming the next GSoC student - or long time contributor? Adios.</p>
+<h2 id="backmatter-">Backmatter. <a name="backmatter"></a></h2>
+<ol>
+<li>
+<p>While talking with my mentor, I later learned there were good reasons for this.
+The author wanted to bootstrap the compiler soon after it was created,
+and so to avoid fiddling with imports he decided have a single file compiler. As an added bonus,
+installing teal is incredibly simple compared to other transpilers/tools. <a href="#1"><strong>(return ⮭)</strong></a></p>
+</li>
+<li>
+<p>I wish I could say it got better with time,
+but as you&#39;ll notice- some of my PRs have as many as <a href="https://github.com/pallene-lang/pallene/pull/334">71</a> comments on them.
+This is true even for the PR I made yesterday. But that&#39;s good!
+Should you ever try to tackle a <em>chonky</em> codebase, my mess-ups are evidence that the reviewers will be nice and offer help when needed.
+So don&#39;t be afraid to take a leap of faith! <a href="#2"><strong>(return ⮭)</strong></a></p>
+</li>
+<li>
+<p>A &quot;boxed value&quot; is simply a value inside a record. For instance:</p>
+</li>
+</ol>
+<code class="language-lua"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">local</span> <span class="va">x</span><span class="op">:</span> <span class="va">integer</span> <span class="op">=</span> <span class="dv">1</span> <span class="co">-- regular value</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="co">-- a &quot;box&quot; type can be thought of as a struct</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a><span class="co">-- surrounding a single, regular data type.</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a><span class="va">record</span> <span class="va">Box</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>	<span class="va">value</span><span class="op">:</span> <span class="va">integer</span></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a><span class="kw">local</span> <span class="va">y</span><span class="op">:</span> <span class="va">Box</span> <span class="op">=</span> <span class="op">{</span> <span class="va">value</span> <span class="op">=</span> <span class="dv">10</span> <span class="op">}</span> <span class="co">-- &quot;boxed value&quot;</span></span></code></pre></div></code></pre>
+<p>Here, <code>y</code> is a &quot;boxed&quot; integer, whereas x is a regular integer variable. Of course, this is just the terminology I choose to use. I don&#39;t know if there is an official name. <a href="#3"><strong>(return ⮭)</strong></a></p>
+<ol start="4">
+<li>Another one of my goals is to be able to script it with <a href>Vyse</a>.
+More on this language in a future post! <a href="#4"><strong>(return ⮭)</strong></a>
+</li>
+</ol>
+
+
+			<script src="https://giscus.app/client.js" data-repo="srijan-paul/srijan-paul.github.io" data-repo-id="MDEwOlJlcG9zaXRvcnkzMTY0MTg0NTk=" data-category="Announcements" data-category-id="DIC_kwDOEtwpm84Cdokt" data-mapping="title" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" defer>
+			</script>
+		</div>
+  </body>
+</html>
