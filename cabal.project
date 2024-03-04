@@ -1,0 +1,4 @@
+packages: 
+  ../bark/bark.cabal,
+  ./*.cabal
+

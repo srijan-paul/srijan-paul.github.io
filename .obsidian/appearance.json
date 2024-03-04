@@ -1,5 +1,8 @@
 {
   "accentColor": "#5c66f5",
   "cssTheme": "AnuPpuccin",
-  "theme": "moonstone"
+  "theme": "moonstone",
+  "textFontFamily": "Inter",
+  "translucency": true,
+  "interfaceFontFamily": "Inter"
 }

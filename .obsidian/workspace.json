@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "src/blog/water-shader.md",
+                "file": "src/blog/narrower-internet.md",
                 "mode": "source",
                 "source": false
               }
@@ -69,7 +69,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 273.50418853759766
+    "width": 273.50418853759766,
+    "collapsed": true
   },
   "right": {
     "id": "6b8f0c32ef1382e5",
@@ -85,7 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "src/blog/water-shader.md",
+                "file": "src/blog/narrower-internet.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "src/blog/water-shader.md",
+                "file": "src/blog/narrower-internet.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +126,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "src/blog/water-shader.md"
+                "file": "src/blog/narrower-internet.md"
               }
             }
           }
@@ -148,6 +149,10 @@
   },
   "active": "d80dfad01649c2e3",
   "lastOpenFiles": [
+    "docs/blog/narrower-internet/index.html",
+    "docs/blog/narrower-internet",
+    "src/blog/water-shader.md",
+    "src/blog/narrower-internet.md",
     "docs/assets/css/blog.css",
     "assets/css/blog.css",
     "foo.html",
@@ -159,8 +164,6 @@
     "docs/assets/fonts/ProximaNovaT-Thin.ttf",
     "docs/assets/fonts/ProximaNova-Extrabld.ttf",
     "docs/assets/fonts/ProximaNova-Semibold.ttf",
-    "docs/assets/fonts/ProximaNova-Bold.ttf",
-    "docs/assets/fonts/ProximaNova-Light.ttf",
     "src/blog/honjin-murders.md",
     "src/now/jan-3-2024.md",
     "src/now/jan-25-2024.md",
@@ -192,8 +195,6 @@
     "docs/assets/img/water-shader/all-ground-tiles.png",
     "src/blog/digital-garden.md",
     "src/about.md",
-    "src/index.md",
-    "README.md",
     "Untitled.canvas"
   ]
 }

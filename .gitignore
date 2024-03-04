@@ -1,3 +1,4 @@
 build
 .obsidian/
-.DS_Store
+DS_Store
+dist-newstyle
