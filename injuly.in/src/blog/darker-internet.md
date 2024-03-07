@@ -5,7 +5,7 @@ tags:
   - technology
 title: The internet is slipping out of our reach
 meta: Between AI generated spam and Google's SEO mafia, human interaction is now more out of each than ever.
-is_blog_post: true
+is_blog_post: false
 date: 2024-03-04
 ---
 

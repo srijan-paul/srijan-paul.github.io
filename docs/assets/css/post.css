@@ -130,9 +130,20 @@ blockquote p {
 }
 
 /* footnotes */
+
+.footnote {
+	margin-bottom: 8px;
+}
+
 .footnote-number, .footnote-contents {
-	display: inline-block;
+	display: inline;
 	padding: 0;
+}
+
+.footnote-contents > p {
+	margin: 0;
+	padding: 0;
+	display: inline;
 }
 
 .footnote-number > a {
