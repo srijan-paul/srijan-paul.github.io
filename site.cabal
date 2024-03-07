@@ -38,6 +38,7 @@ executable site
       unordered-containers,
       bark,
       text-show,
-      text
+      text,
+      mtl 
     hs-source-dirs:   app
     default-language: Haskell2010

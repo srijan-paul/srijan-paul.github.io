@@ -4,7 +4,7 @@ tags: ["FP", "programming-languages", "post", "haskell"]
 title: "Of Phantoms, witches, and type driven design in Haskell"
 date: "2023-03-07"
 meta: "Type driven design with Phantom types in Haskell"
-is_blog_post: "true"
+is_blog_post: true
 ---
 
 In most statically typed languages, compilation offers the guarantee that our program is soundly typed. That we're not doing something stupid like adding an `Int` to a `String`.

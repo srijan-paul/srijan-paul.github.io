@@ -2,12 +2,9 @@
 
 module Internal.Date where
 
-
+import qualified Data.Text as T
 import Text.Read (readMaybe)
 import TextShow
-import Bark.Types (Value(..), Preprocessor)
-import qualified Data.HashMap.Strict as HM
-import qualified Data.Text as T
 
 data Month
   = Jan
@@ -22,13 +19,21 @@ data Month
   | Oct
   | Nov
   | Dec
-  deriving (Show, Eq, Enum)
+  deriving (Show, Eq, Enum, Ord)
 
 data Date = Date
   { dateYear :: Int,
     dateMonth :: Month,
     dateDay :: Int
-  } deriving (Show, Eq)
+  }
+  deriving (Show, Eq)
+
+instance Ord Date where
+  compare a b
+    | dateYear a /= dateYear b = compare (dateYear a) (dateYear b)
+    | dateMonth a /= dateMonth b = compare (dateMonth a) (dateMonth b)
+    | otherwise = compare (dateDay a) (dateDay b)
+
 
 formatDateMonDD :: Date -> T.Text
 formatDateMonDD date = T.pack (show (dateMonth date)) <> " " <> showt (dateDay date)
@@ -49,11 +54,10 @@ parseYear = readMaybe
 
 parseMonth :: String -> Maybe Month
 parseMonth s = case read' s of
-  Just m 
+  Just m
     | m >= 1 && m <= 12 -> Just $ toEnum (m - 1) -- 0-indexed
     | otherwise -> Nothing
   _ -> Nothing
-
 
 parseDay :: Month -> String -> Maybe Int
 parseDay month s = read' s >>= validate
@@ -72,8 +76,9 @@ parseDay month s = read' s >>= validate
       Nov -> 30
       _ -> 31
 
-parseDateS :: T.Text -> Maybe Date
-parseDateS = parse . T.splitOn "-"
+-- | Parse a date string in YYYY-MM-DD format.
+parseDate :: T.Text -> Maybe Date
+parseDate = parse . T.splitOn "-"
   where
     parse :: [T.Text] -> Maybe Date
     parse [y, m, d] = do
@@ -83,8 +88,7 @@ parseDateS = parse . T.splitOn "-"
       return $ Date {dateYear = year, dateMonth = month, dateDay = day}
     parse _ = Nothing
 
-parseDate :: Value -> Maybe Date
-parseDate (String s) = parseDateS s
-parseDate _ = Nothing
-
+-- | Extract the year from a date string in YYYY-MM-DD format.
+getYear :: T.Text -> Maybe Int
+getYear = fmap dateYear . parseDate
 

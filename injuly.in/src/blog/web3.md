@@ -4,7 +4,7 @@ tags: ["web3", "blockchain", "post"]
 title: "My many gripes with NFTs and the Web3"
 date: "2022-01-19"
 meta: "The drawbacks of a web3 based internet"
-is_blog_post: "true"
+is_blog_post: true
 ---
 During my short stint as a blockchain developer, I've learned a lot and have met amazing people.
 While I acknowledge the skill and reverence of some developers in this domain,

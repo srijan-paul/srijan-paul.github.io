@@ -3,8 +3,8 @@ template: "post"
 tags: ["post", "games", "lua", "love", "GLSL"]
 title: "Water surface shader for 2D Pixel art games"
 meta: "Using displacement shaders to create reflections with Lua, Love2D and GLSL"
-is_blog_post: "true"
-date: "2023-09-21"
+is_blog_post: true
+date: 2023-09-21
 ---
 While browsing the LÖVE2D forums,
 I came across [potions](https://alexjgriffith.itch.io/potions): A game where you brew potions to save your cat.

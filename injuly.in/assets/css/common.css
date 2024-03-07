@@ -34,7 +34,7 @@ hr {
   --bg-color: white;
   /* other fonts: Rethink Sans, Open Sans,
 	 * Inter, Cormorand, Zilla Slab, IBM Plex Serif, Bai Jamjuree */
-	--font-family-fallback: Times New Roman, Avenir, -apple-system, sans-serif;
+	--font-family-fallback: Avenir, -apple-system, sans-serif;
   --font-body: 'Rethink Sans', var(--font-family-fallback);
   --font-heading: "Space Grotesk", Arial;
   --font-code: "IBM Plex Mono", monospace;
@@ -301,17 +301,11 @@ ol li {
   flex: 33%;
 }
 
-/* Custom theme for giscus.app */
-
-:root {
-	--btn-bezel: 3px;
-	--btn-bezel-pressed: 1px;
+sup > a {
+	text-decoration: none;
 }
 
-.buttons {
-	display: flex;
-	gap: 10px;
-}
+/* Buttons */
 
 a.button, button {
 	text-decoration: none;
@@ -349,4 +343,18 @@ a.button:active {
 	border-left-width: var(--btn-bezel-pressed);
 	transform: translateY(var(--btn-bezel));
 }
+
+
+/* Custom theme for giscus.app */
+
+:root {
+	--btn-bezel: 3px;
+	--btn-bezel-pressed: 1px;
+}
+
+.buttons {
+	display: flex;
+	gap: 10px;
+}
+
 

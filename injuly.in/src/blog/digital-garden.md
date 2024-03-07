@@ -4,7 +4,7 @@ tags: ["post", "programming-languages"]
 title: "On digital gardens."
 date: "2021-04-13"
 meta: "Digital Gardens"
-is_blog_post: "true"
+is_blog_post: true
 ---
 
 Warm greetings to all zero of my readers. This blog has been fairly dead for a while now.
