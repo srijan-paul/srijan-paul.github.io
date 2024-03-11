@@ -39,11 +39,11 @@ getDate post = do
 addDateToPost :: Preprocessor
 addDateToPost _ _ post = do
   let date = getDate post >>= parseDate
-      postData = postOtherData post
+      buildData = postData post
   return $ case date of
     Just d ->
       let formattedDate = formatDateMonDD d
-       in post {postOtherData = ("formattedDate", String formattedDate) : postData}
+       in post {postData = HM.insert "formattedDate" (String formattedDate) buildData}
     Nothing -> post
 
 getTemplate :: Post -> Maybe T.Text
@@ -64,7 +64,7 @@ populateBlogHome project allPosts post = do
 addAllBlogs :: Project -> [Post] -> Post -> Either ErrorMessage Post
 addAllBlogs project posts post = do
   allBlogs <- getBlogPosts posts
-  return $ post {postOtherData = ("blogs", allBlogs) : postOtherData post}
+  return $ post {postData = HM.insert "blogs" allBlogs (postData post)}
   where
     getBlogPosts :: [Post] -> Either ErrorMessage Value
     getBlogPosts allPosts = do
@@ -92,12 +92,9 @@ addAllBlogs project posts post = do
 
     postToValue :: Post -> Value
     postToValue p =
-      let metaData =
-            [ ("meta", Object $ fmMetaData $ postFrontMatter p),
-              ("url", String $ T.pack $ urlFromMdPath project $ postPath p)
-            ]
-          otherData = postOtherData p
-       in Object $ HM.fromList (metaData ++ otherData)
+      let metaData = Object $ fmMetaData $ postFrontMatter p
+          otherData = postData p
+       in Object $ HM.insert "meta" metaData otherData
 
     isBlogPost p =
       case HM.lookup "is_blog_post" (fmMetaData $ postFrontMatter p) of
