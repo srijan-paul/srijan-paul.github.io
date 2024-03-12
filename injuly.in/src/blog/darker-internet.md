@@ -27,7 +27,7 @@ Like this article? Maybe you'll like this e-book too.
 It's free! (Just enter your email ;)).
 
 The internet continues to grow in volume, but shrink in diversity.
-It is as if everything has moved to a few select apps,
+As if everything has moved to a few select apps,
 which then [sell our words](https://www.theverge.com/2024/2/17/24075670/reddit-ai-training-license-deal-user-content) to AI slot machines.
 Images on Instagram, videos on YouTube, and discussions on Reddit.
 Dare to venture out of this bubble,
