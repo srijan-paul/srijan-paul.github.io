@@ -60,10 +60,10 @@ And if you too have been hiding in telegram groups and mailing lists  – good, 
 It's dark outside.
 ## Footnotes
 
-[^1]: This is by design, Of course. A search engine cannot make money by nimbly leading you to webpages free of charge. The real money is in *hiding*  pages. Showing only the results from firms that can pay to retain their position in the results page – either by paying Google directly, or by hosting ads that share revenue with Google.
+[^1]: This is by design, Of course. A search engine cannot make money by nimbly leading you to webpages free of charge. The real money is in *hiding*  pages. Showing only the results from firms that can pay to retain their position in the results page – either by paying Google directly, or by hosting ads that share revenue with Google. [⏎](#fnref-1)
 
-[^2]: I've come across several tools that "grow" your online presence by auto-generating soulless content. [Here is just one example](https://snowball.club/snowball-extension-ai-post-720.mp4).
+[^2]: I've come across several tools that "grow" your online presence by auto generating soulless content. [Here is just one example](https://snowball.club/snowball-extension-ai-post-720.mp4). [⏎](#fnref-2)
 
-[^3]: That is not to say blogs on Substack or Medium are inferior. Some of my favourite blogs are on Substack. Only that reading everyone's blogs on the same few platforms doesn't feel as diverse.
+[^3]: That is not to say blogs on Substack or Medium are inferior. Some of my favourite blogs are on Substack. Only that reading everyone's blogs on the same few platforms doesn't feel as diverse. [⏎](#fnref-3)
 
-[^4]: While writing this post, I came across [an excellent talk](https://maggieappleton.com/ai-dark-forest) by Maggie Appleton.
+[^4]: While writing this post, I came across [an excellent talk](https://maggieappleton.com/ai-dark-forest) by Maggie Appleton. [⏎](#fnref-4)
