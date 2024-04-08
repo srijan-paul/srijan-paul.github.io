@@ -2,16 +2,16 @@
 template: home
 ---
 
-## Ahoy, sailor. 
+## Ahoy,
 
 This website is an archive of my thoughts, musings, projects, and research.
 
-I have several interests, and with time they tend to change. <br>
+I have several interests, and with time they tend to change.
 As of late though, I'm into haskell, compilers, linear algebra, and [honkaku mysteries](http://honkaku.com/english.html).
 I'm almost always working on something, and maintain [a monthly log](/now).
 
 
-If you fancy a longer introduction, try the [/about](/about) page.
+If you fancy a longer introduction, try the [about](/about) page.
 
 <p class="buttons">
     <a class="button" href="https://github.com/srijan-paul" target="_blank">
@@ -30,10 +30,4 @@ If you fancy a longer introduction, try the [/about](/about) page.
         <span>Twitter</span>
     </a>
 </p>
-
-## Most viewed pages
-
-1. [An interactive guide to Fourier series](/blog/fourier-series)
-2. [But can you give up GitHub?](/blog/gaussian-elimination)
-3. [A visual explanation of Gassian elimination](/blog/gaussian-elimination)
 

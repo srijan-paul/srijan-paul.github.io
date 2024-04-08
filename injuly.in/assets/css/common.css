@@ -1,9 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:ital,wght@0,400;0,500&family=Rethink+Sans:wght@300;400;500&family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:ital,wght@0,400;0,500&family=Inter:wght@300;400;500&family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400&display=swap");
 
 /* Cherry Swash, Zilla Slab */
 
 * {
   box-sizing: border-box;
+  border-color: #e5e7eb;
 }
 
 .main {
@@ -14,55 +15,99 @@
 }
 
 hr {
-  height: 1px;
-  border: none;
-  color: #ccc;
-  background-color: #ccc;
+  height: 0;
+  border-top: 1px;
+  border-color: var(--slate-200);
 }
 
 :root {
-	--clr-black: #2f3237;
-  --clr-primary: #2c3e50;
-  --clr-grey: rgb(107, 107, 107);
-  --clr-font: #2c3a47;
-  --clr-bold: #1e272e;
-  --clr-primary: #4e2cbf;
-	--clr-secondary: #952cbf;
-	--clr-accent: #f8f6ff;
-  --clr-link: var(--clr-primary);
-  --clr-link-hover: var(--clr-secondary);
-  --bg-color: white;
+  /* colors stolen from tailwind default colors. */
+  --sky-50: #f0f9ff;
+  --sky-100: #e0f2fe;
+  --sky-200: #bae6fd;
+  --sky-300: #7dd3fc;
+  --sky-400: #38bdf8;
+  --sky-500: #0ea5e9;
+  --sky-600: #0284c7;
+  --sky-700: #0369a1;
+  --sky-800: #075985;
+  --sky-900: #0c4a6e;
+  --sky-950: #082f49;
+
+  /* Grays */
+
+  --slate-50: #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+  --slate-950: #020617;
+
+  --clr-black: var(--slate-600);
+  --clr-primary: var(--slate-700);
+  --clr-grey: var(--slate-500);
+  --clr-font: var(--slate-700);
+  --clr-bold: var(--slate-800);
+  --clr-primary: var(--sky-700);
+  --clr-secondary: var(--sky-500);
+  --clr-accent: var(--sky-200);
+  --clr-link: var(--sky-700);
+  --clr-link-hover: var(--sky-500);
+  --bg-color: #fafafa;
   /* other fonts: Rethink Sans, Open Sans,
 	 * Inter, Cormorand, Zilla Slab, IBM Plex Serif, Bai Jamjuree */
-	--font-family-fallback: Avenir, -apple-system, sans-serif;
-  --font-body: 'Rethink Sans', var(--font-family-fallback);
-  --font-heading: "Space Grotesk", Arial;
+  --font-family-fallback: Avenir, -apple-system, sans-serif;
+  --font-body: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji",
+    var(--font-family-fallback);
+  --font-heading: var(--font-body), Arial;
   --font-code: "IBM Plex Mono", monospace;
-	--font-weight: 400;
-	--font-weight-bold: 500;
-  --font-size: 16px;
+  --font-weight: 400;
+  --font-weight-bold: 500;
+  --font-size: 15px;
 }
 
 body {
   font-family: var(--font-body);
   background-color: var(--bg-color);
   font-size: var(--font-size);
-	color: var(--clr-black);
+  color: var(--clr-black);
   line-height: 1.5;
 }
 
 strong {
-	font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-bold);
+}
+
+h1 {
+  font-size: 24px;
+}
+
+h2 {
+  font-size: 20px;
+}
+
+h3 {
+  font-size: 18px;
 }
 
 h1,
 h2,
-h3,
-h4,
-h5,
-h6 {
+h3 {
   font-family: var(--font-heading), sans-serif;
-	margin-bottom: 0.67em 0;
+  margin-bottom: 10px;
+  margin-top: 20px;
+}
+
+h1 + p,
+h2 + p,
+h3 + p {
+  margin-top: 0;
 }
 
 a,
@@ -74,8 +119,6 @@ a:active {
 }
 
 a:hover {
-  color: white;
-  background-color: var(--clr-link);
   transition-duration: 0.3s;
 }
 
@@ -101,34 +144,41 @@ div.sourceCode {
   border: 1px solid #ccc;
 }
 
-.website-name {
-  font-size: 1.5rem;
-  color: var(--clr-font);
-  text-decoration: none;
-  font-weight: var(--font-weight-bold);
-  font-family: var(--font-heading);
-}
-
 .nav-container {
-	margin: auto;
-	margin-top: 2.5rem;
-	text-align: center;
+  width: max-content;
+  margin: auto;
+  margin-top: 2.5rem;
+  margin-bottom: 3.5rem;
+  text-align: center;
 }
 
 nav {
-	display: flex;
-	justify-content: center;
-  gap: 1rem;
+  display: flex;
+  justify-content: center;
+  border-radius: 0.375rem;
+  border-width: 1px;
+  border-style: solid;
+  padding: 10px 12px;
+  gap: 1.5rem;
+  box-shadow: 0px 1px 8px 0px rgba(0, 0, 0, 0.1);
+  font-weight: 500;
+  font-size: 0.8rem;
 }
 
 .nav-link {
   text-decoration: none !important;
   font-family: var(--font-body);
+  color: var(--clr-font) !important;
+  text-transform: capitalize;
+}
+
+.nav-link:hover {
+  background-color: inherit !important;
+  color: var(--sky-600) !important;
 }
 
 .active-nav-link {
-  text-decoration: underline !important;
-  opacity: 1;
+  color: var(--sky-600) !important;
 }
 
 .post-list > li {
@@ -175,7 +225,7 @@ code {
 }
 
 details {
-  background-color: #f8f6ff;
+  background-color: var(--sky-50);
   color: var(--clr-primary);
   border-radius: 12px;
   border: 1px solid var(--clr-secondary);
@@ -187,43 +237,24 @@ details > summary {
   font-family: var(--font-body);
   margin: 5px 0px;
   font-weight: var(--font-weight-bold);
-	transition-duration: 0.2s;
+  transition-duration: 0.2s;
 }
 
 details > summary:hover {
-	cursor: pointer;
+  cursor: pointer;
   color: var(--clr-secondary);
 }
 
 details[open] > summary::before {
-	transform: rotate(90deg);
+  transform: rotate(90deg);
 }
-
 
 /* lists */
 
 ol {
-	list-style-type: inside;
-	padding: 0px 2px;
-	margin: 0;
-}
-
-ul {
-	margin: 0;
-	padding: 0px 15px;
-}
-
-ul li {
-	padding: 0px 2px;
-	margin: 0;
-}
-
-ul > li::marker {
-	color: var(--clr-grey);
-}
-
-ol {
-  list-style: none;
+  list-style-type: inside;
+  padding: 0px 2px;
+  margin: 0;
   list-style-position: inside;
   padding-left: 1rem;
 }
@@ -236,6 +267,19 @@ ol li {
   padding-bottom: 1%;
 }
 
+ul {
+  margin: 0;
+  padding: 0px 15px;
+}
+
+ul li {
+  padding: 0px 2px;
+  margin: 0;
+}
+
+ul > li::marker {
+  color: var(--clr-grey);
+}
 
 @media screen and (max-width: 730px) {
   .post-list > li {
@@ -302,59 +346,58 @@ ol li {
 }
 
 sup > a {
-	text-decoration: none;
+  text-decoration: none;
 }
 
 /* Buttons */
 
-a.button, button {
-	text-decoration: none;
+a.button,
+button {
+  text-decoration: none;
 
-	width: fit-content;
-	height: fit-content;
-	padding: 0px 4px;
-	display: flex;
-	gap: 5px;
-	align-items: center;
-	justify-content: center;
+  width: fit-content;
+  height: fit-content;
+  padding: 0px 4px;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  justify-content: center;
 
-	color: var(--clr-primary);
-	background-color: var(--clr-accent);
-	border: 1px solid var(--clr-primary);
-	border-bottom-width: var(--btn-bezel);
-	border-left-width: var(--btn-bezel);
-	border-radius: 8px; 
+  color: var(--sky-600);
+  background-color: var(--sky-50);
+  border: 1px solid var(--sky-600);
 
-	transition-duration: 0.1s;
+  border-bottom-width: var(--btn-bezel);
+  border-left-width: var(--btn-bezel);
+  border-radius: 8px;
+
+  transition-duration: 0.1s;
 }
 
 a.button:hover {
-	cursor: pointer;
+  cursor: pointer;
 
-	color: var(--clr-secondary);
-	border-color: var(--clr-secondary);
-	
-	transform: translate(1px, -2px);
-	transform: 2px;
+  color: var(--clr-secondary);
+  border-color: var(--clr-secondary);
+
+  transform: translate(1px, -2px);
+  transform: 2px;
 }
 
 a.button:active {
-	border-bottom-width: var(--btn-bezel-pressed);
-	border-left-width: var(--btn-bezel-pressed);
-	transform: translateY(var(--btn-bezel));
+  border-bottom-width: var(--btn-bezel-pressed);
+  border-left-width: var(--btn-bezel-pressed);
+  transform: translateY(var(--btn-bezel));
 }
-
 
 /* Custom theme for giscus.app */
 
 :root {
-	--btn-bezel: 3px;
-	--btn-bezel-pressed: 1px;
+  --btn-bezel: 3px;
+  --btn-bezel-pressed: 1px;
 }
 
 .buttons {
-	display: flex;
-	gap: 10px;
+  display: flex;
+  gap: 10px;
 }
-
-

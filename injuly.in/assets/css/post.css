@@ -1,7 +1,7 @@
 /* Notes */
 
 .note {
-  background-color: var(--clr-accent);
+  background-color: var(--sky-50);
   color: var(--clr-primary);
   border-radius: 12px;
   border: 1px solid var(--clr-secondary);
@@ -132,26 +132,27 @@ blockquote p {
 /* footnotes */
 
 .footnote {
-	margin-bottom: 8px;
+  margin-bottom: 8px;
 }
 
-.footnote-number, .footnote-contents {
-	display: inline;
-	padding: 0;
+.footnote-number,
+.footnote-contents {
+  display: inline;
+  padding: 0;
 }
 
 .footnote-contents > p {
-	margin: 0;
-	padding: 0;
-	display: inline;
+  margin: 0;
+  padding: 0;
+  display: inline;
 }
 
 .footnote-number > a {
-	text-decoration: none;
+  text-decoration: none;
 }
 
 .footnote-number::after {
-	content: ".";
+  content: ".";
 }
 
 /* 
@@ -169,4 +170,3 @@ blockquote p {
   width: 350px;
   height: 350px;
 }
-
