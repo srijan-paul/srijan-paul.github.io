@@ -30,4 +30,3 @@ If you fancy a longer introduction, try the [about](/about) page.
         <span>Twitter</span>
     </a>
 </p>
-

@@ -38,14 +38,15 @@
 
 /* tags */
 
+.leader {
+  margin-bottom: 35px;
+}
+
 .tags {
   list-style: none;
   margin: 0;
   padding: 0;
-  font-size: 16px;
-  font-family: var(--font-serif-1);
-  display: flex;
-  margin-bottom: 20px;
+  margin: 20px 0px;
 }
 
 .tags > a {
@@ -118,15 +119,24 @@ blockquote p {
   text-decoration: none !important;
 }
 
+.tags {
+  margin: 10px 0px;
+}
+
 .tag {
-  padding-right: 5px;
-  /* float: right; */
+  font-size: calc(var(--font-size) - 3px);
   cursor: pointer;
-  color: #01a3a4;
+  text-decoration: none;
+  padding: 0.125rem 0.625rem;
+  border-radius: 20px;
+  border: 1px solid none;
+  background-color: var(--sky-100);
+  font-weight: 500;
+  transition-duration: 150ms;
 }
 
 .tag:hover {
-  text-decoration: underline;
+  background-color: var(--sky-200);
 }
 
 /* footnotes */

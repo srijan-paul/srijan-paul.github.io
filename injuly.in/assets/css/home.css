@@ -30,5 +30,17 @@ ol > li > a {
 }
 
 .popular-posts > a:hover .date {
-  color: var(--sky-500);
+  color: var(--sky-600);
+}
+
+.popular-posts .title {
+  margin-right: 10px;
+}
+
+.popular-posts .date {
+  text-wrap: nowrap;
+}
+
+.popular-posts > a:hover .title {
+  text-decoration: underline;
 }

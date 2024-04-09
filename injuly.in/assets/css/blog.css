@@ -1,5 +1,12 @@
-.post-list {
-	margin: 0;
-	padding: 0;
+ul.post-list {
+  margin: 0;
+  padding: 0;
 }
 
+ul.post-list > li:hover > a {
+  text-decoration: underline;
+}
+
+ul.post-list > li:hover > .post-list-date {
+  color: var(--clr-primary);
+}

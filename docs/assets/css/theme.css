@@ -77,18 +77,23 @@ div.sourceCode {
 }
 
 :root {
-  --keyword: #ce4c9a;
-  --number: #eea15d;
-  --comment: rgba(149, 165, 166, 0.8);
-  --type: #7641bb;
+  --background: #ffffff;
+  --foreground: #1e293b;
+
+  --keyword: #1177aa;
+  --number: #555555;
+  --comment: rgba(85, 85, 85, 0.8);
+  --type: #005386;
   --builtin: var(--type);
-  --function: #3787c7;
-  --operator: #c56200;
-  --string: #0d7d6c;
-  --var: #000;
-  --constant: #000;
-  --diff-added: var(--string);
-  --diff-removed: #ed4569;
+  --function: #1177aa;
+  --operator: #555555;
+  --string: #555555;
+  --var: var(--foreground);
+  --constant: var(--foreground);
+
+  /* diffs */
+  --diff-added: #047857;
+  --diff-removed: #f43f5e;
 }
 
 code span.al {
@@ -202,6 +207,6 @@ code span.wa {
 }
 
 :not(pre) > code:not(:has(> div)) {
-  background-color: #f1f1f1;
+  background-color: var(--background);
   padding: 0px 5px;
 }
