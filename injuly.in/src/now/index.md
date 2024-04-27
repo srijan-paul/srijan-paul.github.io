@@ -8,7 +8,7 @@ date: 04-02-2024
 
 During the covid lockdown, I was developing an RPG game.
 Back then, I used to code on a windows machine,
-and would often share gameplay GIFs on discord servers.
+and would often share gameplay GIFs on Discord servers.
 For this, I would use a nifty app called ScreenToGif.
 That was four years ago.
 Eventually, the lockdown passed.

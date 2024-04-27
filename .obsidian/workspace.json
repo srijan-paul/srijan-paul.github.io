@@ -4,19 +4,15 @@
     "type": "split",
     "children": [
       {
-        "id": "9a44527ecb0262a1",
+        "id": "38b18b3a67af28dd",
         "type": "tabs",
         "children": [
           {
-            "id": "87f9527da7e243c1",
+            "id": "1dfe65360974def1",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "src/blog/narrower-internet.md",
-                "mode": "source",
-                "source": false
-              }
+              "type": "empty",
+              "state": {}
             }
           }
         ]
@@ -69,8 +65,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 273.50418853759766,
-    "collapsed": true
+    "width": 273.50418853759766
   },
   "right": {
     "id": "6b8f0c32ef1382e5",
@@ -86,7 +81,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "src/blog/narrower-internet.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +97,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "src/blog/narrower-internet.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +119,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "src/blog/narrower-internet.md"
+                "file": "Untitled 3.canvas"
               }
             }
           }
@@ -149,6 +142,14 @@
   },
   "active": "d80dfad01649c2e3",
   "lastOpenFiles": [
+    "Untitled 3.canvas",
+    "Untitled 2.canvas",
+    "Untitled 1.canvas",
+    "Untitled.canvas",
+    "injuly.in/src/blog/honjin-murders.md",
+    "injuly.in/src/blog/bfinbf.md",
+    "injuly.in/src/index.md",
+    "CHANGELOG.md",
     "docs/blog/narrower-internet/index.html",
     "docs/blog/narrower-internet",
     "src/blog/water-shader.md",
@@ -163,7 +164,6 @@
     "docs/assets/fonts/ProximaNova-Regular.ttf",
     "docs/assets/fonts/ProximaNovaT-Thin.ttf",
     "docs/assets/fonts/ProximaNova-Extrabld.ttf",
-    "docs/assets/fonts/ProximaNova-Semibold.ttf",
     "src/blog/honjin-murders.md",
     "src/now/jan-3-2024.md",
     "src/now/jan-25-2024.md",
@@ -181,8 +181,6 @@
     "src/blog/index.md",
     "src/blog/give-up-github.md",
     "src/blog/gaussian-elimination.md",
-    "src/posts.md",
-    "blog/honjin-murders.md",
     "docs/assets/img/water-shader/waterless-void.png",
     "docs/assets/img/water-shader/water-with-border.gif",
     "docs/assets/img/water-shader/water-tile.gif",
@@ -192,9 +190,6 @@
     "docs/assets/img/water-shader/incorrect-reflection.png",
     "docs/assets/img/water-shader/final-water-reflection.gif",
     "docs/assets/img/water-shader/bland-water.gif",
-    "docs/assets/img/water-shader/all-ground-tiles.png",
-    "src/blog/digital-garden.md",
-    "src/about.md",
-    "Untitled.canvas"
+    "docs/assets/img/water-shader/all-ground-tiles.png"
   ]
 }

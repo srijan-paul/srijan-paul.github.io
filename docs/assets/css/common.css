@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:ital,wght@0,400;0,500&family=Inter:wght@300;400;500&family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400&family=Young+Serif&display=swap");
 
 /* Cherry Swash, Zilla Slab */
 
@@ -48,7 +48,7 @@ hr {
   --slate-900: #0f172a;
   --slate-950: #020617;
 
-  --clr-black: var(--slate-600);
+  --clr-black: var(--slate-700);
   --clr-primary: var(--slate-700);
   --clr-grey: var(--slate-500);
   --clr-font: var(--slate-700);
@@ -63,11 +63,11 @@ hr {
 	 * Inter, Cormorand, Zilla Slab, IBM Plex Serif, Bai Jamjuree */
   --font-body: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-heading: Space Grotesk, var(--font-body);
+  --font-heading: Young Serif, var(--font-body);
   --font-code: "IBM Plex Mono", monospace;
   --font-weight: 400;
   --font-weight-bold: 500;
-  --font-size: 15px;
+  --font-size: 16px;
 }
 
 body {
@@ -75,7 +75,7 @@ body {
   background-color: var(--bg-color);
   font-size: var(--font-size);
   color: var(--clr-black);
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 strong {
@@ -83,11 +83,11 @@ strong {
 }
 
 h1 {
-  font-size: 24px;
+  font-size: 26px;
 }
 
 h2 {
-  font-size: 22px;
+  font-size: 24px;
 }
 
 h3 {
@@ -97,7 +97,7 @@ h3 {
 h1,
 h2,
 h3 {
-  color: var(--slate-800);
+  color: var(--slate-700);
   font-family: var(--font-heading), sans-serif;
   margin-bottom: 12px;
   margin-top: 32px;
@@ -187,6 +187,9 @@ nav {
   list-style-type: none;
   list-style-position: outside;
   margin-left: 0;
+
+	display: flex;
+	justify-content: space-between;
 }
 
 .post-list > li > span {
@@ -207,6 +210,9 @@ nav {
   font-size: 15px;
   font-family: var(--font-body);
   float: right;
+	padding-left: 12px;
+	white-space: nowrap;
+	text-wrap: nowrap;
 }
 
 .main {

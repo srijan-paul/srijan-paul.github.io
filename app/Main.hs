@@ -3,7 +3,6 @@
 module Main where
 
 import Bark.CLI (BarkCLI (BarkCLI), builtinProcessors, doCommand, parseCommand)
-import Bark.Core (urlFromMdPath)
 import Bark.FrontMatter (PostFrontMatter (..))
 import Bark.Types
   ( ErrorMessage,
