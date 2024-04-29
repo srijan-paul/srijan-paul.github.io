@@ -7,14 +7,14 @@ date: 04-02-2024
 *previous entry: [February 27, 2024](/now/feb-2024)*
 
 During the covid lockdown, I was developing an RPG game.
-Back then, I used to code on a windows machine,
-and would often share gameplay GIFs on Discord servers.
-For this, I would use a nifty app called ScreenToGif.
+I used to code on a windows machine, and would often share gameplay GIFs on Discord servers.
+All my GIFs were recorded with an app called ScreenToGif.
+
 That was four years ago.
+
 Eventually, the lockdown passed.
-I abandoned my project, graduated college,
-got a job, moved cities, switched to a MacBook,
-and wrote an NES emulator.
+I abandoned my project, graduated college, got a job, moved cities, switched to a MacBook,
+and started writing an NES emulator.
 Once again, I wanted to share GIFs of my progress on the project.
 
 I reached for the same tool I'd used years ago.
@@ -37,6 +37,7 @@ Humans can send cars to space.
 Surely *this* shouldn't be too hard?
 
 Only one way to find out.
+
 ## Meet Frametap 
 
 As of this month, I'm working on [frametap](https://github.com/srijan-paul/frametap/):
@@ -50,7 +51,7 @@ Features on the roadmap are:
 
 Once satisfied with the MVP, I'll attempt making a screengrab tool that hopefully just works.
 
-# Reading
+## Reading
 
 More Sanderson and shin honkaku.
 
