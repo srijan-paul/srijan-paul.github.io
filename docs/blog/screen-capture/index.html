@@ -51,30 +51,34 @@
 	<source src="/assets/video/screencap.webm"></source>
 </video>
 <p><em><div style="font-size: calc(var(--font-size) - 1px)">A screen capture tool made with frametap</div></em></p>
-<p>I&#39;ve seen a lot of praise for <a href="https://shottr.cc/">Shottr</a> and <a href="https://cleanshot.com/">CleanShotX</a> – two beautiful MacOS apps that capture your screen.
-And I&#39;ve wondered, why aren&#39;t there any alternatives that support all devices?<sup class="footnote-ref"><a href="#fn-1" id="fnref-1">1</a></sup></p>
-<p>As it turns out, to make robust screen capture apps we need robust screen capture libraries.
-So, I&#39;ve spent some time figuring out cross-platform screen capture and image encoding. The bulk of my effort has gone into two projects:</p>
+<p>Have you ever wondered how apps like OBS Studio and LightShot work?
+I have.
+I&#39;ve also wondered why beautiful apps like <a href="https://shottr.cc/">Shottr</a> and <a href="https://getsharex.com/">ShareX</a> don&#39;t run on more than one OS.
+Further, why isn&#39;t there a lightweight app to record screenshots, videos, and GIFs that just works everywhere? <sup class="footnote-ref"><a href="#fn-1" id="fnref-1">1</a></sup></p>
+<p>As it turns out, robust screen capture apps need robust screen capture libraries.
+Native GUIs are already non-trivial without a bulky web runtime.
+Implementing capture and encoding for each device separately will only add to your woes.</p>
+<p>So, I&#39;ve set out to build a cross-platform screen capture library with image encoding support. The bulk of my effort has gone into two projects:</p>
 <ol>
-<li><a href="https://github.com/srijan-paul/frametap">Frametap</a>: A cross platform screen capture library in Zig.
+<li><a href="https://github.com/srijan-paul/frametap">Frametap</a>: The capture library written in Zig.
 </li>
 <li>Snapper: An app that can record GIFs and capture screenshots.
 </li>
 </ol>
-<p>With frametap, I want to establish the plumbing atop which anyone can create applications dealing with pixels on a screen – think OBStudio, ShareX, LightShot, EpicPen, etc.
-To that end, I&#39;m writing this to document the different screen recording methods on each OS and windowing system.</p>
+<p>With frametap, I want to establish the plumbing atop which anyone can create applications dealing with pixels on a screen – think CleanShotX, OBS, etc.
+To that end, I&#39;m writing this article to document the different screen recording methods on every major OS and windowing system.</p>
 <h2 id="recording-frames">Recording frames</h2>
 <p>The Operating System controls the color of every on-screen pixel.
-It sends draw commands to the GPU, which then computes the color for every pixel, and writes this data into a <em>framebuffer</em>. Finally, a video card sends the contents of this buffer to a monitor.</p>
-<p>The GPU framebuffer cannot be accessed directly<sup class="footnote-ref"><a href="#fn-2" id="fnref-2">2</a></sup>, so the only way to get pixel data from the screen is to ask the OS. Overall, it looks something like this:</p>
+It issues draw commands to the GPU, which then computes the color for each pixel, and writes this data into a <em>framebuffer</em>. Finally, a video card sends the contents of this buffer to a monitor.</p>
+<p>Sadly, the GPU framebuffer cannot be accessed directly<sup class="footnote-ref"><a href="#fn-2" id="fnref-2">2</a></sup>. The only way to get pixel data from the screen then is to ask the OS. Roughly, the transaction looks like this:</p>
 <ol>
-<li>Ask the OS for a list of available displays.
+<li>Request a list of available displays.
 </li>
 <li>Select the display you want to use.
 </li>
 <li>Set up filters, like the region of screen to capture and windows to exclude.
 </li>
-<li>Ask the OS for pixel data for the specified region.
+<li>Fetch pixel data for the specified region.
 </li>
 </ol>
 <p>Straightforward, right?
@@ -98,12 +102,12 @@ Right now, frametap&#39;s SCKit wrapper is a <a href="https://github.com/srijan-
 </li>
 </ul>
 <h3 id="linux">Linux</h3>
-<p>On linux, the operating system is not directly responsible for deciding whats drawn to the screen.
+<p>On Linux, the operating system is not directly responsible for deciding whats drawn to the screen.
 Instead, a process called the <a href="https://en.wikipedia.org/wiki/Windowing_system">windowing system</a> renders windows and handles the user&#39;s interaction with GUIs.
 All programs that render to the screen do so by communicating with the window system.</p>
-<p>A run of the mill linux machine will use either X11 or Wayland – the two most popular window systems.</p>
-<p>For X11 based linux devices, you can request a process called the <code>X-Server</code>  for the screen&#39;s image data  using the <a href="https://linux.die.net/man/3/xshmgetimage"><code>XShmGetImage</code></a> call. Here is a <a href="https://stackoverflow.com/questions/43442675/how-to-use-xshmgetimage-and-xshmputimage">usage example</a> on stackoverflow.</p>
-<p>On Wayland linux, you&#39;ll want this library called <code>pipewire</code> that can fetch screen image data from the <em>compositor</em> – a substitute for the X-server on Wayland. Lucky for us, pipewire has an official <a href="https://docs.pipewire.org/page_tutorial5.html">tutorial</a> on capturing video frames.</p>
+<p>A run of the mill Linux machine will use either X11 or Wayland – the two most popular window systems.</p>
+<p>For X11 based Linux devices, you can request the X-Server  for the screen&#39;s image data  using the <a href="https://Linux.die.net/man/3/xshmgetimage"><code>XShmGetImage</code></a> call. Here is a <a href="https://stackoverflow.com/questions/43442675/how-to-use-xshmgetimage-and-xshmputimage">usage example</a> on stackoverflow.</p>
+<p>On Wayland Linux, you&#39;ll want this library called <code>pipewire</code> that can fetch screen image data from the <em>compositor</em> – a substitute for the X-server on Wayland. Lucky for us, pipewire has an official <a href="https://docs.pipewire.org/page_tutorial5.html">tutorial</a> on capturing video frames.</p>
 <h2 id="encoding-frames-to-image-or-video">Encoding frames to image or video</h2>
 <p>Typically, the OS will give you raw frames in a format like <code>RGBA</code> or <code>BGRA</code>, where each frame is a byte buffer (<code>uint8_t*</code>), and every pixel is represented using 4 bytes – one for each color channel.</p>
 <p>To encode these frames into a standard format like PNG, WebP, or GIF, you&#39;ll have to look for an encoding library like <a href="https://github.com/richgel999/fpng">fpng</a>, <a href="https://lodev.org/lodepng/">lodepng</a>, or libwebp.</p>
@@ -120,8 +124,8 @@ I use <a href="https://github.com/dloebl/cgif/">cgif</a> for GIF encoding, along
 <p>In apps like EpicPen and LightShot you can annotate any region of the screen,
 a nifty feature when teaching or streaming your screen.</p>
 <p>The trick behind it is surprisingly simple – transparent windows.</p>
-<p>When you &quot;draw&quot; on a screen you&#39;re really just clicking and moving the cursor on a transparent window.
-Some applications will have two windows – a moveable toolbar from where you can select shapes and brushes; and the transparent canvas on which to draw.
+<p>When you &quot;draw&quot; on a screen, you&#39;re really just clicking and moving the cursor on a transparent window.
+Some applications will have two windows: a moveable toolbar from where you can select shapes and brushes; and the transparent canvas on which to draw.
 The toolbar can be &quot;hidden&quot; from the capture by asking the OS (or compositor) to mask it away when returning frame data for the screen.</p>
 <p>The exact steps to make a window transparent are different for every platform, but most GUI libraries will abstract it away behind a simple configuration flag.</p>
 <h2 id="backmatter">Backmatter</h2>
@@ -131,7 +135,7 @@ The toolbar can be &quot;hidden&quot; from the capture by asking the OS (or comp
 <a href="#fnref-1">1</a>
 </div>
 <div class="footnote-contents">
-<p><a href="https://flameshot.org/">Flameshot</a> deserves a mention – it was the only app I could find that works on all 3 major OSes. Its a little clunky on MacOS, but a very nifty app nonetheless.</p>
+<p><a href="https://flameshot.org/">Flameshot</a> deserves a mention – it was the only screenshot app I could find that works on all 3 major OSes. Its a little clunky on MacOS, but a very nifty app nonetheless.</p>
 </div>
 </div>
 <div class="footnote" id="fn-2">

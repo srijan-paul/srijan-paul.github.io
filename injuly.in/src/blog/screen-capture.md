@@ -13,29 +13,34 @@ is_blog_post: true
 
 *<div style="font-size: calc(var(--font-size) - 1px)">A screen capture tool made with frametap</div>*
 
-I've seen a lot of praise for [Shottr](https://shottr.cc/) and [CleanShotX](https://cleanshot.com/) – two beautiful MacOS apps that capture your screen.
-And I've wondered, why aren't there any alternatives that support all devices?[^1]
+Have you ever wondered how apps like OBS Studio and LightShot work?
+I have.
+I've also wondered why beautiful apps like [Shottr](https://shottr.cc/) and [ShareX](https://getsharex.com/) don't run on more than one OS. 
+Further, why isn't there a lightweight app to record screenshots, videos, and GIFs that just works everywhere? [^1]
 
-As it turns out, to make robust screen capture apps we need robust screen capture libraries.
-So, I've spent some time figuring out cross-platform screen capture and image encoding. The bulk of my effort has gone into two projects:
+As it turns out, robust screen capture apps need robust screen capture libraries.
+Native GUIs are already non-trivial without a bulky web runtime.
+Implementing capture and encoding for each device separately will only add to your woes.
 
-1. [Frametap](https://github.com/srijan-paul/frametap): A cross platform screen capture library in Zig.
+So, I've set out to build a cross-platform screen capture library with image encoding support. The bulk of my effort has gone into two projects:
+
+1. [Frametap](https://github.com/srijan-paul/frametap): The capture library written in Zig.
 2. Snapper: An app that can record GIFs and capture screenshots.
 
-With frametap, I want to establish the plumbing atop which anyone can create applications dealing with pixels on a screen – think OBStudio, ShareX, LightShot, EpicPen, etc.
-To that end, I'm writing this to document the different screen recording methods on each OS and windowing system.
+With frametap, I want to establish the plumbing atop which anyone can create applications dealing with pixels on a screen – think CleanShotX, OBS, etc.
+To that end, I'm writing this article to document the different screen recording methods on every major OS and windowing system.
 
 ## Recording frames
 
 The Operating System controls the color of every on-screen pixel.
-It sends draw commands to the GPU, which then computes the color for every pixel, and writes this data into a *framebuffer*. Finally, a video card sends the contents of this buffer to a monitor.
+It issues draw commands to the GPU, which then computes the color for each pixel, and writes this data into a *framebuffer*. Finally, a video card sends the contents of this buffer to a monitor.
 
-The GPU framebuffer cannot be accessed directly[^2], so the only way to get pixel data from the screen is to ask the OS. Overall, it looks something like this:
+Sadly, the GPU framebuffer cannot be accessed directly[^2]. The only way to get pixel data from the screen then is to ask the OS. Roughly, the transaction looks like this:
 
-1. Ask the OS for a list of available displays.
+1. Request a list of available displays.
 2. Select the display you want to use.
 3. Set up filters, like the region of screen to capture and windows to exclude.
-4. Ask the OS for pixel data for the specified region.
+4. Fetch pixel data for the specified region.
 
 Straightforward, right?
 The devil is in the details. <br>
@@ -61,15 +66,15 @@ For Windows 10 and above there's a well documented [Screen capture API](https://
 
 ### Linux
 
-On linux, the operating system is not directly responsible for deciding whats drawn to the screen.
+On Linux, the operating system is not directly responsible for deciding whats drawn to the screen.
 Instead, a process called the [windowing system](https://en.wikipedia.org/wiki/Windowing_system) renders windows and handles the user's interaction with GUIs.
 All programs that render to the screen do so by communicating with the window system.
 
-A run of the mill linux machine will use either X11 or Wayland – the two most popular window systems.
+A run of the mill Linux machine will use either X11 or Wayland – the two most popular window systems.
 
-For X11 based linux devices, you can request a process called the `X-Server`  for the screen's image data  using the [`XShmGetImage`](https://linux.die.net/man/3/xshmgetimage) call. Here is a [usage example](https://stackoverflow.com/questions/43442675/how-to-use-xshmgetimage-and-xshmputimage) on stackoverflow.
+For X11 based Linux devices, you can request the X-Server  for the screen's image data  using the [`XShmGetImage`](https://Linux.die.net/man/3/xshmgetimage) call. Here is a [usage example](https://stackoverflow.com/questions/43442675/how-to-use-xshmgetimage-and-xshmputimage) on stackoverflow.
 
-On Wayland linux, you'll want this library called `pipewire` that can fetch screen image data from the *compositor* – a substitute for the X-server on Wayland. Lucky for us, pipewire has an official [tutorial](https://docs.pipewire.org/page_tutorial5.html) on capturing video frames.
+On Wayland Linux, you'll want this library called `pipewire` that can fetch screen image data from the *compositor* – a substitute for the X-server on Wayland. Lucky for us, pipewire has an official [tutorial](https://docs.pipewire.org/page_tutorial5.html) on capturing video frames.
 
 ## Encoding frames to image or video
 
@@ -100,8 +105,8 @@ a nifty feature when teaching or streaming your screen.
 
 The trick behind it is surprisingly simple – transparent windows.
 
-When you "draw" on a screen you're really just clicking and moving the cursor on a transparent window. 
-Some applications will have two windows – a moveable toolbar from where you can select shapes and brushes; and the transparent canvas on which to draw.
+When you "draw" on a screen, you're really just clicking and moving the cursor on a transparent window. 
+Some applications will have two windows: a moveable toolbar from where you can select shapes and brushes; and the transparent canvas on which to draw.
 The toolbar can be "hidden" from the capture by asking the OS (or compositor) to mask it away when returning frame data for the screen.
 
 The exact steps to make a window transparent are different for every platform, but most GUI libraries will abstract it away behind a simple configuration flag.
@@ -109,6 +114,6 @@ The exact steps to make a window transparent are different for every platform, b
 
 ## Backmatter
 
-[^1]: [Flameshot](https://flameshot.org/) deserves a mention – it was the only app I could find that works on all 3 major OSes. Its a little clunky on MacOS, but a very nifty app nonetheless.
+[^1]: [Flameshot](https://flameshot.org/) deserves a mention – it was the only screenshot app I could find that works on all 3 major OSes. Its a little clunky on MacOS, but a very nifty app nonetheless.
 [^2]: While windows and MacOS forbid direct access to the GPU, Linux lets you acess the framebuffer via the `/dev/fb0` file. You can even change whats rendered on the screen by writing to it. Try `cat /dev/random > /dev/fb0`.
 [^3]: The GIF format is terribly outdated today, and while WebP is a much better format, its adoption is not as widespread. Prefer using `.webp` if you want to share videos on an online platform. No browser will have any trouble rendering a webp file, and its much more efficient.
