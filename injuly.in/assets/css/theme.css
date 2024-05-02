@@ -87,7 +87,7 @@ div.sourceCode {
   --builtin: var(--type);
   --function: #1177aa;
   --operator: #555555;
-  --string: #555555;
+  --string: #0e7490;
   --var: var(--foreground);
   --constant: var(--foreground);
 
@@ -106,7 +106,7 @@ code span.an {
   font-style: italic;
 } /* Annotation */
 code span.at {
-  color: #7d9029;
+	/* TODO */
 } /* Attribute */
 code span.bn {
   color: #40a070;

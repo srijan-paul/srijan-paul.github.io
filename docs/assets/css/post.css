@@ -127,11 +127,10 @@ blockquote p {
   font-size: calc(var(--font-size) - 3px);
   cursor: pointer;
   text-decoration: none;
-  padding: 0.125rem 0.625rem;
-  border-radius: 20px;
-  border: 1px solid none;
-  background-color: var(--sky-100);
-  font-weight: 500;
+	padding: 0.125rem 0.625rem;
+	border-radius: 5px;
+	border: 1px solid none;	
+	background-color: var(--sky-100);
   transition-duration: 150ms;
 }
 

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+    <meta name="description" content="A guide to using OS native screen capture APIs"></meta>
+    <meta property="og:title" content="Frametap: decoding screen capture with Zig"></meta>
+    <meta property="twitter:title" content="Frametap: decoding screen capture with Zig"></meta>
+    <meta property="twitter:description" content="A guide to using OS native screen capture APIs"></meta>
+
+     
+    <meta property="og:image" content></meta>
+		<meta name="twitter:image" content>
+    
+
+    <meta property="og:site_name" content="InJuly"></meta>
+
+    <link rel="stylesheet" href="/assets/css/common.css">
+    <link rel="stylesheet" href="/assets/css/post.css">
+    <link rel="stylesheet" href="/assets/css/theme.css">
+    
+
+    <script data-goatcounter="https://injuly.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+
+    <title>Frametap: decoding screen capture with Zig</title>
+  </head>
+
+  <body>
+    <div class="main">
+      <div class="nav-container">
+        <nav>
+          <a href="/" class="nav-link">index</a>
+          <a href="/about" class="nav-link">about</a>
+          <a href="/blog" class="nav-link active-nav-link">blog</a>
+          <a href="/now" class="nav-link">now</a>
+        </nav>
+      </div>
+
+      <div class="leader">
+        <h1> Frametap: decoding screen capture with Zig </h1>
+				<div class="post-date"> May 2 </div>
+        <div class="tags" id="tags">
+            <a class="tag" href="/posts/index.html?tag=zig">zig</a>
+            <a class="tag" href="/posts/index.html?tag=software">software</a>
+        </div>
+      </div>
+      <video autoplay muted loop="true">
+	<source src="/assets/video/screencap.webm"></source>
+</video>
+<p><em><div style="font-size: calc(var(--font-size) - 1px)">A screen capture tool made with frametap</div></em></p>
+<p>I&#39;ve seen a lot of praise for <a href="https://shottr.cc/">Shottr</a> and <a href="https://cleanshot.com/">CleanShotX</a> – two beautiful MacOS apps that capture your screen.
+And I&#39;ve wondered, why aren&#39;t there any alternatives that support all devices?<sup class="footnote-ref"><a href="#fn-1" id="fnref-1">1</a></sup></p>
+<p>As it turns out, to make robust screen capture apps we need robust screen capture libraries.
+So, I&#39;ve spent some time figuring out cross-platform screen capture and image encoding. The bulk of my effort has gone into two projects:</p>
+<ol>
+<li><a href="https://github.com/srijan-paul/frametap">Frametap</a>: A cross platform screen capture library in Zig.
+</li>
+<li>Snapper: An app that can record GIFs and capture screenshots.
+</li>
+</ol>
+<p>With frametap, I want to establish the plumbing atop which anyone can create applications dealing with pixels on a screen – think OBStudio, ShareX, LightShot, EpicPen, etc.
+To that end, I&#39;m writing this to document the different screen recording methods on each OS and windowing system.</p>
+<h2 id="recording-frames">Recording frames</h2>
+<p>The Operating System controls the color of every on-screen pixel.
+It sends draw commands to the GPU, which then computes the color for every pixel, and writes this data into a <em>framebuffer</em>. Finally, a video card sends the contents of this buffer to a monitor.</p>
+<p>The GPU framebuffer cannot be accessed directly<sup class="footnote-ref"><a href="#fn-2" id="fnref-2">2</a></sup>, so the only way to get pixel data from the screen is to ask the OS. Overall, it looks something like this:</p>
+<ol>
+<li>Ask the OS for a list of available displays.
+</li>
+<li>Select the display you want to use.
+</li>
+<li>Set up filters, like the region of screen to capture and windows to exclude.
+</li>
+<li>Ask the OS for pixel data for the specified region.
+</li>
+</ol>
+<p>Straightforward, right?
+The devil is in the details. <br>
+For every OS (and sometimes OS version) there&#39;s a different API you&#39;ll have to call.</p>
+<h3 id="macos">MacOS</h3>
+<p>Newer versions of MacOS have an API called <a href="https://developer.apple.com/documentation/screencapturekit/capturing_screen_content_in_macos">ScreenCaptureKit</a>, which lets you easily capture a video or audio stream. To capture a single frame, I&#39;d recommend using the <a href="https://developer.apple.com/documentation/coregraphics">CoreGraphics</a> API since it is much simpler to take static screenshots with.</p>
+<p>The Objective-C bindings for SCKit are not as well documented, but I was able to find <a href="https://github.com/obsproject/obs-studio/pull/5875/files">this patch</a> submitted by apple to OBS Studio, and use it as a reference to fit my usecase.
+Right now, frametap&#39;s SCKit wrapper is a <a href="https://github.com/srijan-paul/frametap/blob/2ea1c095e09b2328e69fdffc403d8725f85a681f/native/screencap.m">mere ~350 lines</a>.</p>
+<p>To support older MacOS versions, however, you&#39;ll want to use the <a href="https://developer.apple.com/av-foundation/">AVFoundation</a> framework.</p>
+<h3 id="windows">Windows</h3>
+<p>For Windows 10 and above there&#39;s a well documented <a href="https://learn.microsoft.com/en-us/windows/uwp/audio-video-camera/screen-capture">Screen capture API</a> for C# and Visual Basic applications.  If you&#39;re using C (or Zig, like me), you&#39;ll want to use the DirectX APIs (or GDI, if you only want static screenshots). Here are some examples I found:</p>
+<ul>
+<li><a href="https://github.com/mmozeiko/wcap">wcap</a> – C, uses DirectX.
+</li>
+<li><a href="https://github.com/daramkun/DaramCam">DaramCam</a> – C++, supports both GDI and DX.
+</li>
+<li><a href="https://stackoverflow.com/questions/5069104/fastest-method-of-screen-capturing-on-windows">Useful stackoverflow example</a> - C++
+</li>
+<li><a href="https://github.com/0x2E757/ScreenCapturer">ScreenCapturer</a> – C#, DXGI.
+</li>
+</ul>
+<h3 id="linux">Linux</h3>
+<p>On linux, the operating system is not directly responsible for deciding whats drawn to the screen.
+Instead, a process called the <a href="https://en.wikipedia.org/wiki/Windowing_system">windowing system</a> renders windows and handles the user&#39;s interaction with GUIs.
+All programs that render to the screen do so by communicating with the window system.</p>
+<p>A run of the mill linux machine will use either X11 or Wayland – the two most popular window systems.</p>
+<p>For X11 based linux devices, you can request a process called the <code>X-Server</code>  for the screen&#39;s image data  using the <a href="https://linux.die.net/man/3/xshmgetimage"><code>XShmGetImage</code></a> call. Here is a <a href="https://stackoverflow.com/questions/43442675/how-to-use-xshmgetimage-and-xshmputimage">usage example</a> on stackoverflow.</p>
+<p>On Wayland linux, you&#39;ll want this library called <code>pipewire</code> that can fetch screen image data from the <em>compositor</em> – a substitute for the X-server on Wayland. Lucky for us, pipewire has an official <a href="https://docs.pipewire.org/page_tutorial5.html">tutorial</a> on capturing video frames.</p>
+<h2 id="encoding-frames-to-image-or-video">Encoding frames to image or video</h2>
+<p>Typically, the OS will give you raw frames in a format like <code>RGBA</code> or <code>BGRA</code>, where each frame is a byte buffer (<code>uint8_t*</code>), and every pixel is represented using 4 bytes – one for each color channel.</p>
+<p>To encode these frames into a standard format like PNG, WebP, or GIF, you&#39;ll have to look for an encoding library like <a href="https://github.com/richgel999/fpng">fpng</a>, <a href="https://lodev.org/lodepng/">lodepng</a>, or libwebp.</p>
+<p>Frametap uses lodepng under the hood, and lets you capture a screenshot in just 5 lines of code:</p>
+<code class="language-js"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">var</span> capture <span class="op">=</span> <span class="cf">try</span> core<span class="op">.</span><span class="at">Capture</span><span class="op">.</span><span class="fu">create</span>(allocator<span class="op">,</span> <span class="kw">null</span>)<span class="op">;</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>defer capture<span class="op">.</span><span class="fu">destroy</span>()<span class="op">;</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> frame <span class="op">=</span> <span class="cf">try</span> capture<span class="op">.</span><span class="fu">screenshot</span>(<span class="kw">null</span>)<span class="op">;</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>frame<span class="op">.</span><span class="fu">writePng</span>(<span class="st">&quot;screenshot.png&quot;</span>)<span class="op">;</span></span></code></pre></div></code></pre>
+<p>Although experimental, GIF export<sup class="footnote-ref"><a href="#fn-3" id="fnref-3">3</a></sup> is also supported.
+I use <a href="https://github.com/dloebl/cgif/">cgif</a> for GIF encoding, along with <a href="https://github.com/srijan-paul/frametap/blob/2ea1c095e09b2328e69fdffc403d8725f85a681f/src/quantize.zig">a hand-written color quantizer</a>.</p>
+<p>WebP support is still on the roadmap, and won&#39;t be available for quite some time.</p>
+<h2 id="drawing-on-screen">Drawing on screen</h2>
+<p>In apps like EpicPen and LightShot you can annotate any region of the screen,
+a nifty feature when teaching or streaming your screen.</p>
+<p>The trick behind it is surprisingly simple – transparent windows.</p>
+<p>When you &quot;draw&quot; on a screen you&#39;re really just clicking and moving the cursor on a transparent window.
+Some applications will have two windows – a moveable toolbar from where you can select shapes and brushes; and the transparent canvas on which to draw.
+The toolbar can be &quot;hidden&quot; from the capture by asking the OS (or compositor) to mask it away when returning frame data for the screen.</p>
+<p>The exact steps to make a window transparent are different for every platform, but most GUI libraries will abstract it away behind a simple configuration flag.</p>
+<h2 id="backmatter">Backmatter</h2>
+<section class="footnotes">
+<div class="footnote" id="fn-1">
+<div class="footnote-number">
+<a href="#fnref-1">1</a>
+</div>
+<div class="footnote-contents">
+<p><a href="https://flameshot.org/">Flameshot</a> deserves a mention – it was the only app I could find that works on all 3 major OSes. Its a little clunky on MacOS, but a very nifty app nonetheless.</p>
+</div>
+</div>
+<div class="footnote" id="fn-2">
+<div class="footnote-number">
+<a href="#fnref-2">2</a>
+</div>
+<div class="footnote-contents">
+<p>While windows and MacOS forbid direct access to the GPU, Linux lets you acess the framebuffer via the <code>/dev/fb0</code> file. You can even change whats rendered on the screen by writing to it. Try <code>cat /dev/random &gt; /dev/fb0</code>.</p>
+</div>
+</div>
+<div class="footnote" id="fn-3">
+<div class="footnote-number">
+<a href="#fnref-3">3</a>
+</div>
+<div class="footnote-contents">
+<p>The GIF format is terribly outdated today, and while WebP is a much better format, its adoption is not as widespread. Prefer using <code>.webp</code> if you want to share videos on an online platform. No browser will have any trouble rendering a webp file, and its much more efficient.</p>
+</div>
+</div>
+</section>
+
+
+			<script src="https://giscus.app/client.js" data-repo="srijan-paul/srijan-paul.github.io" data-repo-id="MDEwOlJlcG9zaXRvcnkzMTY0MTg0NTk=" data-category="Announcements" data-category-id="DIC_kwDOEtwpm84Cdokt" data-mapping="title" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" defer>
+			</script>
+		</div>
+  </body>
+</html>
