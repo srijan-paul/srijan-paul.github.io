@@ -1,63 +1,43 @@
 ---
+date: 6th May 2024
 template: now
-date: 04-02-2024
 ---
-# 9<sup>th</sup> April, 2024
+# 6th May, 2024
 
-*previous entry: [February 27, 2024](/now/feb-2024)*
+*previous entry: [9th April, 2024](/now/apr-2024)*
 
-During the covid lockdown, I was developing an RPG game.
-I used to code on a windows machine, and would often share gameplay GIFs on Discord servers.
-All my GIFs were recorded with an app called ScreenToGif.
+I was supposed to write this update in April, but ended up losing a week to fever and a sore throat.
+Now that I'm not tied to my bed, I'll spend the month of May working on screen capture libraries, and mentoring in Google Summer of Code.
+## Making OSS screen capture tooling
 
-That was four years ago.
+Last month, I was hacking on a screen-capture library in Zig
+<sup>([post](/blog/screen-capture))</sup>.
+I ran some experiments trying to take screenshots and record my screen, then encoding the recordings into GIFs.
 
-Eventually, the lockdown passed.
-I abandoned my project, graduated college, got a job, moved cities, switched to a MacBook,
-and started writing an NES emulator.
-Once again, I wanted to share GIFs of my progress on the project.
+Since then, I:
+1. Implemented a screenshot app with Rust, Tauri, and SolidJS.
+2.  Profiled the app, and realized JS is the wrong choice for "native" apps.
+3. Ditched JavaScript frameworks and re-wrote the whole thing in C++.
 
-I reached for the same tool I'd used years ago.
-ScreenToGif – a GIF recorder with an integrated editor (yay!)... *for windows*.
-Bummer.
-I ended up recording videos with MacOS's native recorder, then converting them into GIFs with an online tool. 
+And so, the latest build of ***blink***—a nimble screenshot app—now consumes 10x less memory, and is much snappier.
 
-This wasn't the first time I had to jump through hoops to share a screengrab.
-[LightShot](https://app.prntscr.com/en/index.html)—another app I'd used to capture and edit screenshots—is not available on Linux.
-[GreenShot](https://getgreenshot.org/) doesn't support MacOS, and [Shottr](https://shottr.cc/) *only* supports MacOS. 
-I like using them. But why do I know how to use *four* different apps to take screenshots!?
+Down the road, I plan to add GIF and WebP support as well.
+For this, I've been exploring quantization and dithering techniques to get the best out of the dated GIF format (This research may or may not result in a blog post).
 
-Why aren't there any decent cross platform screen capture apps?
-Not OBS Studio or ShareX,
-just something small that lets me make a PNG, GIF or WebP from my screen;
-and perhaps let me edit the resulting media.
+## Mentoring in Google Summer of Code
 
-It turns out that there are some hurdles that make OS agnostic screen-capture annoying to deal with for an app developer, but nothing that can't be overcome with a little grunt work.
-Humans can send cars to space.
-Surely *this* shouldn't be too hard?
+Earlier this year, [Hugo](https://www.inf.puc-rio.br/~hgualandi/)—erm, *Professor* Hugo (congratulations!)—emailed me about GSoC.
+I'm more than happy to help students get into OSS research, and will thus be mentoring contributors to [the Pallene compiler](https://github.com/pallene-lang/pallene).
 
-Only one way to find out.
+Pallene is a research project that compiles a typed dialect of Lua down to native code.
+It's hero feature is Lua interop:
+libraries written in Pallene, which are usually much faster, can be directly imported into Lua programs.
 
-## Meet Frametap 
-
-As of this month, I'm working on [frametap](https://github.com/srijan-paul/frametap/):
-A cross platform screen capture library in Zig.
-My hope is for Frametap to be the underpinning for a no-nonsense screen grabber.
-Features on the roadmap are: 
-1. Raw **RGBA frame capture** – in progress, works on MacOS.
-2. **PNG** encoding – implemented using lodepng.
-3. **GIF** encoding – in progress, uses CGIF.
-4. **WEBP** encoding – planned.
-
-Once satisfied with the MVP, I'll attempt making a screengrab tool that hopefully just works.
+In 2021, I too was a student developer working on Pallene.
+I dug up [my report](blog/gsoc/) on this blog from three years ago, and despite the rusty writing, it was a fun read.
 
 ## Reading
 
-More Sanderson and shin honkaku.
-
-- **Finished**:
-	- Mistborn: The Final Empire
-- **Currently reading**:
-	- Mistborn: The Well of Ascension
-	- The Tokyo Zodiac Murders
+- Mistborn: The Hero of Ages – Brandon Sanderson.
+- The Devil's Flute Murders – Seishi Yokomizo.
 

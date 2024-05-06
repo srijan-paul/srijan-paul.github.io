@@ -9,7 +9,7 @@
 	<link rel="stylesheet" href="/assets/css/theme.css">
 	<link rel="stylesheet" href="/assets/css/post.css">
    <script data-goatcounter="https://injuly.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
-	<title>injuly / Now (04-02-2024) </title>
+	<title>injuly / Now (6th May 2024) </title>
 </head>
 
 <body>
@@ -24,64 +24,39 @@
 				<a href="/now" class="nav-link active-nav-link">now</a>
 			</nav>
 		</div>
-		<h1 id="9th-april-2024">9<sup>th</sup> April, 2024</h1>
-<p><em>previous entry: <a href="/now/feb-2024">February 27, 2024</a></em></p>
-<p>During the covid lockdown, I was developing an RPG game.
-I used to code on a windows machine, and would often share gameplay GIFs on Discord servers.
-All my GIFs were recorded with an app called ScreenToGif.</p>
-<p>That was four years ago.</p>
-<p>Eventually, the lockdown passed.
-I abandoned my project, graduated college, got a job, moved cities, switched to a MacBook,
-and started writing an NES emulator.
-Once again, I wanted to share GIFs of my progress on the project.</p>
-<p>I reached for the same tool I&#39;d used years ago.
-ScreenToGif – a GIF recorder with an integrated editor (yay!)... <em>for windows</em>.
-Bummer.
-I ended up recording videos with MacOS&#39;s native recorder, then converting them into GIFs with an online tool.</p>
-<p>This wasn&#39;t the first time I had to jump through hoops to share a screengrab.
-<a href="https://app.prntscr.com/en/index.html">LightShot</a>—another app I&#39;d used to capture and edit screenshots—is not available on Linux.
-<a href="https://getgreenshot.org/">GreenShot</a> doesn&#39;t support MacOS, and <a href="https://shottr.cc/">Shottr</a> <em>only</em> supports MacOS.
-I like using them. But why do I know how to use <em>four</em> different apps to take screenshots!?</p>
-<p>Why aren&#39;t there any decent cross platform screen capture apps?
-Not OBS Studio or ShareX,
-just something small that lets me make a PNG, GIF or WebP from my screen;
-and perhaps let me edit the resulting media.</p>
-<p>It turns out that there are some hurdles that make OS agnostic screen-capture annoying to deal with for an app developer, but nothing that can&#39;t be overcome with a little grunt work.
-Humans can send cars to space.
-Surely <em>this</em> shouldn&#39;t be too hard?</p>
-<p>Only one way to find out.</p>
-<h2 id="meet-frametap">Meet Frametap</h2>
-<p>As of this month, I&#39;m working on <a href="https://github.com/srijan-paul/frametap/">frametap</a>:
-A cross platform screen capture library in Zig.
-My hope is for Frametap to be the underpinning for a no-nonsense screen grabber.
-Features on the roadmap are:</p>
+		<h1 id="6th-may-2024">6th May, 2024</h1>
+<p><em>previous entry: <a href="/now/apr-2024">9th April, 2024</a></em></p>
+<p>I was supposed to write this update in April, but ended up losing a week to fever and a sore throat.
+Now that I&#39;m not tied to my bed, I&#39;ll spend the month of May working on screen capture libraries, and mentoring in Google Summer of Code.</p>
+<h2 id="making-oss-screen-capture-tooling">Making OSS screen capture tooling</h2>
+<p>Last month, I was hacking on a screen-capture library in Zig
+<sup>(<a href="/blog/screen-capture">post</a>)</sup>.
+I ran some experiments trying to take screenshots and record my screen, then encoding the recordings into GIFs.</p>
+<p>Since then, I:</p>
 <ol>
-<li>Raw <strong>RGBA frame capture</strong> – in progress, works on MacOS.
+<li>Implemented a screenshot app with Rust, Tauri, and SolidJS.
 </li>
-<li><strong>PNG</strong> encoding – implemented using lodepng.
+<li>Profiled the app, and realized JS is the wrong choice for &quot;native&quot; apps.
 </li>
-<li><strong>GIF</strong> encoding – in progress, uses CGIF.
-</li>
-<li><strong>WEBP</strong> encoding – planned.
+<li>Ditched JavaScript frameworks and re-wrote the whole thing in C++.
 </li>
 </ol>
-<p>Once satisfied with the MVP, I&#39;ll attempt making a screengrab tool that hopefully just works.</p>
+<p>And so, the latest build of <em><strong>blink</strong></em>—a nimble screenshot app—now consumes 10x less memory, and is much snappier.</p>
+<p>Down the road, I plan to add GIF and WebP support as well.
+For this, I&#39;ve been exploring quantization and dithering techniques to get the best out of the dated GIF format (This research may or may not result in a blog post).</p>
+<h2 id="mentoring-in-google-summer-of-code">Mentoring in Google Summer of Code</h2>
+<p>Earlier this year, <a href="https://www.inf.puc-rio.br/~hgualandi/">Hugo</a>—erm, <em>Professor</em> Hugo (congratulations!)—emailed me about GSoC.
+I&#39;m more than happy to help students get into OSS research, and will thus be mentoring contributors to <a href="https://github.com/pallene-lang/pallene">the Pallene compiler</a>.</p>
+<p>Pallene is a research project that compiles a typed dialect of Lua down to native code.
+It&#39;s hero feature is Lua interop:
+libraries written in Pallene, which are usually much faster, can be directly imported into Lua programs.</p>
+<p>In 2021, I too was a student developer working on Pallene.
+I dug up <a href="blog/gsoc/">my report</a> on this blog from three years ago, and despite the rusty writing, it was a fun read.</p>
 <h2 id="reading">Reading</h2>
-<p>More Sanderson and shin honkaku.</p>
 <ul>
-<li><strong>Finished</strong>:
-<ul>
-<li>Mistborn: The Final Empire
+<li>Mistborn: The Hero of Ages – Brandon Sanderson.
 </li>
-</ul>
-</li>
-<li><strong>Currently reading</strong>:
-<ul>
-<li>Mistborn: The Well of Ascension
-</li>
-<li>The Tokyo Zodiac Murders
-</li>
-</ul>
+<li>The Devil&#39;s Flute Murders – Seishi Yokomizo.
 </li>
 </ul>
 
