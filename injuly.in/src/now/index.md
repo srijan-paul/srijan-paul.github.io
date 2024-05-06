@@ -16,7 +16,7 @@ I ran some experiments trying to take screenshots and record my screen, and enco
 
 Since then, I:
 1. Implemented a screenshot app with Rust, Tauri, and SolidJS.
-2.  Profiled the app, and realized JS is the wrong choice for "native" apps.
+2.  Profiled the app and realized JS is the wrong choice for "native" apps.
 3. Ditched JavaScript frameworks and re-wrote the whole thing in C++.
 
 And so, the latest build of ***blink***—a nimble screenshot app—now consumes 10x less memory, and is much snappier.
