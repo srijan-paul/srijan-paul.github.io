@@ -6,13 +6,13 @@ template: now
 
 *previous entry: [9th April, 2024](/now/apr-2024)*
 
-I was supposed to write this update in April, but ended up losing a week to a fever and sore throat.
-Now that I'm not tied to my bed, I'll spend the month of May working on screen-cap libraries, and mentoring in Google Summer of Code.
+I was supposed to write this update in April, but ended up falling sick in the last week.
+Tied to my bed no longer, I will spend the month of May working writing Zig libraries, and mentoring in Google Summer of Code.
 ## Making OSS screen capture tools
 
 Last month, I was hacking on a screen-capture library in Zig
 <sup>([post](/blog/screen-capture))</sup>.
-I ran some experiments trying to take screenshots and record my screen, and encoding captured frames into GIFs.
+I ran some experiments trying to take screenshots and record my screen, then encoding captured the frames into GIFs.
 
 Since then, I:
 1. Implemented a screenshot app with Rust, Tauri, and SolidJS.
@@ -35,7 +35,6 @@ libraries written in Pallene, which are usually much faster, can be directly imp
 
 In 2021, I too was a student developer working on Pallene.
 I dug up [my report](blog/gsoc/) on this blog from three years ago, and despite the rusty writing, it was a fun read.
-
 ## Reading
 
 - Mistborn: The Hero of Ages – Brandon Sanderson.
