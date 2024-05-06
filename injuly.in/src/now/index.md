@@ -12,7 +12,7 @@ Tied to my bed no longer, I will spend the month of May writing Zig libraries, a
 
 Last month, I was hacking on a screen-capture library in Zig
 <sup>([post](/blog/screen-capture))</sup>.
-I ran some experiments trying to take screenshots and record my screen, then encoding captured the frames into GIFs.
+I ran some experiments trying to take screenshots and record my screen, then encoding the captured frames into GIFs.
 
 Since then, I:
 1. Implemented a screenshot app with Rust, Tauri, and SolidJS.
