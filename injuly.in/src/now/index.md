@@ -6,9 +6,9 @@ template: now
 
 *previous entry: [9th April, 2024](/now/apr-2024)*
 
-I was supposed to write this update in April, but ended up losing a week to fever and a sore throat.
-Now that I'm not tied to my bed, I'll spend the month of May working on screen capture libraries, and mentoring in Google Summer of Code.
-## Making OSS screen capture tooling
+I was supposed to write this update in April, but ended up losing a week to a fever and sore throat.
+Now that I'm not tied to my bed, I'll spend the month of May working on screen-cap libraries, and mentoring in Google Summer of Code.
+## Making OSS screen capture tools
 
 Last month, I was hacking on a screen-capture library in Zig
 <sup>([post](/blog/screen-capture))</sup>.
