@@ -7,7 +7,7 @@ template: now
 *previous entry: [9th April, 2024](/now/apr-2024)*
 
 I was supposed to write this update in April, but ended up falling sick in the last week.
-Tied to my bed no longer, I will spend the month of May working writing Zig libraries, and mentoring in Google Summer of Code.
+Tied to my bed no longer, I will spend the month of May writing Zig libraries, and mentoring in Google Summer of Code.
 ## Making OSS screen capture tools
 
 Last month, I was hacking on a screen-capture library in Zig
