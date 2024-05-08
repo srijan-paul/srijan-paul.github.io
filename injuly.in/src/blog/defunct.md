@@ -6,7 +6,7 @@ tags:
   - FP
 date: 2024-05-09
 title: Compiling higher order functions with GADTs.
-meta: De-functionalization is a method of converting a program with higher order functions to one that uses regular functions.
+meta: Compile higher order functions using the defunctionalization transform. Compiler authors HATE this one weird trick!
 ---
 
 
