@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+    <meta name="description" content="De-functionalization is a method of converting a program with higher order functions to one that uses regular functions."></meta>
+    <meta property="og:title" content="Compiling higher order functions with GADTs."></meta>
+    <meta property="twitter:title" content="Compiling higher order functions with GADTs."></meta>
+    <meta property="twitter:description" content="De-functionalization is a method of converting a program with higher order functions to one that uses regular functions."></meta>
+
+     
+    <meta property="og:image" content></meta>
+		<meta name="twitter:image" content>
+    
+
+    <meta property="og:site_name" content="InJuly"></meta>
+
+    <link rel="stylesheet" href="/assets/css/common.css">
+    <link rel="stylesheet" href="/assets/css/post.css">
+    <link rel="stylesheet" href="/assets/css/theme.css">
+    
+
+    <script data-goatcounter="https://injuly.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+
+    <title>Compiling higher order functions with GADTs.</title>
+  </head>
+
+  <body>
+    <div class="main">
+      <div class="nav-container">
+        <nav>
+          <a href="/" class="nav-link">index</a>
+          <a href="/about" class="nav-link">about</a>
+          <a href="/blog" class="nav-link active-nav-link">blog</a>
+          <a href="/now" class="nav-link">now</a>
+        </nav>
+      </div>
+
+      <div class="leader">
+        <h1> Compiling higher order functions with GADTs. </h1>
+				<div class="post-date"> May 9 </div>
+        <div class="tags" id="tags">
+            <a class="tag" href="/posts/index.html?tag=haskell">haskell</a>
+            <a class="tag" href="/posts/index.html?tag=FP">FP</a>
+        </div>
+      </div>
+      <p>Implementing first class functions in a bytecode interpreter is trivial.</p>
+<p>But how do compilers that generate machine code (or lower to C, or SSA) implement higher order functions?
+Back in 2021, I found an answer when contributing closures to the Pallene compiler.</p>
+<p>Today I was researching something loosely related, and learned about yet another neat trick called <em>defunctionalization</em> in <a href="https://www.cl.cam.ac.uk/~jdy22/papers/lightweight-higher-kinded-polymorphism.pdf">this paper</a>.</p>
+<p>Defunctionalization is a <em>transform</em> – a way to re-write the original program without using higher order functions so that it can be trivially compiled to a flat IR in subsequent compiler passes.</p>
+<p>The paper uses an OCaml example, and I&#39;ll be porting the same program to Haskell.
+Our implementation will assume that the language being compiled supports GADTs, though its certainly possible to defunctionalize without them.</p>
+<h2 id="rewriting-programs-to-remove-higher-order-functions">Rewriting programs to remove higher order functions</h2>
+<p>Consider the following snippet:</p>
+<code class="language-hs"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Prelude</span> <span class="kw">hiding</span> (fold)</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="ot">fold ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> b</span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>fold _ b [] <span class="ot">=</span> b</span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>fold f b (x <span class="op">:</span> xs) <span class="ot">=</span> f x (fold f b xs)</span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span> xs <span class="ot">=</span> fold (<span class="op">+</span>) <span class="dv">0</span> xs</span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>add n xs <span class="ot">=</span> fold (\x l&#39; <span class="ot">-&gt;</span> (x <span class="op">+</span> n) <span class="op">:</span> l&#39;) [] xs</span></code></pre></div></code></pre>
+<p>We have a simple implementation of <code>fold</code>, and two functions that call it.
+<code>sum</code> adds up all items in a list, and <code>add n xs</code>  adds <code>n</code> to each item.
+In <code>sum</code>&#39;s case we pass the &quot;+&quot; operator to <code>fold</code>, which has type <code>Int -&gt; Int -&gt; Int</code>.
+Inside <code>add</code>, the lambda passed to <code>fold</code> has type <code>Int -&gt; [Int] -&gt; [Int]</code>.</p>
+<p>To remove the lambdas passed by both functions, we first introduce a GADT called &quot;arrow&quot; in the original program:</p>
+<code class="language-hs"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Arrow</span> p r <span class="kw">where</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>	<span class="dt">FnPlus</span><span class="ot"> ::</span> <span class="dt">Arrow</span> (<span class="dt">Int</span>, <span class="dt">Int</span>) <span class="dt">Int</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>	<span class="dt">FnPlusCons</span><span class="ot"> ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Arrow</span> (<span class="dt">Int</span>, [<span class="dt">Int</span>]) <span class="dt">Int</span></span></code></pre></div></code></pre>
+<p><code>Arrow p r</code> represents a higher order function that takes parameters of type <code>p</code> and has a return type <code>r</code>.
+When there are multiple parameters, <code>p</code> becomes a tuple, as seen in both cases.</p>
+<p>Arrow has two data constructors – one for every unique HOF seen in the source program.</p>
+<p>When invoked, the <code>FnPlus</code> data constructor will create a value of type <code>Arrow (Int, Int) Int</code> to represent the &quot;+&quot; operator.
+The <code>FnPlusCons</code> data constructor takes an argument of type <code>Int</code> which represents the &quot;n&quot; that is captured by the lambda in <code>add</code>:</p>
+<code class="language-hs"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>(\x l&#39; <span class="ot">-&gt;</span> (x <span class="op">+</span> n)<span class="op">:</span>l&#39;) <span class="co">-- notice the free variable &quot;n&quot;</span></span></code></pre></div></code></pre>
+<p>So we&#39;ve settled on representing functions with <code>Arrow</code>, but how do we call such a function?
+Simple, we write another function for that:</p>
+<code class="language-hs"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="ot">apply ::</span> <span class="dt">Arrow</span> p r <span class="ot">-&gt;</span> p <span class="ot">-&gt;</span> r</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>apply <span class="dt">FnPlus</span> (x, y) <span class="ot">-&gt;</span> x <span class="op">+</span> y</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>apply (<span class="dt">FnPlusCons</span> n) (x, xs) <span class="ot">=</span> (n <span class="op">+</span> x)<span class="op">:</span>xs</span></code></pre></div></code></pre>
+<p>The helper <code>apply</code> knows how to map a data constructor to its corresponding function body.
+So, whenever the source program refers to <code>(+)</code> by value, we replace it with <code>FnPlus</code>.
+For example:</p>
+<code class="language-hs"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Before:</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> add <span class="ot">=</span> (<span class="op">+</span>)</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>	five <span class="ot">=</span> add <span class="dv">3</span> <span class="dv">2</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a><span class="co">-- After:</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> add <span class="ot">=</span> <span class="dt">FnPlus</span></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>	five <span class="ot">=</span> apply <span class="dt">FnPlus</span> <span class="dv">3</span> <span class="dv">2</span></span></code></pre></div></code></pre>
+<p>At the end of the day, the original program is transformed to look like this:</p>
+<code class="language-hs"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE GADTs #-}</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Prelude</span> <span class="kw">hiding</span> (fold)</span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Arrow</span> p r <span class="kw">where</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">FnPlus</span><span class="ot"> ::</span> <span class="dt">Arrow</span> (<span class="dt">Int</span>, <span class="dt">Int</span>) <span class="dt">Int</span></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">FnPlusCons</span><span class="ot"> ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Arrow</span> (<span class="dt">Int</span>, [<span class="dt">Int</span>]) [<span class="dt">Int</span>]</span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a><span class="ot">apply ::</span> <span class="dt">Arrow</span> a b <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> b</span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>apply <span class="dt">FnPlus</span> (x, y) <span class="ot">=</span> x <span class="op">+</span> y</span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>apply (<span class="dt">FnPlusCons</span> n) (x, xs) <span class="ot">=</span> (n <span class="op">+</span> x) <span class="op">:</span> xs</span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a><span class="ot">fold ::</span> <span class="dt">Arrow</span> (a, b) b <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span>[a] <span class="ot">-&gt;</span> b</span>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a>fold fun b [] <span class="ot">=</span> b</span>
+<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a>fold fun b (x <span class="op">:</span> xs) <span class="ot">=</span> apply fun (x, fold&#39; fun b xs)</span>
+<span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="17"><a href="#17" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span> <span class="ot">=</span> fold&#39; <span class="dt">FnPlus</span> <span class="dv">0</span></span>
+<span id="18"><a href="#18" aria-hidden="true" tabindex="-1"></a>add n <span class="ot">=</span> fold&#39; (<span class="dt">FnPlusCons</span> n) []</span></code></pre></div></code></pre>
+<p>Notice how there are no higher order functions involved in this new program, even though the logic is identical.</p>
+<h2 id="mutable-captures">Mutable captures</h2>
+<p>Defunctionalization can transform first class functions and immutable variable captures.
+Many languages allow mutable captures from surrounding scopes:</p>
+<code class="language-ts"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">counter</span>(x<span class="op">:</span> <span class="dt">number</span>) {</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>	<span class="cf">return</span> <span class="kw">function</span>() {</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>		x<span class="op">++;</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>		<span class="cf">return</span> x<span class="op">;</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>	}</span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> f <span class="op">=</span> <span class="fu">counter</span>(<span class="dv">0</span>)<span class="op">;</span></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a><span class="fu">f</span>()<span class="op">;</span> <span class="co">// 1</span></span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a><span class="fu">f</span>()<span class="op">;</span> <span class="co">// 2</span></span></code></pre></div></code></pre>
+<p>In such cases, defunctionalization must be preceded by <a href="https://en.wikipedia.org/wiki/Lambda_lifting">lambda lifting</a>
+Since that isn&#39;t the focus of this post, I&#39;ll  just a leave a link to <a href="https://github.com/pallene-lang/pallene/pull/402">my PR</a> that adds support for mutable captures to the Pallene language.</p>
+<h2 id="references">References</h2>
+<ol>
+<li><a href="https://www.cl.cam.ac.uk/~jdy22/papers/lightweight-higher-kinded-polymorphism.pdf">Lightweight higher-kinded polymorphism</a> – Section 1.2.
+</li>
+<li><a href="https://surface.syr.edu/cgi/viewcontent.cgi?article=1012&amp;context=lcsmith_other">Definitional interpreters for higher-order programming languages</a>
+</li>
+<li><a href="https://injuly.in/blog/gsoc-2/">Implementation of closures in Pallene</a>
+</li>
+</ol>
+
+
+			<script src="https://giscus.app/client.js" data-repo="srijan-paul/srijan-paul.github.io" data-repo-id="MDEwOlJlcG9zaXRvcnkzMTY0MTg0NTk=" data-category="Announcements" data-category-id="DIC_kwDOEtwpm84Cdokt" data-mapping="title" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" defer>
+			</script>
+		</div>
+  </body>
+</html>

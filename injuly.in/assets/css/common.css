@@ -163,6 +163,7 @@ div.sourceCode {
 	border-radius: 3px;
 	border: 1px solid var(--slate-300);
 	background-color: var(--slate-100);
+	font-size: calc(var(--font-size) - 1px);
 }
 
 .nav-container {

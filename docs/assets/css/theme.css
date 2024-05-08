@@ -208,5 +208,5 @@ code span.wa {
 
 :not(pre) > code:not(:has(> div)) {
   background-color: var(--background);
-  padding: 0px 5px;
+  padding: 0px 3px;
 }
