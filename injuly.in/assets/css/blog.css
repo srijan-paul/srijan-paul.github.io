@@ -1,12 +1,47 @@
 ul.post-list {
-  margin: 0;
-  padding: 0;
+	margin: 0;
+	padding: 0;
 }
 
-ul.post-list > li:hover > a {
-  text-decoration: underline;
+ul.post-list>li:hover>a {
+	text-decoration: underline;
 }
 
-ul.post-list > li:hover > .post-list-date {
-  color: var(--clr-primary);
+.post-list>li:hover>.post-list-date {
+	color: var(--clr-primary);
+}
+
+.post-list>li {
+	box-sizing: border-box;
+	padding: 0;
+	clear: both;
+	list-style-type: none;
+	list-style-position: outside;
+	margin-left: 0;
+
+	display: flex;
+	justify-content: space-between;
+}
+
+.post-list>li>span {
+	text-decoration: none;
+	vertical-align: baseline;
+}
+
+.post-list>li>a {
+	text-decoration: none;
+}
+
+.post-list>li>a:visited {
+	text-decoration: none;
+}
+
+.post-list-date {
+	color: var(--clr-grey);
+	font-size: 15px;
+	font-family: var(--font-body);
+	float: right;
+	padding-left: 12px;
+	white-space: nowrap;
+	text-wrap: nowrap;
 }

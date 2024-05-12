@@ -13,9 +13,8 @@ image: /assets/img/honjin-murders/honjin_cover.webp
 ![The Honjin Murders Cover art](/assets/img/honjin-murders/honjin_cover.webp)
 
 <div class="note">
-<h3> Note: </h3>
-This is a spoiler-free review.
-Try to avoid spoilers in the comments!
+    <h3>Note</h3>
+    This is a spoiler-free review.
 </div>
 
 On a lazy evening, I was strolling past an aisle of a local bookstore
