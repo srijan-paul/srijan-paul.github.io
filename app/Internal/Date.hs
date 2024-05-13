@@ -34,9 +34,17 @@ instance Ord Date where
     | dateMonth a /= dateMonth b = compare (dateMonth a) (dateMonth b)
     | otherwise = compare (dateDay a) (dateDay b)
 
-
 formatDateMonDD :: Date -> T.Text
-formatDateMonDD date = T.pack (show (dateMonth date)) <> " " <> showt (dateDay date)
+formatDateMonDD date = T.pack (show (dateMonth date)) <> " " <> day
+  where
+    day =
+      let d = dateDay date
+       in if T.length (showt d) == 1
+            then "0" <> showt d
+            else showt d
+
+formateDateMonDDYear :: Date -> T.Text
+formateDateMonDDYear date = formatDateMonDD date <> ", " <> showt (dateYear date)
 
 read' :: Read a => String -> Maybe a
 read' = readMaybe
@@ -91,4 +99,3 @@ parseDate = parse . T.splitOn "-"
 -- | Extract the year from a date string in YYYY-MM-DD format.
 getYear :: T.Text -> Maybe Int
 getYear = fmap dateYear . parseDate
-

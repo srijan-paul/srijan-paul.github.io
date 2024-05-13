@@ -1,28 +1,112 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TupleSections #-}
 
 module Main where
 
-import Bark.CLI (BarkCLI (BarkCLI), builtinProcessors, doCommand, parseCommand)
+import Bark.CLI (BarkCLI (BarkCLI), builtinPlugins, doCommand, parseCommand)
+import Bark.Core (template2Html, (</>))
 import Bark.FrontMatter (PostFrontMatter (..))
 import Bark.Types
-  ( ErrorMessage,
+  ( Compilation (..),
+    ErrorMessage,
+    ExceptT,
+    HTMLPage (..),
+    MonadTrans (lift),
+    Plugin (..),
     Post (..),
-    Preprocessor,
-    Processor (..),
-    Project,
+    Project (..),
     Value (..),
+    foldM,
     fromList,
+    toList,
   )
 import Control.Monad ((>=>))
 import Control.Monad.Except (liftEither)
+import Control.Monad.State (MonadState (get, put))
 import qualified Data.HashMap.Strict as HM
 import Data.List (nub, sortOn)
-import Data.Maybe (fromMaybe)
+import Data.Maybe (mapMaybe)
 import Data.Ord (Down (Down))
 import qualified Data.Text as T
-import Internal.Date (formatDateMonDD, getYear, parseDate)
+import Internal.Date (Date (dateYear), formatDateMonDD, getYear, parseDate)
 import System.Environment (getArgs)
 import TextShow (TextShow (showt))
+
+getTags :: PostFrontMatter -> [T.Text]
+getTags fm =
+  case HM.lookup "tags" (fmMetaData fm) of
+    Just (Array tags) -> mapMaybe extractTag (toList tags)
+    _ -> []
+  where
+    extractTag (String t) = Just t
+    extractTag _ = Nothing
+
+postTitle :: Post -> Maybe T.Text
+postTitle = getTitle . postFrontMatter
+  where
+    getTitle fm =
+      case HM.lookup "title" (fmMetaData fm) of
+        Just (String t) -> Just t
+        _ -> Nothing
+
+generateTagPages :: Plugin
+generateTagPages = AfterBuild $ do
+  compilation <- get
+  let posts = compilationPosts compilation
+      tags = nub $ concatMap (getTags . postFrontMatter) posts
+      project = compilationProject compilation
+
+  let combine pages tag = do
+        page <- lift $ tagToHtmlPage tag project posts
+        return $ page : pages
+
+  tagPages <- foldM combine [] tags
+  put $ compilation {compilationPages = compilationPages compilation ++ tagPages}
+  where
+    tagToHtmlPage :: T.Text -> Project -> [Post] -> ExceptT ErrorMessage IO HTMLPage
+    tagToHtmlPage tag project posts = do
+      let taggedPosts = postsByTag tag posts
+          templatePath = projectTemplateDir project </> "tags.mustache"
+          content = wrapInHtml taggedPosts
+          compileData = Object $ HM.fromList [("tag", String tag), ("content", content)]
+      compiledHtml <- template2Html templatePath compileData
+      let dstPath = projectOutDir project </> "tags" </> (T.unpack tag <> ".html")
+      return $
+        HTMLPage
+          { htmlPagePost = Nothing,
+            htmlPagePath = dstPath,
+            htmlPageContent = compiledHtml
+          }
+
+    postsByTag :: T.Text -> [Post] -> [Post]
+    postsByTag tag = filter (\p -> tag `elem` getTags (postFrontMatter p))
+
+    wrapInHtml :: [Post] -> Value
+    wrapInHtml posts = do
+      let titleUrlPairs = mapMaybe pairPost posts
+          listItems = T.concat $ map li titleUrlPairs
+       in String $ "<ul class=\"post-list\">" <> listItems <> "</ul>"
+      where
+        pairPost :: Post -> Maybe (T.Text, T.Text, T.Text)
+        pairPost post = case (postTitle post, postDate post) of
+          (Just title, Just date) -> Just (T.pack $ postUrl post, title, date)
+          _ -> Nothing
+
+        postDate :: Post -> Maybe T.Text
+        postDate post =
+          getDate post >>= parseDate >>= Just . showt . dateYear
+
+        li :: (T.Text, T.Text, T.Text) -> T.Text
+        li (url, text, date) =
+          "<li><a href=\"/"
+            <> url
+            <> "\">"
+            <> text
+            <> "</a>"
+            <> " <span class=\"post-list-date\">"
+            <> date
+            <> "</span>"
+            <> "</li>\n"
 
 getDate :: Post -> Maybe T.Text
 getDate post = do
@@ -35,15 +119,20 @@ getDate post = do
 -- | Add a `formattedDate` field to the post.
 -- It is a string in the format `Mon DD`.
 -- Example: "Jan 01"
-addDateToPost :: Preprocessor
-addDateToPost _ _ post = do
-  let date = getDate post >>= parseDate
-      buildData = postData post
-  return $ case date of
-    Just d ->
-      let formattedDate = formatDateMonDD d
-       in post {postData = HM.insert "formattedDate" (String formattedDate) buildData}
-    Nothing -> post
+addDateToPosts :: Plugin
+addDateToPosts = BeforeBuild $ do
+  compilation <- get
+  let posts = compilationPosts compilation
+      modifiedPosts = map addFormattedDate posts
+  put $ compilation {compilationPosts = modifiedPosts}
+  where
+    addFormattedDate post =
+      case getDate post >>= parseDate of
+        Just date ->
+          let formattedDate = formatDateMonDD date
+              buildData = postData post
+           in post {postData = HM.insert "formattedDate" (String formattedDate) buildData}
+        Nothing -> post
 
 getTemplate :: Post -> Maybe T.Text
 getTemplate post = do
@@ -53,15 +142,26 @@ getTemplate post = do
     String s -> Just s
     _ -> Nothing
 
-populateBlogHome :: Preprocessor
-populateBlogHome project allPosts post = do
-  let template = fromMaybe "" (getTemplate post)
-  if template == "blog-home"
-    then liftEither $ addAllBlogs project allPosts post
-    else return post
+populateBlogHome :: Plugin
+populateBlogHome = BeforeBuild $ do
+  compilation <- get
+  let posts = compilationPosts compilation
+      newPosts' = mapM (f posts) posts
 
-addAllBlogs :: Project -> [Post] -> Post -> Either ErrorMessage Post
-addAllBlogs project posts post = do
+  case newPosts' of
+    Left message -> liftEither $ Left message
+    Right newPosts -> put $ compilation {compilationPosts = newPosts}
+  where
+    f :: [Post] -> Post -> Either ErrorMessage Post
+    f allPosts currentPost =
+      if isBlogHome currentPost
+        then addAllBlogs allPosts currentPost
+        else return currentPost
+
+    isBlogHome post = getTemplate post == Just "blog-home"
+
+addAllBlogs :: [Post] -> Post -> Either ErrorMessage Post
+addAllBlogs posts post = do
   allBlogs <- getBlogPosts posts
   return $ post {postData = HM.insert "blogs" allBlogs (postData post)}
   where
@@ -70,7 +170,7 @@ addAllBlogs project posts post = do
       let blogPosts = filter isBlogPost allPosts
           maybeYears = nub <$> mapM (getDate >=> getYear) blogPosts
        in case maybeYears of
-            Nothing -> Left "All blog posts must contain a date field in YYYY-MM-DD format."
+            Nothing -> Left "A blog post is missing a 'date' field in YYYY-MM-DD format."
             Just years -> do
               let postsByYear = sortOn (Down . fst) $ fmap (\y -> (y, postsInYear y blogPosts)) years
                   grouped = fromList $ fmap toObject postsByYear
@@ -102,7 +202,7 @@ addAllBlogs project posts post = do
 
 main :: IO ()
 main = do
-  let processors = builtinProcessors ++ [OnPost addDateToPost, OnPost populateBlogHome]
+  let processors = builtinPlugins ++ [addDateToPosts, populateBlogHome, generateTagPages]
       cli = BarkCLI processors
   maybeCommand <- parseCommand <$> getArgs
   case maybeCommand of
