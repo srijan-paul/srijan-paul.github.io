@@ -4,10 +4,10 @@ template: home
 
 ## Ahoy,
 
-I'm **Srijan** – Maker of compilers, games, web apps, and such.
+I'm **Srijan** – Maker of compilers, web servers, games, and other things.
 
-This website is an archive of my thoughts, musings, projects, and research. <br />
-Right now, I'm into haskell, databases, linear algebra, and [honkaku mysteries](http://honkaku.com/english.html).
+This website is an archive of my musings and research.
+Currently, I'm into functional programming and databases.
 I'm almost always working on something, and maintain [a monthly log](/now).
 
 If you fancy a longer introduction, try the [about](/about) page.
