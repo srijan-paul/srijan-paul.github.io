@@ -12,9 +12,11 @@ While I acknowledge the skill and reverence of some developers in this domain,
 I still stand by my opinion that blockchain technology is not the panacea it's made out to be.
 Rather, it's a solution in search of a problem.
 
-Developers of NFT projects aren't blind to the technical limitations of blockchain.
-Yet they choose to write them off as "tradeoffs" for *web3*, or worse, turn a blind eye to them.
-Worse are the social problems - ones that can't be tackled by any number of token standards or consensus algorithms.
+People (mostly students) approach me about my work in the blockchain space,
+so I'm writing this to explain my stance on the matter.
+I've tried to keep it as objective as possible, but I'm human, and I have my biases.
+
+All that considered, here my gripes with the web3.
 
 ## The majority of crypto is shady, even for artists.
 
