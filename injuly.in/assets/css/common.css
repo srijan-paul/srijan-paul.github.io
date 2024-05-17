@@ -86,7 +86,6 @@ h1 {
 	font-size: 25px;
 }
 
-
 h2 {
 	font-size: 22px;
 }
@@ -109,7 +108,7 @@ h3 {
 	color: var(--slate-700);
 	font-family: var(--font-heading), sans-serif;
 	margin-bottom: 6px;
-	margin-top: 32px;
+	margin-top: 20px;
 }
 
 h1::before,
