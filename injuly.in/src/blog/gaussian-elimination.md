@@ -1,6 +1,6 @@
 ---
 template: "post"
-tags: ["post", "math"]
+tags: ["math"]
 title: "A visual explanation of Gaussian Elimination"
 date: "2022-10-22"
 is_blog_post: true

@@ -1,6 +1,6 @@
 ---
 template: "post"
-tags: ["FP", "programming-languages", "post", "haskell"]
+tags: ["FP", "programming-languages", "haskell"]
 title: "Of Phantoms, witches, and type driven design in Haskell"
 date: "2023-03-07"
 meta: "Type driven design with Phantom types in Haskell"

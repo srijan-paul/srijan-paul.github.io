@@ -1,6 +1,6 @@
 ---
 template: "post"
-tags: ["post", "programming-languages"]
+tags: ["programming-languages"]
 title: "On digital gardens."
 date: "2021-04-13"
 meta: "Digital Gardens"

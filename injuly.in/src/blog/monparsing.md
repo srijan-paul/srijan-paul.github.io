@@ -1,6 +1,6 @@
 ---
 template: "post"
-tags: ["FP", "programming-languages", "post"]
+tags: ["FP", "programming-languages", "haskell" ]
 title: "Monadic parser combinators"
 date: "2022-05-05"
 meta: "Using monads to write parser combinators in Haskell"

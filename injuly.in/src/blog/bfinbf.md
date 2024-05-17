@@ -1,6 +1,6 @@
 ---
 template: "post"
-tags: ["brainfuck", "programming-languages", "post"]
+tags: ["brainfuck", "programming-languages" ]
 title: "Compiling to Brainf#ck - Meep."
 date: "2020-11-22"
 meta: "Writing a brainfuck interpreter in brainfuck, using a language that compiles down to brainfuck"

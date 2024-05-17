@@ -1,6 +1,6 @@
 ---
 template: "post" 
-tags: ["ave", "programming-languages", "type-system", "post"]
+tags: ["ave", "programming-languages", "type-system"]
 title: "Ave - JS with static types"
 date: "2020-10-01"
 meta: "A statically typed language that compiles to JavaScript"

@@ -1,6 +1,6 @@
 ---
 template: "post"
-tags: ["post", "math"]
+tags: ["math"]
 title: "An interactive guide to Fourier series"
 date: "2022-10-08"
 meta: "Drawing with the Fourier Series"

@@ -1,6 +1,6 @@
 ---
 template: "post"
-tags: ["javascript", "programming-languages", "post"]
+tags: ["javascript", "programming-languages"]
 title: "BoOHoO JaVaScRiPT!!"
 date: "2021-07-18"
 meta: "JavaScript may be terrible, but it's not as bad as you think"

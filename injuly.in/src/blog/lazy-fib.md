@@ -1,6 +1,6 @@
 ---
 template: "post"
-tags: ["post", "haskell", "project-euler"]
+tags: ["haskell", "FP", "project-euler"]
 title: "Intro to lazy evaluation and functional DP"
 date: "2022-08-16"
 meta: "Dynamic programming in Haskell with lazy evaluation"

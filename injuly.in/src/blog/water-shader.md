@@ -1,6 +1,6 @@
 ---
 template: "post" 
-tags: ["post", "games", "lua", "love", "GLSL"]
+tags: ["games", "lua", "love", "GLSL"]
 title: "Water surface shader for 2D Pixel art games"
 meta: "Using displacement shaders to create reflections with Lua, Love2D and GLSL"
 is_blog_post: true
