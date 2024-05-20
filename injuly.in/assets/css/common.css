@@ -129,6 +129,12 @@ h3+p {
 	margin-top: 0;
 }
 
+h1 > code,
+h2 > code,
+h3 > code{
+	font-size: inherit;
+}
+
 a,
 a:visited,
 a:link,
@@ -158,11 +164,10 @@ div.sourceCode {
 	font-size: calc(var(--font-size) - 1px);
 }
 
-:not(pre)>code:not([class^="language-"], :has(> div)) {
+:not(h1,h2,h3,pre)>code:not([class^="language-"], :has(> div)) {
 	border-radius: 3px;
 	border: 1px solid var(--slate-300);
 	background-color: var(--slate-100);
-	font-size: calc(var(--font-size) - 1px);
 }
 
 .nav-container {
