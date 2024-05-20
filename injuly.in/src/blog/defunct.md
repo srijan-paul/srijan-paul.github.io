@@ -138,6 +138,8 @@ But that isn't the focus of this post, so I'll  just a leave a link to [my PR](h
 
 ## References
 
+If you want to read up some more on defunctionalization, here are some resources:
+
 1. [Lightweight higher-kinded polymorphism](https://www.cl.cam.ac.uk/~jdy22/papers/lightweight-higher-kinded-polymorphism.pdf) – Section 1.2.
 2. [Definitional interpreters for higher-order programming languages](https://surface.syr.edu/cgi/viewcontent.cgi?article=1012&context=lcsmith_other)
 3. [Implementation of closures in Pallene](https://injuly.in/blog/gsoc-2/)
