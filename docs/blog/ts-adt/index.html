@@ -47,11 +47,11 @@
             <a class="tag" href="/tags/TypeScript.html">TypeScript</a>
         </div>
       </div>
-      <p>I write TypeScript and Go at my job.
-I&#39;ve written close to ~100k lines of TS and ~30k lines of Go in some four odd years.
+      <p>I write Go and TypeScript at my day job.
 In both these languages, I often reach for patterns that I had originally learned while using Haskell.
-Some of these tools deserve more publicity, so I&#39;m writing a series of articles about them.</p>
-<p>In later entries, I will cover:</p>
+This series of articles will cover some ideas from functional programming that I think every programmer should at
+least have a passing familiarity with.</p>
+<p>In later entries, I will implement:</p>
 <ol>
 <li>Higher Kinded Types.
 </li>
@@ -60,20 +60,20 @@ Some of these tools deserve more publicity, so I&#39;m writing a series of artic
 <li>Generalized Algebraic Data Types.
 </li>
 </ol>
-<p>As an introduction, we&#39;ll pick a simpler concept – <a href="https://en.wikipedia.org/wiki/Algebraic_data_type">ADTs</a>.</p>
+<p>As an introduction though, we&#39;ll pick a simpler concept – <a href="https://en.wikipedia.org/wiki/Algebraic_data_type">ADTs</a>.</p>
 <p>In functional programming, algebraic types are so ubiquitous that you would be hard pressed
 to find a language that doesn&#39;t support them.
 Strangely though, nothing about them demands that a language be functional by paradigm.
 That imperative languages have avoided ADTs for decades seems almost an accident.</p>
-<p>Fortunately, TypeScript <em>almost</em> supports them as a first class feature.</p>
+<p>Fortunately, TypeScript has everything we need to use ADTs.</p>
 <h2 id="motivation">Motivation</h2>
 <p>You have inherited a React SPA behemoth at your new job.
 For your first Jira ticket, you will track every move the user makes and send it to a telemetry client.</p>
 <p>The task is simple, model three event types – key press, mouse click, and scroll;
-then write a function that serializes any event of these events to a string.
-Each event type might have its own unique meta data, like the
-coordinates for a mouse click, or the key code for a keyboard event.
-You have to include this information in the serialized string.</p>
+then write a function that serializes an event to a string.
+Each event type might have its own unique meta data—like the
+coordinates for a mouse click or the key code for a key press—
+that you must include in the serialized string.</p>
 <p>This is a very simple exercise, try it before reading ahead:</p>
 <code class="language-ts"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> UiEvent <span class="op">=</span> <span class="op">...</span></span>
 <span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> serialize <span class="op">=</span> (e<span class="op">:</span> UiEvent)<span class="op">:</span> <span class="dt">string</span> <span class="kw">=&gt;</span> { <span class="op">...</span> }</span></code></pre></div></code></pre>

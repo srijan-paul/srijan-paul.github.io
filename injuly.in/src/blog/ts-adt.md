@@ -7,25 +7,25 @@ is_blog_post: true
 date: 2024-05-20
 ---
 
-I write TypeScript and Go at my job.
-I've written close to ~100k lines of TS and ~30k lines of Go in some four odd years.
+I write Go and TypeScript at my day job.
 In both these languages, I often reach for patterns that I had originally learned while using Haskell.
-Some of these tools deserve more publicity, so I'm writing a series of articles about them.
+This series of articles will cover some ideas from functional programming that I think every programmer should at
+least have a passing familiarity with.
 
-In later entries, I will cover:
+In later entries, I will implement:
 
   1. Higher Kinded Types.
   2. Type classes (called "traits" in Rust).
   3. Generalized Algebraic Data Types.
 
-As an introduction, we'll pick a simpler concept – [ADTs](https://en.wikipedia.org/wiki/Algebraic_data_type).
+As an introduction though, we'll pick a simpler concept – [ADTs](https://en.wikipedia.org/wiki/Algebraic_data_type).
 
 In functional programming, algebraic types are so ubiquitous that you would be hard pressed
 to find a language that doesn't support them.
 Strangely though, nothing about them demands that a language be functional by paradigm.
 That imperative languages have avoided ADTs for decades seems almost an accident.
 
-Fortunately, TypeScript *almost* supports them as a first class feature.
+Fortunately, TypeScript has everything we need to use ADTs.
 
 ## Motivation
 
@@ -33,10 +33,10 @@ You have inherited a React SPA behemoth at your new job.
 For your first Jira ticket, you will track every move the user makes and send it to a telemetry client.
 
 The task is simple, model three event types – key press, mouse click, and scroll;
-then write a function that serializes any event of these events to a string.
-Each event type might have its own unique meta data, like the
-coordinates for a mouse click, or the key code for a keyboard event.
-You have to include this information in the serialized string.
+then write a function that serializes an event to a string.
+Each event type might have its own unique meta data—like the
+coordinates for a mouse click or the key code for a key press—
+that you must include in the serialized string.
 
 This is a very simple exercise, try it before reading ahead:
 

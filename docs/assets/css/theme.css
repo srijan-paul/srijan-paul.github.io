@@ -20,7 +20,7 @@ code.sourceCode {
 div.sourceCode {
   margin: 1em 0;
   padding: 10px;
-  background-color: #fafafa;
+  background-color: var(--background);
 }
 pre.sourceCode {
   margin: 0;
@@ -77,19 +77,22 @@ div.sourceCode {
 }
 
 :root {
-  --background: #fafafa;
-  --foreground: #1e293b;
+  --background: #f8f8f8;
+  --foreground: black;
 
-  --keyword: #1177aa;
-  --number: #555555;
+  --keyword: #099;
+  --number: #900;
   --comment: rgba(85, 85, 85, 0.8);
-  --type: #005386;
+  --type: #0f4b6e;
   --builtin: var(--type);
-  --function: #1177aa;
+  --function: var(--keyword);
   --operator: #555555;
-  --string: #0e7490;
+  --string: #bb405f;
   --var: var(--foreground);
   --constant: var(--foreground);
+
+	/* e.g - ${} in JS template strings */
+	--specialChar: #990073;
 
   /* diffs */
   --diff-added: #047857;
@@ -126,7 +129,7 @@ code span.cn {
 } /* Constant */
 code span.co {
   color: var(--comment);
-  font-style: italic;
+  /*font-style: italic;*/
 } /* Comment */
 code span.cv {
   color: #60a0b0;
@@ -152,10 +155,12 @@ code span.ex {
 code span.fl {
   color: var(--number);
 } /* Float */
+
 code span.fu {
   color: var(--function);
-  font-weight: bold;
+	font-weight: bold;
 } /* Function */
+
 code span.im {
   color: var(--keyword);
 } /* Import */
@@ -178,7 +183,7 @@ code span.pp {
   color: #bc7a00;
 } /* Preprocessor */
 code span.sc {
-  color: #4070a0;
+  color: var(--specialChar);
 } /* SpecialChar */
 code span.ss {
   color: var(--string);
@@ -206,7 +211,11 @@ code span.wa {
   color: var(--diff-removed);
 }
 
+pre > code {
+	font-weight: normal;
+}
+
 :not(pre) > code:not(:has(> div)) {
   background-color: var(--background);
-  padding: 0px 3px;
+	font-weight: normal;
 }
