@@ -97,8 +97,8 @@ type UiEvent = Click | Keypress | Scroll
 
 function serialize(e: UiEvent): string {
   switch (e.tag) {
-    case "KeyPress": return `Pressed: ${e.keyCode}` 
-    case "Click":    return `Clicked: ${e.x} ${e.y}`
+    case "KeyPress": return `Pressed: ${e.value.keyCode}` 
+    case "Click":    return `Clicked: ${e.value.x} ${e.value.y}`
     case "Scroll":   return "Scroll"
   }
 }
