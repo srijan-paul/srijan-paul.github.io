@@ -8,7 +8,7 @@ date: 2024-05-20
 ---
 
 I write Go and TypeScript at my day job.
-In both these languages, I often reach for patterns that I had originally learned while using Haskell.
+In both these languages, I often reach for patterns that I had originally learned in Haskell.
 This series of articles will cover some ideas from functional programming that I think every programmer should at
 least have a passing familiarity with.
 
