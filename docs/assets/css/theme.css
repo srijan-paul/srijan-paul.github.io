@@ -19,7 +19,7 @@ code.sourceCode {
 }
 div.sourceCode {
   margin: 1em 0;
-  padding: 10px;
+  /*padding: 10px;*/
   background-color: var(--background);
 }
 pre.sourceCode {
@@ -77,22 +77,22 @@ div.sourceCode {
 }
 
 :root {
-  --background: #f8f8f8;
+  --background: #fafafa;
   --foreground: black;
 
-  --keyword: #099;
+  --keyword: #444;
   --number: #900;
   --comment: rgba(85, 85, 85, 0.8);
-  --type: #0f4b6e;
+  --type: #444;
   --builtin: var(--type);
   --function: var(--keyword);
   --operator: #555555;
-  --string: #bb405f;
+  --string: #066;
   --var: var(--foreground);
   --constant: var(--foreground);
 
 	/* e.g - ${} in JS template strings */
-	--specialChar: #990073;
+	--specialChar: var(--type);
 
   /* diffs */
   --diff-added: #047857;
