@@ -21,7 +21,7 @@ hr {
 }
 
 :root {
-	/* colors stolen from tailwind default colors. */
+	/* blues */
 	--sky-50: #f0f9ff;
 	--sky-100: #e0f2fe;
 	--sky-200: #bae6fd;
@@ -34,8 +34,7 @@ hr {
 	--sky-900: #0c4a6e;
 	--sky-950: #082f49;
 
-	/* Grays */
-
+	/* grays */
 	--slate-50: #f8fafc;
 	--slate-100: #f1f5f9;
 	--slate-200: #e2e8f0;
@@ -47,6 +46,19 @@ hr {
 	--slate-800: #1e293b;
 	--slate-900: #0f172a;
 	--slate-950: #020617;
+
+	/* yellows */
+	--amber-50: #fffbeb;
+	--amber-100: #fef3c7;
+	--amber-200: #fde68a;
+	--amber-300: #fcd34d;
+	--amber-400: #fbbf24;
+	--amber-500: #f59e0b;
+	--amber-600: #d97706;
+	--amber-700: #b45309;
+	--amber-800: #92400e;
+	--amber-900: #78350f;
+	--amber-950: #451a03;
 
 	--clr-black: var(--slate-800);
 	--clr-grey: var(--slate-500);
@@ -95,14 +107,8 @@ h2 {
 	font-size: 22px;
 }
 
-h2::before {
-}
-
 h3 {
 	font-size: 20px;
-}
-
-h3::before {
 }
 
 h1,
@@ -162,7 +168,7 @@ code {
 }
 
 div.sourceCode {
-	padding: 1em 0.5em; 
+	padding: 1em 0.5em;
 	border-radius: 3px;
 	/*border: 1px solid #eeeeee;*/
 	/*font-size: calc(var(--font-size) - 1px);*/
@@ -357,8 +363,7 @@ sup>a {
 
 /* Buttons */
 
-a.button,
-button {
+a.button {
 	text-decoration: none;
 
 	width: fit-content;
@@ -396,14 +401,8 @@ a.button:active {
 	transform: translateY(var(--btn-bezel));
 }
 
-/* Custom theme for giscus.app */
-
-:root {
-	--btn-bezel: 3px;
-	--btn-bezel-pressed: 1px;
-}
-
 .buttons {
 	display: flex;
 	gap: 10px;
 }
+

@@ -47,8 +47,10 @@ The author has skilfully crafted an eerie mood in surprisingly few pages [[1](#b
 
 The book opens with a narrator who speaks to the reader in first person.
 From start to finish, the tone is very consistent, and the narration doesn't falter once.
-The writing flows smoothly between first-person dialogue addressing the reader, and third-person prose summarizing the accounts of villagers who witnessed the crime. 
-The harsh winters of post war Japan with several traditional Japanese elements splendidly sell the haunting atmosphere of K village – where the story takes place.
+The writing flows smoothly between first-person dialogue addressing the reader,
+and third-person prose summarizing the accounts of villagers who witnessed the crime. 
+The harsh winters of post war Japan with several traditional Japanese elements splendidly sell
+the haunting atmosphere of K village – where the story takes place.
 
 All of this is delivered under 200 pages.
 I'm impressed by writers who write without cruft.

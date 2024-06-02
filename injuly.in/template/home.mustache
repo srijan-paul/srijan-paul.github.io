@@ -2,22 +2,23 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 	{{! inter font}}
 	<link rel="preconnect" href="https://rsms.me/">
 	<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 
 	<link rel="stylesheet" href="https://cdn.lineicons.com/4.0/lineicons.css" />
-  <link rel="stylesheet" href="/assets/css/common.css">
-  <link rel="stylesheet" href="/assets/css/home.css">
-  <title>InJuly – Home</title>
+	<link rel="stylesheet" href="/assets/css/common.css">
+	<link rel="stylesheet" href="/assets/css/home.css">
+	<link rel="stylesheet" href="/assets/css/subscribe.css">
+	<title>InJuly – Home</title>
 </head>
 
 <body>
-  <div class="main">
+	<div class="main">
 		{{! The navbar }}
 		<div class="nav-container">
 			<nav>
@@ -27,38 +28,68 @@
 				<a href="/now" class="nav-link">now</a>
 			</nav>
 		</div>
-		  
-      {{&content}}
 
-			<h2> Most viewed posts </h2>
+		{{&content}}
 
-			<div class="popular-posts">
-      <a href="/blog/fourier-series">
-        <div> 
-          <div class="title">An interactive guide to the fourier series</div>
-          <div class="date">Oct 2023</div>
-        </div>
-      </a>
+		<h2> Most viewed posts </h2>
 
-      <hr />
+		<div class="popular-posts">
+			<a href="/blog/fourier-series">
+				<div>
+					<div class="title">An interactive guide to the fourier series</div>
+					<div class="date">Oct 2023</div>
+				</div>
+			</a>
 
-      <a href="/blog/give-up-github">
-        <div>
-          <div class="title">But can you give up GitHub?</div>
-          <div class="date">Feb 2024</div>
-        </div>
-      </a>
+			<hr />
 
-      <hr />
+			<a href="/blog/give-up-github">
+				<div>
+					<div class="title">But can you give up GitHub?</div>
+					<div class="date">Feb 2024</div>
+				</div>
+			</a>
 
-      <a href="/blog/darker-internet">
-        <div>
-          <div class="title">The internet is slipping out of our reach</div>
-          <div class="date">Mar 2024</div>
-        </div>
-      </a>
-    </div>
-    </div>
+			<hr />
+
+			<a href="/blog/darker-internet">
+				<div>
+					<div class="title">The internet is slipping out of our reach</div>
+					<div class="date">Mar 2024</div>
+				</div>
+			</a>
+		</div>
+
+		
+		<!--Email notification system-->
+		<div class="subscription-container">
+			<h2>Subscribe with e-mail</h2>
+
+			<p>
+				When I write something new, I'll send you an e-mail about it.
+				I usually publish write-ups once or twice a month.
+
+				No spam.
+			</p>
+
+			<form>
+				<input type="email" placeholder="you@example.com" />
+				<button>Confirm</button>
+			</form>
+
+			<p>
+				<strong>PS:</strong> This email service is an open source, self-hosted Haskell app.
+				<a href="https://github.com/srijan-paul/newsletter" target="_blank">Learn more</a>.
+			</p>
+
+			<!--<p>-->
+			<!--	<strong>PS:</strong> my newsletter setup is a self-hosted Haskell app. <a href="
+					https://github.com/srijan-paul/newsletter/"> See here</a>.-->
+			<!--</p>-->
+
+		</div>
+
+	</div>
 </body>
 
 </html>
