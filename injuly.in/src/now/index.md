@@ -2,41 +2,92 @@
 date: 6th May 2024
 template: now
 ---
-# 6th May, 2024
 
-*previous entry: [9th April, 2024](/now/apr-2024)*
+# 24th July 2024
 
-I was supposed to write this update in April, but ended up falling sick in the last week.
-Tied to my bed no longer, I will spend the month of May writing Zig libraries, and mentoring in Google Summer of Code.
-## Making OSS screen capture tools
+*previous entry: [May 2024](/now/may-2024)*
 
-Last month, I was hacking on a screen-capture library in Zig
-<sup>([post](/blog/screen-capture))</sup>.
-I ran some experiments trying to take screenshots and record my screen, then encoding the captured frames into GIFs.
+I've been making decent progress on some of my hobby projects,
+and taking care not to burn out in the process.
 
-Since then, I:
-1. Implemented a screenshot app with Rust, Tauri, and SolidJS.
-2.  Profiled the app and realized JS is the wrong choice for "native" apps.
-3. Ditched JavaScript frameworks and re-wrote the whole thing in C++.
+To cope with my growing backlog,
+I've become comfortable with this idea of managing a stack of on-going projects.
+I maintain a pile of three projects that are "active".
+At any given time, I can only be working on one of these.
+When work gets too mundane, or if I feel I'm risking burnout,
+I put the project back in the pile and draw another one. 
+The pile must not grow – I get to add a new project *only* when an active
+one is finished.
 
-And so, the latest build of ***blink***—a nimble screenshot app—now consumes 10x less memory, and is much snappier.
+Here's the two projects I last drew from the pile:
 
-Down the road, I plan to add GIF and WebP support as well.
-For this, I've been exploring quantization and dithering techniques to get the best out of the dated GIF format (This research may or may not result in a blog post).
+## Projects
 
-## Mentoring in Google Summer of Code
+### [nez](https://github.com/srijan-paul/nez) – NES Emulator
 
-Earlier this year, [Hugo](https://www.inf.puc-rio.br/~hgualandi/)—erm, *Professor* Hugo (congratulations!)—emailed me about GSoC.
-I'm more than happy to help students get into OSS research, and will thus be mentoring contributors to [the Pallene compiler](https://github.com/pallene-lang/pallene).
+![FCEUX (top) and nez (bottom)](/assets/img/jul-2024/fceux_nez_comparison_1200.png)
 
-Pallene is a research project that compiles a typed dialect of Lua down to native code.
-It's hero feature is Lua interop:
-libraries written in Pallene, which are usually much faster, can be directly imported into Lua programs.
+Nez can now run games like Final Fantasy 2, Journey to Silius, and Robocop 3.
+The emulator is also more accurate than before,
+passing more PPU test ROMs than [FCEUX](https://fceux.com/web/home.html), as pictured above.
 
-In 2021, I too was a student developer working on Pallene.
-I dug up [my report](blog/gsoc/) on this blog from three years ago, and despite the rusty writing, it was a fun read.
-## Reading
+Currently, I'm working on emulating the APU to finally have some audio.
+This turned out to be much harder than I expected, but it wouldn't be so rewarding if it wasn't hard.
 
-- Mistborn: The Hero of Ages – Brandon Sanderson.
-- The Devil's Flute Murders – Seishi Yokomizo.
+As fun as this project is, I wish the Famicom had a more diverse game library.
+Most games simply don't hold up well today, though there are some notable exceptions to this. 
+To challenge myself some more, I wish to try my hand at a Game Boy Advance 
+or PlayStation emulator sometime.
+Maybe then I'll have a virtual console that I'll enjoy using myself :)
+
+### Frametap – Screen capture library with GIF support
+
+The screen capture library hasn't seen as much progress as I had hoped for.
+I've managed to cobble together a CLI tool that can quantize PNG images and record a GIF 
+from any region of the screen.
+Some problems still remain – like large GIF sizes and flickering colors.
+
+When I get back to it, I'll be adding WebP support, along with the ability to record on Windows.
+
+## Work
+
+### Sniper – Language agnostic call stack analysis
+
+I usually don't write about my full time job here.
+This is a *personal* website, and I like to think that my personhood goes beyond a payslip,
+but that doesn't mean my job is boring.
+This past week, [Tushar](https://tushar.lol) and I have been hacking on a language agnostic call stack analyzer. 
+
+In simpler terms: for any codebase, it generates a graph of all function calls made inside an expression.
+As an example, take this little program:
+
+```py
+def gcd(a, b):
+  return a if b == 0 else gcd_helper(a, b)
+
+def gcd_helper(a, b):
+  return gcd(b, a % b)
+
+def main():
+  gcd(48, 18)
+
+# perform stack analysis for this call expression
+main()
+```
+
+For this Python snippet, the analyzer emits a graph like this:
+
+<img src="/assets/img/jul-2024/d2_graph_gcd.png" width="200">
+
+
+Not so impressive when you run it for a trivial program,
+but this tool proves to be very useful when scanning vulnerable code.
+
+## Other
+
+I recently bought a Switch, and have been enjoying my time playing [Breath of the Wild](https://en.wikipedia.org/wiki/The_Legend_of_Zelda:_Breath_of_the_Wild)
+and [Overcooked](https://en.wikipedia.org/wiki/Overcooked).
+As for reading, I'm currently working my way through [Safe Houses](https://danfesperman.com/novels/safe-houses/).
+
+Until next time o/
 

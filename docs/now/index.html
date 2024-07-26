@@ -29,41 +29,66 @@
 				<a href="/now" class="nav-link active-nav-link">now</a>
 			</nav>
 		</div>
-		<h1 id="6th-may-2024">6th May, 2024</h1>
-<p><em>previous entry: <a href="/now/apr-2024">9th April, 2024</a></em></p>
-<p>I was supposed to write this update in April, but ended up falling sick in the last week.
-Tied to my bed no longer, I will spend the month of May writing Zig libraries, and mentoring in Google Summer of Code.</p>
-<h2 id="making-oss-screen-capture-tools">Making OSS screen capture tools</h2>
-<p>Last month, I was hacking on a screen-capture library in Zig
-<sup>(<a href="/blog/screen-capture">post</a>)</sup>.
-I ran some experiments trying to take screenshots and record my screen, then encoding the captured frames into GIFs.</p>
-<p>Since then, I:</p>
-<ol>
-<li>Implemented a screenshot app with Rust, Tauri, and SolidJS.
-</li>
-<li>Profiled the app and realized JS is the wrong choice for &quot;native&quot; apps.
-</li>
-<li>Ditched JavaScript frameworks and re-wrote the whole thing in C++.
-</li>
-</ol>
-<p>And so, the latest build of <em><strong>blink</strong></em>—a nimble screenshot app—now consumes 10x less memory, and is much snappier.</p>
-<p>Down the road, I plan to add GIF and WebP support as well.
-For this, I&#39;ve been exploring quantization and dithering techniques to get the best out of the dated GIF format (This research may or may not result in a blog post).</p>
-<h2 id="mentoring-in-google-summer-of-code">Mentoring in Google Summer of Code</h2>
-<p>Earlier this year, <a href="https://www.inf.puc-rio.br/~hgualandi/">Hugo</a>—erm, <em>Professor</em> Hugo (congratulations!)—emailed me about GSoC.
-I&#39;m more than happy to help students get into OSS research, and will thus be mentoring contributors to <a href="https://github.com/pallene-lang/pallene">the Pallene compiler</a>.</p>
-<p>Pallene is a research project that compiles a typed dialect of Lua down to native code.
-It&#39;s hero feature is Lua interop:
-libraries written in Pallene, which are usually much faster, can be directly imported into Lua programs.</p>
-<p>In 2021, I too was a student developer working on Pallene.
-I dug up <a href="blog/gsoc/">my report</a> on this blog from three years ago, and despite the rusty writing, it was a fun read.</p>
-<h2 id="reading">Reading</h2>
-<ul>
-<li>Mistborn: The Hero of Ages – Brandon Sanderson.
-</li>
-<li>The Devil&#39;s Flute Murders – Seishi Yokomizo.
-</li>
-</ul>
+		<h1 id="24th-july-2024">24th July 2024</h1>
+<p><em>previous entry: <a href="/now/may-2024">May 2024</a></em></p>
+<p>I&#39;ve been making decent progress on some of my hobby projects,
+and taking care not to burn out in the process.</p>
+<p>To cope with my growing backlog,
+I&#39;ve become comfortable with this idea of managing a stack of on-going projects.
+I maintain a pile of three projects that are &quot;active&quot;.
+At any given time, I can only be working on one of these.
+When work gets too mundane, or if I feel I&#39;m risking burnout,
+I put the project back in the pile and draw another one.
+The pile must not grow – I get to add a new project <em>only</em> when an active
+one is finished.</p>
+<p>Here&#39;s the two projects I last drew from the pile:</p>
+<h2 id="projects">Projects</h2>
+<h3 id="nez--nes-emulator"><a href="https://github.com/srijan-paul/nez">nez</a> – NES Emulator</h3>
+<p><img src="/assets/img/jul-2024/fceux_nez_comparison_1200.png" alt="FCEUX (top) and nez (bottom)"></img></p>
+<p>Nez can now run games like Final Fantasy 2, Journey to Silius, and Robocop 3.
+The emulator is also more accurate than before,
+passing more PPU test ROMs than <a href="https://fceux.com/web/home.html">FCEUX</a>, as pictured above.</p>
+<p>Currently, I&#39;m working on emulating the APU to finally have some audio.
+This turned out to be much harder than I expected, but it wouldn&#39;t be so rewarding if it wasn&#39;t hard.</p>
+<p>As fun as this project is, I wish the Famicom had a more diverse game library.
+Most games simply don&#39;t hold up well today, though there are some notable exceptions to this.
+To challenge myself some more, I wish to try my hand at a Game Boy Advance
+or PlayStation emulator sometime.
+Maybe then I&#39;ll have a virtual console that I&#39;ll enjoy using myself :)</p>
+<h3 id="frametap--screen-capture-library-with-gif-support">Frametap – Screen capture library with GIF support</h3>
+<p>The screen capture library hasn&#39;t seen as much progress as I had hoped for.
+I&#39;ve managed to cobble together a CLI tool that can quantize PNG images and record a GIF
+from any region of the screen.
+Some problems still remain – like large GIF sizes and flickering colors.</p>
+<p>When I get back to it, I&#39;ll be adding WebP support, along with the ability to record on Windows.</p>
+<h2 id="work">Work</h2>
+<h3 id="sniper--language-agnostic-call-stack-analysis">Sniper – Language agnostic call stack analysis</h3>
+<p>I usually don&#39;t write about my full time job here.
+This is a <em>personal</em> website, and I like to think that my personhood goes beyond a payslip,
+but that doesn&#39;t mean my job is boring.
+This past week, <a href="https://tushar.lol">Tushar</a> and I have been hacking on a language agnostic call stack analyzer.</p>
+<p>In simpler terms: for any codebase, it generates a graph of all function calls made inside an expression.
+As an example, take this little program:</p>
+<code class="language-py"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gcd(a, b):</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> a <span class="cf">if</span> b <span class="op">==</span> <span class="dv">0</span> <span class="cf">else</span> gcd_helper(a, b)</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gcd_helper(a, b):</span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> gcd(b, a <span class="op">%</span> b)</span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> main():</span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>  gcd(<span class="dv">48</span>, <span class="dv">18</span>)</span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a><span class="co"># perform stack analysis for this call expression</span></span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>main()</span></code></pre></div></code></pre>
+<p>For this Python snippet, the analyzer emits a graph like this:</p>
+<img src="/assets/img/jul-2024/d2_graph_gcd.png" width="200">
+<p>Not so impressive when you run it for a trivial program,
+but this tool proves to be very useful when scanning vulnerable code.</p>
+<h2 id="other">Other</h2>
+<p>I recently bought a Switch, and have been enjoying my time playing <a href="https://en.wikipedia.org/wiki/The_Legend_of_Zelda:_Breath_of_the_Wild">Breath of the Wild</a>
+and <a href="https://en.wikipedia.org/wiki/Overcooked">Overcooked</a>.
+As for reading, I&#39;m currently working my way through <a href="https://danfesperman.com/novels/safe-houses/">Safe Houses</a>.</p>
+<p>Until next time o/</p>
 
 
 		<script src="https://giscus.app/client.js" data-repo="srijan-paul/srijan-paul.github.io" data-repo-id="MDEwOlJlcG9zaXRvcnkzMTY0MTg0NTk=" data-category="Announcements" data-category-id="DIC_kwDOEtwpm84Cdokt" data-mapping="title" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" defer>
