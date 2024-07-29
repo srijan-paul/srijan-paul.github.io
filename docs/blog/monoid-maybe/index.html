@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+    <meta name="description" content="No program comes out right the first time. Libraries aren&#39;t an exception, and shouldn&#39;t be treated as such"></meta>
+    <meta property="og:title" content="Data.Maybe, and thoughts on library design"></meta>
+    <meta property="twitter:title" content="Data.Maybe, and thoughts on library design"></meta>
+    <meta property="twitter:description" content="No program comes out right the first time. Libraries aren&#39;t an exception, and shouldn&#39;t be treated as such"></meta>
+
+     
+    <meta property="og:image" content></meta>
+		<meta name="twitter:image" content>
+    
+
+    <meta property="og:site_name" content="InJuly"></meta>
+
+		<link rel="preconnect" href="https://rsms.me/">
+		<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+
+    <link rel="stylesheet" href="/assets/css/common.css">
+    <link rel="stylesheet" href="/assets/css/post.css">
+    <link rel="stylesheet" href="/assets/css/theme.css">
+    
+
+    <script data-goatcounter="https://injuly.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+
+    <title>Data.Maybe, and thoughts on library design</title>
+  </head>
+
+  <body>
+    <div class="main">
+      <div class="nav-container">
+        <nav>
+          <a href="/" class="nav-link">index</a>
+          <a href="/about" class="nav-link">about</a>
+          <a href="/blog" class="nav-link active-nav-link">blog</a>
+          <a href="/now" class="nav-link">now</a>
+        </nav>
+      </div>
+
+      <div class="leader">
+        <h1> Data.Maybe, and thoughts on library design </h1>
+				<div class="post-date"> Jul 29 </div>
+        <div class="tags" id="tags">
+            <a class="tag" href="/tags/haskell.html">haskell</a>
+            <a class="tag" href="/tags/FP.html">FP</a>
+        </div>
+      </div>
+      <p>Earlier today, I was reading <a href="https://core.ac.uk/download/pdf/76383233.pdf">a paper about monoids</a>
+that briefly highlighted an interesting flaw in older versions of Haskell&#39;s standard library.
+The problem—although fixed in later—still serves as an interesting case study for library design.
+So I took a break from the study session to log my thoughts here before I forget.</p>
+<h2 id="semigroups-and-monoids">Semigroups and Monoids</h2>
+<p>In Haskell, a Monoid is any type <code>a</code> that has:</p>
+<ol>
+<li>An identity element, called <code>mempty</code>, like <code>0</code> for <code>Int</code>.
+</li>
+<li>A function <code>mappend</code> (or <code>&lt;&gt;</code>) that combines two <code>a</code>s, e.g: <code>+</code>.
+</li>
+</ol>
+<p>In the base library, <code>Monoid</code> is defined roughly like this:</p>
+<code class="language-haskell"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Monoid</span> a <span class="kw">where</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="ot">  mempty ::</span> a</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="ot">  (&lt;&gt;)   ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a</span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a><span class="co">-- E.g: All lists are monoidal under concatenation</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Monoid</span> (<span class="dt">List</span> a) <span class="kw">where</span></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mempty</span> <span class="ot">=</span> []</span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>  a <span class="op">&lt;&gt;</span> b <span class="ot">=</span> (<span class="op">++</span>)</span></code></pre></div></code></pre>
+<p>Alongside this, we also have the <code>Semigroup</code> typeclass that
+represents any type with an <code>mappend</code> function,
+but not necessarily an <code>mempty</code>.
+Naturally, its definition is the same as <code>Monoid</code>&#39;s minus the <code>mempty :: a</code>:</p>
+<code class="language-haskell"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Semigroup</span> a <span class="kw">where</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="ot">  mappend ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a</span></code></pre></div></code></pre>
+<p>Any Monoid is also a Semigroup by virtue of having an <code>mappend</code>.
+But for a Semigroup to be a Monoid, it has to have an identity element.</p>
+<h2 id="maybe-as-a-monoid">Maybe as a Monoid</h2>
+<p>Any <code>Semigroup a</code> can be turned into a <code>Monoid (Maybe a)</code> by declaring <code>Nothing</code> as the identity element.
+This way, we can &quot;lift&quot; a type that forms a semigroup under some operation, into an optional type
+that forms a monoid under the same operation.</p>
+<p>The definition of <code>Monoid (Maybe a)</code> in the standard library, however, was:</p>
+<code class="language-haskell"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Monoid</span> a <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Maybe</span> a) <span class="kw">where</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mempty</span> <span class="ot">=</span> <span class="dt">Nothing</span> </span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Nothing</span> <span class="op">&lt;&gt;</span> y <span class="ot">=</span> y</span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>  x <span class="op">&lt;&gt;</span> <span class="dt">Nothing</span> <span class="ot">=</span> x</span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>  (<span class="dt">Just</span> x) <span class="op">&lt;&gt;</span> (<span class="dt">Just</span> y) <span class="ot">=</span> x <span class="op">&lt;&gt;</span> y</span></code></pre></div></code></pre>
+<p>This completely overlooks the existence of semigroups,
+mostly because they didn&#39;t exist in <code>base</code> until much later.</p>
+<p>To understand the problem, take a closer look at the constraint:</p>
+<code class="language-haskell"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Monoid</span> a <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Maybe</span> a)</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="co">--       ^^^^^^^^ </span></span></code></pre></div></code></pre>
+<p>For <code>Maybe a</code> to be a monoid, <code>a</code> must be a monoid first.
+But in the instance body, we only ever use <code>&lt;&gt;</code> to combine <code>x</code> and <code>y</code>,
+so a <code>Semigroup a =&gt; ...</code> constraint would&#39;ve made more sense:</p>
+<code class="language-diff"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="va">+ instance Semigroup a =&gt; Monoid (Maybe a) where</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="st">- instance Monoid a =&gt; Monoid (Maybe a) where</span></span></code></pre></div></code></pre>
+<p>This fix was finally made in <a href="https://hackage.haskell.org/package/base-4.11.1.0/changelog">base-4.11</a>.</p>
+<p>Before the <code>Data.Semigroup</code> module was added to base,
+programmers would use the <a href="https://hackage.haskell.org/package/semigroups-0.18.1/docs/Data-Semigroup.html">semigroups</a> package
+and its <code>Option</code> data type, which is described as:</p>
+<blockquote>
+<p><code>Option</code> is effectively <code>Maybe</code> with a better instance of <code>Monoid</code>,
+built off of an underlying <code>Semigroup</code> instead of an underlying <code>Monoid</code>.
+Ideally, this type would not exist at all and we would just fix the <code>Monoid</code> instance of <code>Maybe</code></p>
+</blockquote>
+<code class="language-haskell"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">Option</span> a <span class="ot">=</span> <span class="dt">Option</span> {<span class="ot"> getOption ::</span> <span class="dt">Maybe</span> a }</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Semigroup</span> a <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Option</span> a) <span class="kw">where</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- ...</span></span></code></pre></div></code></pre>
+<p><code>getOption</code> is a zero-cost abstraction, since <code>Option</code> is a simple <code>newtype</code> wrapper.
+Fortunately, this workaround is no longer necessary.</p>
+<h2 id="designing-libraries-for-the-general-case">Designing libraries for the general case</h2>
+<p>Libraries that cover more ground are also harder to design.</p>
+<p>Imagine you&#39;re writing a parsing library.
+What kind of input is considered valid for your parser?
+Is it only <code>String</code>? What about <code>Text</code> and <code>ByteString</code>?
+Perhaps it should be <code>IsString a =&gt; a</code>, then?
+But what if the data is chunked, or in some binary format?</p>
+<p>The megaparsec library uses a <a href="https://hackage.haskell.org/package/megaparsec-9.6.1/docs/Text-Megaparsec-Stream.html#t:Stream">Stream</a>
+typeclass to represent all &quot;parse-able&quot; inputs, and has a note about moving away
+from an older design decision in future versions.</p>
+<p>I like the way Bartosz Milewski says it in his book:</p>
+<blockquote>
+<p>A good library writer should be able to identify the bare minimum of
+constraints that make the library work.</p>
+</blockquote>
+<p>Identifying the limits of a library&#39;s use case,
+then fitting them to an API is <em>incredibly hard</em>.
+And yet, when improvements are made in future versions or succeeding libraries,
+the fix seems obvious in hindsight.
+Even the experts don&#39;t get it right on their first try.</p>
+<p>The Haskell prelude still has partials like <code>head</code>,
+JavaScript&#39;s date API was broken for decades until <a href="https://tc39.es/proposal-temporal/docs/">temporal</a> turned things around,
+Python has an <a href="https://peps.python.org/pep-0594/">entire proposal</a> to remove &quot;dead batteries&quot;
+from the standard library,
+and Xorg&#39;s API and security issues still spark debate in Linux forums.</p>
+<p>Libraries evolve just as any other software project,
+and when a soft deprecation isn&#39;t enough,
+breaking changes clear the slate.</p>
+<p>Building atop APIs that exist purely for legacy reasons can often lead to
+a kind of bloat that hurts a project&#39;s adoption and ergonomics.
+The C++ standard is—in my personal opinion—a victim of this style of maintenance.</p>
+<p>I don&#39;t have a bigger picture to paint, so I&#39;ll conclude this post rather abruptly.
+Now if you&#39;ll excuse me, I should return to my study.</p>
+
+
+			<script src="https://giscus.app/client.js" data-repo="srijan-paul/srijan-paul.github.io" data-repo-id="MDEwOlJlcG9zaXRvcnkzMTY0MTg0NTk=" data-category="Announcements" data-category-id="DIC_kwDOEtwpm84Cdokt" data-mapping="title" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" defer>
+			</script>
+		</div>
+  </body>
+</html>

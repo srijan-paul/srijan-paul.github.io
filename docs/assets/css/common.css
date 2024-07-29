@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&family=Bricolage+Grotesque&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Jetbrains+Mono:ital,wght@0,400;0,500;1,400&family=Bricolage+Grotesque&display=swap");
 
 /* Cherry Swash, Zilla Slab */
 
@@ -75,10 +75,10 @@ hr {
 	--font-body: Inter, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
 		"Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 	--font-heading: "Bricolage Grotesque", var(--font-body);
-	--font-code: "IBM Plex Mono", monospace;
+	--font-code: "Jetbrains Mono", monospace;
 	--font-weight: 400;
 	--font-weight-bold: 500;
-	--font-size: 15px;
+	--font-size: 16px;
 }
 
 @supports (font-variation-settings: normal) {
@@ -174,11 +174,11 @@ div.sourceCode {
 	/*font-size: calc(var(--font-size) - 1px);*/
 }
 
-/*:not(h1, h2, h3, pre)>code:not([class^="language-"], :has(> div)) {*/
-/*	border-radius: 3px;*/
-/*	border: 1px solid var(--slate-300);*/
-/*	padding: 0 5px;*/
-/*}*/
+:not(h1, h2, h3, pre)>code:not([class^="language-"], :has(> div)) {
+	border-radius: 3px;
+	border: 1px solid var(--slate-300);
+	padding: 0 5px;
+}
 
 .nav-container {
 	width: max-content;
