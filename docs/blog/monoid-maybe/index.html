@@ -52,17 +52,17 @@
       </div>
       <p>Earlier today, I was reading <a href="https://core.ac.uk/download/pdf/76383233.pdf">a paper about monoids</a>
 that briefly highlighted an interesting flaw in older versions of Haskell&#39;s standard library.
-The problem—although fixed in later—still serves as an interesting case study for library design.
+The problem—although fixed later—still serves as an interesting case study for library design.
 So I took a break from the study session to log my thoughts here before I forget.</p>
 <h2 id="semigroups-and-monoids">Semigroups and Monoids</h2>
 <p>In Haskell, a Monoid is any type <code>a</code> that has:</p>
 <ol>
-<li>An identity element, called <code>mempty</code>, like <code>0</code> for <code>Int</code>.
+<li>An identity element called <code>mempty</code>, like <code>0</code> for <code>Int</code>.
 </li>
 <li>A function <code>mappend</code> (or <code>&lt;&gt;</code>) that combines two <code>a</code>s, e.g: <code>+</code>.
 </li>
 </ol>
-<p>In the base library, <code>Monoid</code> is defined roughly like this:</p>
+<p>In the base library, <code>Monoid</code> is defined roughly like so:</p>
 <code class="language-haskell"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Monoid</span> a <span class="kw">where</span></span>
 <span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="ot">  mempty ::</span> a</span>
 <span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="ot">  (&lt;&gt;)   ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a</span>

@@ -9,17 +9,17 @@ is_blog_post: true
 
 Earlier today, I was reading [a paper about monoids](https://core.ac.uk/download/pdf/76383233.pdf)
 that briefly highlighted an interesting flaw in older versions of Haskell's standard library.
-The problem—although fixed in later—still serves as an interesting case study for library design.
+The problem—although fixed later—still serves as an interesting case study for library design.
 So I took a break from the study session to log my thoughts here before I forget. 
 
 ## Semigroups and Monoids
 
 In Haskell, a Monoid is any type `a` that has:
 
-1. An identity element, called `mempty`, like `0` for `Int`.
+1. An identity element called `mempty`, like `0` for `Int`.
 2. A function `mappend` (or `<>`) that combines two `a`s, e.g: `+`.
 
-In the base library, `Monoid` is defined roughly like this:
+In the base library, `Monoid` is defined roughly like so:
 
 ```haskell
 class Monoid a where
