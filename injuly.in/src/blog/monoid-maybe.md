@@ -7,6 +7,8 @@ meta: "No program comes out right the first time. Libraries aren't an exception,
 is_blog_post: true
 ---
 
+*See discussion on [lobste.rs](https://lobste.rs/s/pf16l1/data_maybe_thoughts_on_library_design)*
+
 Earlier today, I was reading [a paper about monoids](https://core.ac.uk/download/pdf/76383233.pdf)
 that briefly highlighted an interesting flaw in older versions of Haskell's standard library.
 The problem—although fixed later—still serves as an interesting case study for library design.
