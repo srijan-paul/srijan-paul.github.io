@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Main where
+module Main (main) where
 
 import Bark.CLI (BarkCLI (BarkCLI), builtinPlugins, doCommand, parseCommand)
 import Bark.Core (template2Html, (</>))
@@ -28,6 +28,7 @@ import Data.Maybe (mapMaybe)
 import Data.Ord (Down (Down))
 import qualified Data.Text as T
 import Internal.Date (Date (dateYear), formatDateMonDD, getYear, parseDate)
+import Internal.Rss (addRssFeed)
 import System.Environment (getArgs)
 import TextShow (TextShow (showt))
 
@@ -66,7 +67,7 @@ generateTagPages = AfterBuild $ do
     tagToHtmlPage tag project posts = do
       let taggedPosts = postsByTag tag posts
           templatePath = projectTemplateDir project </> "tags.mustache"
-          content = wrapInHtml taggedPosts
+          content = toHtmlUl taggedPosts
           compileData = Object $ HM.fromList [("tag", String tag), ("content", content)]
       compiledHtml <- template2Html templatePath compileData
       let dstPath = projectOutDir project </> "tags" </> (T.unpack tag <> ".html")
@@ -80,12 +81,14 @@ generateTagPages = AfterBuild $ do
     postsByTag :: T.Text -> [Post] -> [Post]
     postsByTag tag = filter (\p -> tag `elem` getTags (postFrontMatter p))
 
-    wrapInHtml :: [Post] -> Value
-    wrapInHtml posts = do
+    -- return an HTML rendered unordered list of posts.
+    toHtmlUl :: [Post] -> Value
+    toHtmlUl posts = do
       let titleUrlPairs = mapMaybe pairPost posts
           listItems = T.concat $ map li titleUrlPairs
        in String $ "<ul class=\"post-list\">" <> listItems <> "</ul>"
       where
+        -- \| returns a (URL, title, date) triple from a post.
         pairPost :: Post -> Maybe (T.Text, T.Text, T.Text)
         pairPost post = case (postTitle post, postDate post) of
           (Just title, Just date) -> Just (T.pack $ postUrl post, title, date)
@@ -95,6 +98,7 @@ generateTagPages = AfterBuild $ do
         postDate post =
           getDate post >>= parseDate >>= Just . showt . dateYear
 
+        -- returns an HTML list item from a (URL, title, date) triple of a post.
         li :: (T.Text, T.Text, T.Text) -> T.Text
         li (url, text, date) =
           "<li><a href=\"/"
@@ -199,9 +203,17 @@ addAllBlogs posts post = do
         Just (Bool b) -> b
         _ -> False
 
+customPlugins :: [Plugin]
+customPlugins =
+  [ addDateToPosts, -- add a formatted date field to the post
+    populateBlogHome, -- populate the blog home page with all blog posts
+    generateTagPages, -- generate tag pages (e.g: injuly.in/tags/lua/index.html)
+    addRssFeed -- add an RSS feed to the site
+  ]
+
 main :: IO ()
 main = do
-  let processors = builtinPlugins ++ [addDateToPosts, populateBlogHome, generateTagPages]
+  let processors = builtinPlugins ++ customPlugins
       cli = BarkCLI processors
   maybeCommand <- parseCommand <$> getArgs
   case maybeCommand of

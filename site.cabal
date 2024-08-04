@@ -30,6 +30,7 @@ executable site
     -- Modules included in this executable, other than Main.
     other-modules:
       Internal.Date
+      Internal.Rss
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
@@ -39,6 +40,8 @@ executable site
       bark,
       text-show,
       text,
-      mtl 
+      mtl,
+      rss,
+      network-uri
     hs-source-dirs:   app
     default-language: Haskell2010
