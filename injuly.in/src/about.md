@@ -43,5 +43,5 @@ And many more on my [GitHub](https://github.com/srijan-paul).
 ## Contact
 
 I'm always open to discourse, chit-chat, or helping a fellow human out. <br>
-Feel free to message me on discord (**@injuly.**), [twitter](https://twitter.com/_injuly), or send an e-mail to [srijan@injuly.in](mailto:srijan@injuly.in).
+Feel free to message me on discord (**@injuly.**), [twitter](https://twitter.com/ptrCast), or send an e-mail to [srijan@injuly.in](mailto:srijan@injuly.in).
 
