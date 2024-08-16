@@ -10,9 +10,9 @@ I'm a programmer by trade, and work at [DeepSource](https://deepsource.com) – 
 As of 2024, My interests lie in:
 
 - **Programming**: Compilers, computer networks, databases, FP.
-- **Reading**: High fantasy, golden age japanese mystery, sci-fi.
+- **Reading**: High fantasy, golden age Japanese mystery, sci-fi.
 - **Math**: Category theory, linear algebra.
-- **Technology**: Retro console architecture (NES, Gameboy, PlayStation), game development.
+- **Technology**: Retro console architecture (NES, Game Boy, PlayStation), game development.
 - **Miscellaneous**: Pixel art, typography.
 
 I don't actively play as many video games anymore,
