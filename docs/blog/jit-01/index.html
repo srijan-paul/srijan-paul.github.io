@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+    <meta name="description" content="Write a JIT compiler from first principles in Zig."></meta>
+    <meta property="og:title" content="JIT Compiler from scratch – 1/3"></meta>
+    <meta property="twitter:title" content="JIT Compiler from scratch – 1/3"></meta>
+    <meta property="twitter:description" content="Write a JIT compiler from first principles in Zig."></meta>
+
+     
+    <meta property="og:image" content></meta>
+		<meta name="twitter:image" content>
+    
+
+    <meta property="og:site_name" content="InJuly"></meta>
+
+		<link rel="preconnect" href="https://rsms.me/">
+		<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+
+    <link rel="stylesheet" href="/assets/css/common.css">
+    <link rel="stylesheet" href="/assets/css/post.css">
+    <link rel="stylesheet" href="/assets/css/theme.css">
+    
+
+    <script data-goatcounter="https://injuly.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+
+    <title>JIT Compiler from scratch – 1/3</title>
+  </head>
+
+  <body>
+    <div class="main">
+      <div class="nav-container">
+        <nav>
+          <a href="/" class="nav-link">index</a>
+          <a href="/about" class="nav-link">about</a>
+          <a href="/blog" class="nav-link active-nav-link">blog</a>
+          <a href="/now" class="nav-link">now</a>
+        </nav>
+      </div>
+
+      <div class="leader">
+        <h1> JIT Compiler from scratch – 1/3 </h1>
+				<div class="post-date"> Aug 16 </div>
+        <div class="tags" id="tags">
+            <a class="tag" href="/tags/compilers.html">compilers</a>
+            <a class="tag" href="/tags/zig.html">zig</a>
+            <a class="tag" href="/tags/programming-languages.html">programming-languages</a>
+        </div>
+      </div>
+      <p>Have you perhaps written a programming language interpreter, or a bytecode VM?
+Me too.</p>
+<p>So then, tried to squeeze more performance out of it by
+adding computed-gotos, pointer tagging, a peephole optimizer,
+or instruction re-ordering?
+Yeah... me neither.
+Vanilla bytecode VMs are okay for many workloads –
+databases still use them.</p>
+<p>But it doesn&#39;t hurt to get on with the times, right?
+Even Python—the language that stores <em>integers on the heap</em>(!)—is getting
+a JIT compiler.
+Think about it, what mainstream interpreted language <em>doesn&#39;t</em> have a JIT today?<sup class="footnote-ref"><a href="#fn-1" id="fnref-1">1</a></sup></p>
+<p>Bytecode-only VMs will soon be a thing of past, and download links to them will re-direct to
+the wayback machine.
+But you don&#39;t want your interpreter on the internet&#39;s cemetery, do you?</p>
+<p>Thought so. Well, I have you covered.</p>
+<p>We&#39;ll learn the ins-and-outs of a JIT compiler by implementing one from scratch
+with zero dependencies.
+No LLVM.</p>
+<h1 id="a-bytecode-machine">A Bytecode Machine</h1>
+<h2 id="slackjaw">SlackJaw</h2>
+<p>For the rest of this guide, we will be optimizing a friendly stack based
+assembly-like language called SlackJaw.</p>
+<p>To focus on implementing a JIT from first principles, I&#39;ve kept the language simple.
+This will help speed past the parser and bytecode VM implementation.
+I should caution you though, do not be fooled by the small instruction set!
+It is capable of non-trivial programs, and can be extended with higher level
+syntax for statements, loops, and functions if you so desire.</p>
+<p>As we draw closer to the final chapter, we&#39;ll see how features like I/O
+and native functions can be implemented to further the horizon for our toy language.
+By the end, you&#39;ll have enough knowledge to write a JIT for a sufficiently complex language.</p>
+<p>And let&#39;s be honest, you&#39;ve probably already read <a href="https://craftinginterpreters.com/">crafting interpreters</a>
+(or something similar) if you&#39;re learning about JITs.</p>
+<p>Here&#39;s a slackjaw program that sums all natural numbers less than one million:</p>
+<code class="language-asm"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="bu">push</span> x <span class="dv">0</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="bu">push</span> i <span class="dv">0</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a><span class="fu">loop:</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>  <span class="bu">push</span> <span class="op">(</span>i <span class="op">&lt;</span> <span class="dv">10000000</span><span class="op">)</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>  cjmp loop_end</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>  <span class="bu">push</span> <span class="op">(</span>x <span class="op">+</span> i<span class="op">)</span></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>  <span class="bu">set</span>  x</span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>  <span class="bu">add</span> <span class="op">(</span>i <span class="op">+</span> <span class="dv">1</span><span class="op">)</span></span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a>  <span class="bu">set</span>  i</span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a>  jump loop</span>
+<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a><span class="fu">loop_end:</span></span>
+<span id="17"><a href="#17" aria-hidden="true" tabindex="-1"></a>  print</span></code></pre></div></code></pre>
+<p>If you&#39;ve seen assembly code out in the wild,
+you may find the syntax vaguely familiar.</p>
+<p>As we learned earlier, SlackJaw is a <em>stack-machine</em> –
+the instructions in this program manipulate the stack to crunch numbers.</p>
+<p>Lets go through the above program with a fine-toothed comb.</p>
+<p>In the first two lines, we push two zeros onto the stack, and &quot;remember&quot; the slots
+they&#39;re stored in as <code>x</code> and <code>i</code>.</p>
+<code class="language-asm"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="bu">push</span> x <span class="dv">0</span> <span class="co">; x = 0</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="bu">push</span> i <span class="dv">0</span> <span class="co">; i = 0</span></span></code></pre></div></code></pre>
+<p>This is the equivalent of a variable declaration in, say, Python.</p>
+<p>In what follows, we have a &quot;label&quot; – a named block of code in a program:</p>
+<code class="language-asm"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="fu">loop:</span>  <span class="co">; while (i &lt;= 10000000) {</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">push</span> <span class="op">(</span>i <span class="op">&gt;</span> <span class="dv">10000000</span><span class="op">)</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>    cjmp loop_end</span></code></pre></div></code></pre>
+<p>We will use the label name <code>loop</code> later when we want to jump back to the third line.
+<code>push (i &gt; 10000000)</code> will push <code>1</code> onto the stack if the condition is true, and <code>0</code> otherwise.</p>
+<p>The <code>cjmp</code> instruction will pop a value off the stack,
+and jump the program to the specified label if the popped is non-zero.</p>
+<p>By now, you should be able to make sense of the entailing lines.
+<code>set</code> modifies the value in a named stack slot—in this case, <code>x</code> and <code>i</code>—
+and <code>jump</code> unconditionally jumps the program to a labelled block.</p>
+<p>I will introduce a few more instructions as we advance, and you can always
+add more to suit your needs.</p>
+<h2 id="the-slackvm">The SlackVM</h2>
+<p>Unlike regular assembly programs, Slackjaw code cannot natively run on a CPU
+that understands x86, x64, or ARM instructions.
+So we write a &quot;virtual&quot; machine to execute our custom instruction set.</p>
+<p>First, an enum to represent every instruction in the VM:</p>
+<code class="language-rust"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">const</span> Opcode <span class="op">=</span> <span class="kw">enum</span>(<span class="dt">u8</span>) <span class="op">{</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>    push<span class="op">,</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>    add<span class="op">,</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>    eq<span class="op">,</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>    jump_nz<span class="op">,</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>    jump<span class="op">,</span></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>    load_var<span class="op">,</span></span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>    store_var<span class="op">,</span></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div></code></pre>
+<p>The <code>enum(u8)</code> orders Zig to use a byte-wide unsigned integer to represent
+the instructions.
+This allows us to cast a <code>u8</code> to an <code>Opcode</code> and vice-versa.</p>
+<p>Next, a small helper to spare you the pain of writing <code>@intFromEnum</code> to convert an op-code to a number:</p>
+<code class="language-rust"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="co">/// Shorthand to convert a u8 to an Opcode</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> inline <span class="kw">fn</span> Op(num<span class="op">:</span> <span class="dt">u8</span>) Opcode <span class="op">{</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">@</span>enumFromInt(num)<span class="op">;</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></code></pre>
+<p>Let&#39;s imagine how one might call an interpreter to execute some code,
+and bang out a main function:</p>
+<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>pub fn main() void {</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>    const program = [_]Opcode{</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>       .push, Op(2),</span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>       .push, Op(3),</span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>       .add,</span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>       .print</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>    };</span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>    const vm = Interpreter.init(program);</span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>    vm.run();</span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
+<p>Notice how when referencing the instructions, we prefix them with a dot.
+Zig enum types are inferred based on usage,
+so the compiler will interpret <code>.push</code> as <code>Opcode.push</code>.</p>
+<p>Finally, the skeleton for the interpreter:</p>
+<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>const Interpreter = struct {</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>    const Self = @This();</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>    stack: [32000]i64 = undefined,</span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>    program: []Opcode,</span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>    /// Index of next free stack slot.</span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>    stack_pos: usize = 0,</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>    /// Index of the next instruction to execute.</span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>    instr_pos: usize = 0,</span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>    pub fn init(program: []Opcode) Self {</span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>       return Self{ .program = program }; </span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a>    pub fn run() void {</span>
+<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a>        std.debug.panic(&quot;Not implemented!&quot;, .{});</span>
+<span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="17"><a href="#17" aria-hidden="true" tabindex="-1"></a>};</span></code></pre></div></code></pre>
+<p>If you plop this into your <code>main.zig</code> file and hit <code>zig build run</code>, you should see an
+error message that says &quot;Not Implemented!&quot; somewhere in it.</p>
+<p><code>@This</code> is a builtin function that returns the nearest surrounding type –
+<code>Interpreter</code> in this case.
+Within the struct&#39;s scope, <code>Self</code> and <code>Interpreter</code> are the same thing.
+We don&#39;t necessarily need this alias, but it&#39;s a common convention and saves us a few keystrokes.</p>
+<p>Remember, Zig does not make a semantic distinction between types and values, so we
+can assign a type to a variable, and then use it in type annotations.
+It is no different from assigning the struct type definition to the <code>Interpreter</code> variable.</p>
+<p>Before we flesh out the <code>run</code> function, we&#39;ll need a few more helpers:</p>
+<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>// Inside `Interpreter`:</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>pub inline fn push(self: *Self, value: i64) void {</span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>    self.stack[self.stack_ptr] = value;</span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>    self.stack_ptr -= 1;</span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>pub inline fn pop(self: *Self) i64 {</span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>    self.stack_ptr -= 1;</span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>    const value = self.stack[self.stack_ptr];</span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>    return value;</span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a>/// Read one byte from the instructions array and cast to u8</span>
+<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a>pub inline fn operand(self: *Self) u8 {</span>
+<span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a>    const op = self.instructions[self.instr_ptr];</span>
+<span id="17"><a href="#17" aria-hidden="true" tabindex="-1"></a>    self.instr_ptr += 1;</span>
+<span id="18"><a href="#18" aria-hidden="true" tabindex="-1"></a>    return @intFromEnum(op);</span>
+<span id="19"><a href="#19" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
+<p>With these, we can implement a basic interpreter loop:</p>
+<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>pub fn run(self: *Self) void {</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>    while (self.instr_pos &lt; self.program.len) {</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>        const op = self.program[self.instr_ps];</span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>        self.instr_pos += 1;</span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>        switch (op) {</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>            .print =&gt; std.debug.print(&quot;{d}\n&quot;, .{self.pop()}),</span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>            .add  =&gt; self.push(self.pop() + self.pop()),</span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>            .push =&gt; self.push(self.operand()),</span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>            else =&gt; std.debug.panic(&quot;not implemented!&quot;, .{});</span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>        } </span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
+<p>After these changes, you should see <code>5</code> in your terminal upon running the code.</p>
+<h3 id="setting-up">Setting up</h3>
+<section class="footnotes">
+<div class="footnote" id="fn-1">
+<div class="footnote-number">
+<a href="#fnref-1">1</a>
+</div>
+<div class="footnote-contents">
+<p>Technically, PHP, Perl, and Lua without the JIT are still mainstream.</p>
+</div>
+</div>
+</section>
+
+
+			<script src="https://giscus.app/client.js" data-repo="srijan-paul/srijan-paul.github.io" data-repo-id="MDEwOlJlcG9zaXRvcnkzMTY0MTg0NTk=" data-category="Announcements" data-category-id="DIC_kwDOEtwpm84Cdokt" data-mapping="title" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" defer>
+			</script>
+		</div>
+  </body>
+</html>
