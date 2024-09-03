@@ -19,7 +19,7 @@ If you fancy a longer introduction, try the [about](/about) page.
     </a>
     <a
       class="button"
-      href="https://drive.google.com/file/d/1IldqwSE6BwVvcMj2DOscFnrrE7ftZ-86/view?usp=sharing"
+      href="/resume.pdf"
       target="_blank" >
         <i class="lni lni-empty-file"></i>
         <span>Resume</span>
