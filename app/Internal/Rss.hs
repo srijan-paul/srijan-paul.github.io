@@ -51,7 +51,7 @@ postToRssItem post =
     link :: URI
     link =
       nullURI
-        { uriScheme = "https",
+        { uriScheme = "https:",
           uriAuthority = Just (nullURIAuth {uriRegName = "injuly.in", uriPort = ":443"}),
           uriPath = "/blog" ++ '/' : relPath
         }
@@ -71,7 +71,7 @@ makeFeed =
   RSS.RSS
     ""
     ( nullURI
-        { uriScheme = "https",
+        { uriScheme = "https:",
           uriAuthority = Just (nullURIAuth {uriRegName = "injuly.in", uriPort = ":443"}),
           uriPath = "/blog"
         }
