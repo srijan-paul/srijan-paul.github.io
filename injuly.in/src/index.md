@@ -24,6 +24,10 @@ If you fancy a longer introduction, try the [about](/about) page.
         <i class="lni lni-empty-file"></i>
         <span>Resume</span>
     </a>
+    <a class="button" href="/rss.xml" target="_blank">
+        <i class="lni lni-rss-feed"></i>
+        <span>RSS Feed</span>
+    </a>
     <a class="button" href="https://twitter.com/ptrCast" target="_blank">
         <i class="lni lni-twitter"></i>
         <span>Twitter</span>
