@@ -13,7 +13,9 @@ I'm almost always working on something, and maintain [a monthly log](/now).
 If you fancy a longer introduction, try the [about](/about) page.
 
 <p class="buttons">
-    <a class="button" href="https://github.com/srijan-paul" target="_blank">
+    <a class="button button-github" 
+       href="https://github.com/srijan-paul" 
+       target="_blank">
         <i class="lni lni-github"></i>
         <span>Code</span>
     </a>
@@ -24,11 +26,13 @@ If you fancy a longer introduction, try the [about](/about) page.
         <i class="lni lni-empty-file"></i>
         <span>Resume</span>
     </a>
-    <a class="button" href="/rss.xml" target="_blank">
+    <a class="button button-rss" href="/rss.xml" target="_blank">
         <i class="lni lni-rss-feed"></i>
         <span>RSS Feed</span>
     </a>
-    <a class="button" href="https://twitter.com/ptrCast" target="_blank">
+    <a class="button button-twitter" 
+       href="https://twitter.com/ptrCast"
+       target="_blank">
         <i class="lni lni-twitter"></i>
         <span>Twitter</span>
     </a>

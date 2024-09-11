@@ -363,6 +363,13 @@ sup>a {
 
 /* Buttons */
 
+/* container for buttons */
+.buttons {
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
 a.button {
 	text-decoration: none;
 
@@ -399,10 +406,5 @@ a.button:active {
 	border-bottom-width: var(--btn-bezel-pressed);
 	border-left-width: var(--btn-bezel-pressed);
 	transform: translateY(var(--btn-bezel));
-}
-
-.buttons {
-	display: flex;
-	gap: 10px;
 }
 
