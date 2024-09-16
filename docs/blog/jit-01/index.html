@@ -6,8 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
     <meta name="description" content="Write a JIT compiler from first principles in Zig."></meta>
-    <meta property="og:title" content="JIT Compiler from scratch – 1/3"></meta>
-    <meta property="twitter:title" content="JIT Compiler from scratch – 1/3"></meta>
+    <meta property="og:title" content="JIT Compiler from scratch – 1/2"></meta>
+    <meta property="twitter:title" content="JIT Compiler from scratch – 1/2"></meta>
     <meta property="twitter:description" content="Write a JIT compiler from first principles in Zig."></meta>
 
      
@@ -28,7 +28,7 @@
     <script data-goatcounter="https://injuly.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 
 
-    <title>JIT Compiler from scratch – 1/3</title>
+    <title>JIT Compiler from scratch – 1/2</title>
   </head>
 
   <body>
@@ -36,14 +36,15 @@
       <div class="nav-container">
         <nav>
           <a href="/" class="nav-link">index</a>
-          <a href="/about" class="nav-link">about</a>
-          <a href="/blog" class="nav-link active-nav-link">blog</a>
-          <a href="/now" class="nav-link">now</a>
+          <a href="/about/" class="nav-link">about</a>
+          <a href="/blog/" class="nav-link active-nav-link">blog</a>
+          <a href="/work/" class="nav-link">work</a>
+          <a href="/now/" class="nav-link">now</a>
         </nav>
       </div>
 
       <div class="leader">
-        <h1> JIT Compiler from scratch – 1/3 </h1>
+        <h1> JIT Compiler from scratch – 1/2 </h1>
 				<div class="post-date"> Aug 16 </div>
         <div class="tags" id="tags">
             <a class="tag" href="/tags/compilers.html">compilers</a>
@@ -71,62 +72,35 @@ But you don&#39;t want your interpreter on the internet&#39;s cemetery, do you?<
 with zero dependencies.
 No LLVM.</p>
 <h1 id="a-bytecode-machine">A Bytecode Machine</h1>
-<h2 id="slackjaw">SlackJaw</h2>
+<h2 id="the-instruction-set">The Instruction set</h2>
 <p>For the rest of this guide, we will be optimizing a friendly stack based
-assembly-like language called SlackJaw.</p>
+assembly-like language.</p>
 <p>To focus on implementing a JIT from first principles, I&#39;ve kept the language simple.
 This will help speed past the parser and bytecode VM implementation.
-I should caution you though, do not be fooled by the small instruction set!
+I should caution you though, do not be fooled by the small instruction set;
 It is capable of non-trivial programs, and can be extended with higher level
 syntax for statements, loops, and functions if you so desire.</p>
-<p>As we draw closer to the final chapter, we&#39;ll see how features like I/O
-and native functions can be implemented to further the horizon for our toy language.
-By the end, you&#39;ll have enough knowledge to write a JIT for a sufficiently complex language.</p>
 <p>And let&#39;s be honest, you&#39;ve probably already read <a href="https://craftinginterpreters.com/">crafting interpreters</a>
 (or something similar) if you&#39;re learning about JITs.</p>
-<p>Here&#39;s a slackjaw program that sums all natural numbers less than one million:</p>
-<code class="language-asm"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="bu">push</span> x <span class="dv">0</span></span>
-<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="bu">push</span> i <span class="dv">0</span></span>
-<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a><span class="fu">loop:</span></span>
-<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>  <span class="bu">push</span> <span class="op">(</span>i <span class="op">&lt;</span> <span class="dv">10000000</span><span class="op">)</span></span>
-<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>  cjmp loop_end</span>
-<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>  <span class="bu">push</span> <span class="op">(</span>x <span class="op">+</span> i<span class="op">)</span></span>
-<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>  <span class="bu">set</span>  x</span>
-<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>  <span class="bu">add</span> <span class="op">(</span>i <span class="op">+</span> <span class="dv">1</span><span class="op">)</span></span>
-<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a>  <span class="bu">set</span>  i</span>
-<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a>  jump loop</span>
-<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a><span class="fu">loop_end:</span></span>
-<span id="17"><a href="#17" aria-hidden="true" tabindex="-1"></a>  print</span></code></pre></div></code></pre>
-<p>If you&#39;ve seen assembly code out in the wild,
-you may find the syntax vaguely familiar.</p>
-<p>As we learned earlier, SlackJaw is a <em>stack-machine</em> –
-the instructions in this program manipulate the stack to crunch numbers.</p>
-<p>Lets go through the above program with a fine-toothed comb.</p>
-<p>In the first two lines, we push two zeros onto the stack, and &quot;remember&quot; the slots
-they&#39;re stored in as <code>x</code> and <code>i</code>.</p>
-<code class="language-asm"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="bu">push</span> x <span class="dv">0</span> <span class="co">; x = 0</span></span>
-<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="bu">push</span> i <span class="dv">0</span> <span class="co">; i = 0</span></span></code></pre></div></code></pre>
-<p>This is the equivalent of a variable declaration in, say, Python.</p>
-<p>In what follows, we have a &quot;label&quot; – a named block of code in a program:</p>
-<code class="language-asm"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="fu">loop:</span>  <span class="co">; while (i &lt;= 10000000) {</span></span>
-<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">push</span> <span class="op">(</span>i <span class="op">&gt;</span> <span class="dv">10000000</span><span class="op">)</span></span>
-<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>    cjmp loop_end</span></code></pre></div></code></pre>
-<p>We will use the label name <code>loop</code> later when we want to jump back to the third line.
-<code>push (i &gt; 10000000)</code> will push <code>1</code> onto the stack if the condition is true, and <code>0</code> otherwise.</p>
-<p>The <code>cjmp</code> instruction will pop a value off the stack,
-and jump the program to the specified label if the popped is non-zero.</p>
-<p>By now, you should be able to make sense of the entailing lines.
-<code>set</code> modifies the value in a named stack slot—in this case, <code>x</code> and <code>i</code>—
-and <code>jump</code> unconditionally jumps the program to a labelled block.</p>
-<p>I will introduce a few more instructions as we advance, and you can always
-add more to suit your needs.</p>
-<h2 id="the-slackvm">The SlackVM</h2>
-<p>Unlike regular assembly programs, Slackjaw code cannot natively run on a CPU
+<p>We&#39;ll be writing a stack-based VM. Here&#39;s the instruction set:</p>
+<ul>
+<li><code>push &lt;value&gt;</code>: Pushes a value onto the stack.
+</li>
+<li><code>add</code>: Pops two values, pushes their sum.
+</li>
+<li><code>eq</code>: Pops two values, pushes 1 if they are equal, 0 otherwise.
+</li>
+<li><code>jump &lt;block-id&gt;</code>: jumps to the beginning of a block labeled with the ID.
+</li>
+<li><code>jump_nz &lt;block-id&gt;</code>: pops a value, jumps to the block if it is is non-zero.
+</li>
+<li><code>load_var &lt;var-id&gt;</code>: copies the value at stack index <code>var-id</code> back to the top of stack.
+</li>
+<li><code>store_var &lt;var-id&gt;</code>: pops a value and stores it at stack index <code>var-id</code>.
+</li>
+</ul>
+<h2 id="the-virtual-machine">The Virtual Machine</h2>
+<p>Unlike regular assembly programs, our bytecode cannot natively run on a CPU
 that understands x86, x64, or ARM instructions.
 So we write a &quot;virtual&quot; machine to execute our custom instruction set.</p>
 <p>First, an enum to represent every instruction in the VM:</p>
@@ -143,89 +117,110 @@ So we write a &quot;virtual&quot; machine to execute our custom instruction set.
 the instructions.
 This allows us to cast a <code>u8</code> to an <code>Opcode</code> and vice-versa.</p>
 <p>Next, a small helper to spare you the pain of writing <code>@intFromEnum</code> to convert an op-code to a number:</p>
-<code class="language-rust"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="co">/// Shorthand to convert a u8 to an Opcode</span></span>
-<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> inline <span class="kw">fn</span> Op(num<span class="op">:</span> <span class="dt">u8</span>) Opcode <span class="op">{</span></span>
-<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">@</span>enumFromInt(num)<span class="op">;</span></span>
-<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></code></pre>
+<code class="language-rs"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">/// Shorthand to convert an Opcode to a number</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> inline <span class="kw">fn</span> Op(num<span class="op">:</span> Opcode) <span class="dt">u8</span> <span class="op">{</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">@</span>intFromEnum(num)<span class="op">;</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></code></pre>
 <p>Let&#39;s imagine how one might call an interpreter to execute some code,
 and bang out a main function:</p>
-<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>pub fn main() void {</span>
-<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>    const program = [_]Opcode{</span>
-<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>       .push, Op(2),</span>
-<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>       .push, Op(3),</span>
-<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>       .add,</span>
-<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>       .print</span>
-<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>    };</span>
-<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>    const vm = Interpreter.init(program);</span>
-<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>    vm.run();</span>
-<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
+<code class="language-rs"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> std <span class="op">=</span> <span class="op">@</span>import(<span class="st">&quot;std&quot;</span>)<span class="op">;</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">fn</span> main() void <span class="op">{</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>    <span class="co">// constant values used in the program</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> constants <span class="op">=</span> [_]<span class="dt">i64</span><span class="op">{</span><span class="dv">10</span><span class="op">,</span> <span class="dv">20</span><span class="op">};</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> code <span class="op">=</span> [_]<span class="dt">u8</span><span class="op">{</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>       Op(<span class="op">.</span>push)<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="co">// push 10</span></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>       Op(<span class="op">.</span>push)<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="co">// push 20</span></span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>       Op(<span class="op">.</span>add)<span class="op">,</span>     <span class="co">// push(pop() + pop()) ;=30</span></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>    <span class="op">};</span></span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> program <span class="op">=</span> [_]CodeBlock<span class="op">{</span></span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a>        <span class="op">.{</span></span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span>instructions <span class="op">=</span> code<span class="op">,</span></span>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span>constants    <span class="op">=</span> constants<span class="op">,</span></span>
+<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a>    <span class="op">};</span></span>
+<span id="17"><a href="#17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="18"><a href="#18" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> vm <span class="op">=</span> Interpreter<span class="op">.</span>init(program)<span class="op">;</span></span>
+<span id="19"><a href="#19" aria-hidden="true" tabindex="-1"></a>    vm<span class="op">.</span>run()<span class="op">;</span></span>
+<span id="20"><a href="#20" aria-hidden="true" tabindex="-1"></a>    std<span class="op">.</span>debug<span class="op">.</span>print(<span class="st">&quot;{d}</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> <span class="op">.{</span>vm<span class="op">.</span>stack[vm<span class="op">.</span>stack_pos]<span class="op">}</span>)<span class="op">;</span></span>
+<span id="21"><a href="#21" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></code></pre>
+<p>A program in our virtual machine is represented as a list of blocks.
+This way, jump instructions can reference blocks using their index in the program array.
+We store the constants separately, and instructions refer to them using their index (
+<code>push 0</code> will push <code>constants[0]</code> onto the stack).
+This is because our instructions are 64-bit, but an operand can only store 8 bits of data.</p>
 <p>Notice how when referencing the instructions, we prefix them with a dot.
 Zig enum types are inferred based on usage,
 so the compiler will interpret <code>.push</code> as <code>Opcode.push</code>.</p>
 <p>Finally, the skeleton for the interpreter:</p>
-<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>const Interpreter = struct {</span>
-<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>    const Self = @This();</span>
-<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>    stack: [32000]i64 = undefined,</span>
-<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>    program: []Opcode,</span>
-<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>    /// Index of next free stack slot.</span>
-<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>    stack_pos: usize = 0,</span>
-<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>    /// Index of the next instruction to execute.</span>
-<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>    instr_pos: usize = 0,</span>
-<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>    pub fn init(program: []Opcode) Self {</span>
-<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>       return Self{ .program = program }; </span>
-<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a>    pub fn run() void {</span>
-<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a>        std.debug.panic(&quot;Not implemented!&quot;, .{});</span>
-<span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="17"><a href="#17" aria-hidden="true" tabindex="-1"></a>};</span></code></pre></div></code></pre>
+<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>const CodeBlock = struct {</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>    instructions: []u8,</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>    constants:    []i64</span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>};</span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>const Interpreter = struct {</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>    const Self = @This();</span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>    stack: [32000]i64 = undefined,</span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>    program: []CodeBlock,</span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>    current_block: *CodeBlock = undefined,</span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>    /// Index of next free stack slot.</span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a>    stack_ptr: usize = 0,</span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a>    /// Index of the next instruction to execute.</span>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a>    instr_ptr: usize = 0,</span>
+<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a>    pub fn init(program: []CodeBlock) Self {</span>
+<span id="17"><a href="#17" aria-hidden="true" tabindex="-1"></a>       return Self{</span>
+<span id="18"><a href="#18" aria-hidden="true" tabindex="-1"></a>           .program = program, </span>
+<span id="19"><a href="#19" aria-hidden="true" tabindex="-1"></a>           .current_block = &amp;program[0],</span>
+<span id="20"><a href="#20" aria-hidden="true" tabindex="-1"></a>       }; </span>
+<span id="21"><a href="#21" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="22"><a href="#22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="23"><a href="#23" aria-hidden="true" tabindex="-1"></a>    pub fn run() void {</span>
+<span id="24"><a href="#24" aria-hidden="true" tabindex="-1"></a>        std.debug.panic(&quot;Not implemented!&quot;, .{});</span>
+<span id="25"><a href="#25" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="26"><a href="#26" aria-hidden="true" tabindex="-1"></a>};</span></code></pre></div></code></pre>
 <p>If you plop this into your <code>main.zig</code> file and hit <code>zig build run</code>, you should see an
 error message that says &quot;Not Implemented!&quot; somewhere in it.</p>
 <p><code>@This</code> is a builtin function that returns the nearest surrounding type –
 <code>Interpreter</code> in this case.
 Within the struct&#39;s scope, <code>Self</code> and <code>Interpreter</code> are the same thing.
 We don&#39;t necessarily need this alias, but it&#39;s a common convention and saves us a few keystrokes.</p>
-<p>Remember, Zig does not make a semantic distinction between types and values, so we
+<p>Zig does not make a semantic distinction between types and values, so we
 can assign a type to a variable, and then use it in type annotations.
 It is no different from assigning the struct type definition to the <code>Interpreter</code> variable.</p>
 <p>Before we flesh out the <code>run</code> function, we&#39;ll need a few more helpers:</p>
-<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>// Inside `Interpreter`:</span>
+<code class="language-rs"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">// Inside `Interpreter`:</span></span>
 <span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>pub inline fn push(self: *Self, value: i64) void {</span>
-<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>    self.stack[self.stack_ptr] = value;</span>
-<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>    self.stack_ptr -= 1;</span>
-<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> inline <span class="kw">fn</span> push(<span class="kw">self</span><span class="op">:</span> <span class="op">*</span><span class="dt">Self</span><span class="op">,</span> value<span class="op">:</span> <span class="dt">i64</span>) void <span class="op">{</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">self</span><span class="op">.</span>stack[<span class="kw">self</span><span class="op">.</span>stack_ptr] <span class="op">=</span> value<span class="op">;</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">self</span><span class="op">.</span>stack_ptr <span class="op">-=</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
 <span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>pub inline fn pop(self: *Self) i64 {</span>
-<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>    self.stack_ptr -= 1;</span>
-<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>    const value = self.stack[self.stack_ptr];</span>
-<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>    return value;</span>
-<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> inline <span class="kw">fn</span> pop(<span class="kw">self</span><span class="op">:</span> <span class="op">*</span><span class="dt">Self</span>) <span class="dt">i64</span> <span class="op">{</span></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">self</span><span class="op">.</span>stack_ptr <span class="op">-=</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> value <span class="op">=</span> <span class="kw">self</span><span class="op">.</span>stack[<span class="kw">self</span><span class="op">.</span>stack_ptr]<span class="op">;</span></span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> value<span class="op">;</span></span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
 <span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a>/// Read one byte from the instructions array and cast to u8</span>
-<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a>pub inline fn operand(self: *Self) u8 {</span>
-<span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a>    const op = self.instructions[self.instr_ptr];</span>
-<span id="17"><a href="#17" aria-hidden="true" tabindex="-1"></a>    self.instr_ptr += 1;</span>
-<span id="18"><a href="#18" aria-hidden="true" tabindex="-1"></a>    return @intFromEnum(op);</span>
-<span id="19"><a href="#19" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a><span class="co">/// Read one byte from the instructions array and cast to u8</span></span>
+<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> inline <span class="kw">fn</span> operand(<span class="kw">self</span><span class="op">:</span> <span class="op">*</span><span class="dt">Self</span>) <span class="dt">u8</span> <span class="op">{</span></span>
+<span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> op <span class="op">=</span> <span class="kw">self</span><span class="op">.</span>instructions[<span class="kw">self</span><span class="op">.</span>instr_ptr]<span class="op">;</span></span>
+<span id="17"><a href="#17" aria-hidden="true" tabindex="-1"></a>    <span class="kw">self</span><span class="op">.</span>instr_ptr <span class="op">+=</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="18"><a href="#18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">@</span>intFromEnum(op)<span class="op">;</span></span>
+<span id="19"><a href="#19" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></code></pre>
 <p>With these, we can implement a basic interpreter loop:</p>
-<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>pub fn run(self: *Self) void {</span>
-<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>    while (self.instr_pos &lt; self.program.len) {</span>
-<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>        const op = self.program[self.instr_ps];</span>
-<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>        self.instr_pos += 1;</span>
+<code class="language-rs"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">fn</span> run(<span class="kw">self</span><span class="op">:</span> <span class="op">*</span><span class="dt">Self</span>) void <span class="op">{</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> (<span class="kw">self</span><span class="op">.</span>instr_ptr <span class="op">&lt;</span> <span class="kw">self</span><span class="op">.</span>current_block<span class="op">.</span>instructions<span class="op">.</span>len) <span class="op">{</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>        <span class="kw">const</span> op <span class="op">=</span> <span class="kw">self</span><span class="op">.</span>current_block<span class="op">.</span>instructions[<span class="kw">self</span><span class="op">.</span>instr_ptr]<span class="op">;</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>        <span class="kw">self</span><span class="op">.</span>instr_ptr <span class="op">+=</span> <span class="dv">1</span><span class="op">;</span></span>
 <span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>        switch (op) {</span>
-<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>            .print =&gt; std.debug.print(&quot;{d}\n&quot;, .{self.pop()}),</span>
-<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>            .add  =&gt; self.push(self.pop() + self.pop()),</span>
-<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>            .push =&gt; self.push(self.operand()),</span>
-<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>            else =&gt; std.debug.panic(&quot;not implemented!&quot;, .{});</span>
-<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>        } </span>
-<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
-<p>After these changes, you should see <code>5</code> in your terminal upon running the code.</p>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>        switch (op) <span class="op">{</span></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span>add  <span class="op">=&gt;</span> <span class="kw">self</span><span class="op">.</span>push(<span class="kw">self</span><span class="op">.</span>pop() <span class="op">+</span> <span class="kw">self</span><span class="op">.</span>pop())<span class="op">,</span></span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span>push <span class="op">=&gt;</span> <span class="kw">self</span><span class="op">.</span>push(<span class="kw">self</span><span class="op">.</span>operand())<span class="op">,</span></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span> <span class="op">=&gt;</span>  <span class="op">@</span>panic(<span class="st">&quot;Not implemented&quot;</span>)<span class="op">,</span></span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span> </span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></code></pre>
 <h3 id="setting-up">Setting up</h3>
 <section class="footnotes">
 <div class="footnote" id="fn-1">

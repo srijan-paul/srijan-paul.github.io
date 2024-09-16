@@ -1,0 +1,42 @@
+.workplaceHeader {
+	display: flex;
+	gap: 20px;
+	margin-top: 40px;
+}
+
+.workplaceHeader-left {
+	display: grid;
+	place-items: center;
+}
+
+.workplaceHeader-logo {
+	padding: 15px;
+	border-radius: 8px;
+	background-color: var(--slate-50);
+	bordeR: 1px solid var(--slate-200);
+	/*box-shadow: 0px 1px 6px 2px rgba(0,0,0,0.1);*/
+	box-shadow: 0 1px 3px 0 rgb(0 0 150 / 0.05);
+}
+
+.workplaceHeader-logo>img {
+	width: 42px;
+	height: 42px;
+}
+
+.workplaceHeader h2 {
+	font-size: 22px;
+	margin: 0px;
+	color: var(--sky-900);
+}
+
+.workplaceHeader-duration {
+	font-size: calc(var(--font-size) - 1px);
+	color: var(--slate-500);
+	margin: 0;
+}
+
+.workplaceHeader-designation {
+	font-size: calc(var(--font-size) - 1px);
+	color: var(--sky-800);
+	margin: 0;
+}

@@ -4,22 +4,39 @@ template: about
 
 ## Me 
 
+
+<blockquote class="small">
+  <em>
+     To see what I'm up to right now,
+     check the <a href="/now">now page</a>.
+  </em>
+</blockquote>
+
 A CS and math enthusiast put up in Bangalore, India. <br>
 I'm a programmer by trade, and work at [DeepSource](https://deepsource.com) – a code health monitoring platform.
 
 As of 2024, My interests lie in:
 
-- **Programming**: Compilers, computer networks, databases, FP.
+- **Programming**: Databases, compilers, computer networks, FP.
 - **Reading**: High fantasy, golden age Japanese mystery, sci-fi.
 - **Math**: Category theory, linear algebra.
-- **Technology**: Retro console architecture (NES, Game Boy, PlayStation), game development.
+- **Technology**: Retro console architecture (NES, GBA, PS1/2), gamedev.
 - **Miscellaneous**: Pixel art, typography.
 
 I don't actively play as many video games anymore,
 but have grown up playing Warcraft 3, DotA 2, and Nuclear Throne – in that order.
+These days, I mostly play Mario Kart with friends, the newer Zelda games (ToTK/BotW),
+and [Golden Sun](https://en.wikipedia.org/wiki/Golden_Sun_(video_game)) on the Game Boy Advanced.
 
-To see what I'm up to *right now*, check the [now page](/now). <br>
-To start a conversation, just [hit me up](#contact).
+To play retro games, I use SBC consoles like this one:
+
+<img 
+  src="/assets/img/about/anbernic-rg35xxh.jpeg"
+  alt="The Anbernic RG35XHH – my handheld emulator console"
+  class="image"
+  width="500px"
+/>
+
 
 ## This site
 

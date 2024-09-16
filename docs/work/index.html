@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	
+	<link rel="preconnect" href="https://rsms.me/">
+	<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+
+	<link rel="stylesheet" href="/assets/css/common.css">
+	<link rel="stylesheet" href="/assets/css/post.css">
+	<link rel="stylesheet" href="/assets/css/work.css">
+	<title>injuly / work</title>
+   <script data-goatcounter="https://injuly.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</head>
+
+<body>
+	<div class="main">
+		<div class="nav-container">
+			<nav>
+				<a href="/" class="nav-link">index</a>
+				<a href="/about/" class="nav-link">about</a>
+				<a href="/blog/" class="nav-link">blog</a>
+        <a href="/work/" class="nav-link active-nav-link">work</a>
+				<a href="/now/" class="nav-link">now</a>
+			</nav>
+		</div>
+		<h1 id="work">Work</h1>
+<p>This is a publicly available record of my work that goes beyond
+<a href="/resume.pdf">my resume</a>,
+with some personal commentary and highlights.
+Most of my career has been spent working on <strong>compilers</strong> and
+<strong>web servers</strong>; but I&#39;ve have also made a good number of production UIs.</p>
+<p>Day jobs notwithstanding, I&#39;ve studied and built numerous things on the side
+—systems programming, copious amounts of Zig and Haskell, game-development, blah blah—
+but those records are tucked away in <a href="/blog">my blog</a>.</p>
+<p>This page only includes projects and tools that I&#39;ve worked
+on <em>professionally</em>.
+i.e, no FOSS work and personal projects.
+Those can be found on my GitHub, and elsewhere on this site.</p>
+<div class="workplaceHeader">
+  <div class="workplaceHeader-left">
+    <div class="workplaceHeader-logo">
+      <img src="/assets/work/deepsource-logo.svg" alt="DeepSource logo"></img>
+    </div>
+  </div>
+  <div class="workplaceHeader-right">
+    <h2>DeepSource</h2>
+    <div class="workplaceHeader-designation">
+      Software Engineer I -&gt; II
+    </div>
+    <em class="workplaceHeader-duration">
+      October 2021 – Present
+    </em>
+  </div>
+</div>
+<p><em><strong>Tools</strong>: Golang (for compiler tooling), TypeScript, PureScript, SolidJS, Bun, SQLite, gRPC.</em></p>
+<p>A YC backed code health monitoring platform.
+During my time here, I&#39;ve worked across the board on several projects
+and used numerous tools.
+It&#39;s hard to summarize all the work in a few bullet points.
+Even still, here&#39;s what I consider to be my most impactful work:</p>
+<ul>
+<li><a href="https://app.deepsource.com/directory/analyzers/javascript">JavaScript Static Analyzer</a>: Fast and efficient static analysis built from the ground up.
+The analyzer is much more capable than existing linters like ESLint,
+and supports React, VueJS, Angular, Node, TypeScript, and JSX out of the box with zero configuration.
+</li>
+<li><strong>Security coverage</strong>: Implemented a data-flow analysis engine to perform taint analysis on JavaScript projects.
+A basic architecture is <a href="https://deepsource.com/blog/scanning-javascript-code-for-security-vulnerabilities">described on the blog</a>.
+</li>
+<li><a href="https://deepsource.com/platform/ide">IDE integration</a>: Built and maintained the plugin, along with its relevant services.
+</li>
+<li>Wrote web-services for collecting metrics, tracing, and connecting user&#39;s machines to our cloud.
+</li>
+<li>Built <a href="https://deepsource.com/ai">AI AutoFix</a>: A tree-sitter based product that can generate fixes for issues reported by DeepSource.
+</li>
+<li><strong>Software Component Analysis</strong>: Built a language agnostic framework that finds vulnerable dependencies,
+and performs reachability analysis to only report the ones that actually
+affect the user&#39;s codebase.
+</li>
+</ul>
+<div class="workplaceHeader">
+  <div class="workplaceHeader-left">
+    <div class="workplaceHeader-logo">
+      <img src="/assets/work/tezos-logo.svg" alt="Tezos logo"></img>
+    </div>
+  </div>
+  <div class="workplaceHeader-right">
+    <h2>Tezos</h2>
+    <div class="workplaceHeader-designation">
+      Student Developer (Tezos Fellowship) 
+    </div>
+    <em class="workplaceHeader-duration">
+      August 2021 – October 2021 
+    </em>
+  </div>
+</div>
+<p><em><strong>Tools</strong>: Haskell, SmartPy, TypeScript, React, NodeJS, Express, RabbitMQ.</em></p>
+<p>Tezos is a well-known blockchain network.
+I&#39;m not particularly psyched about blockchain/crypto-currency, though.
+In fact, my work here was more grounded in algorithms, programming
+language runtimes, and web services.</p>
+<ul>
+<li>Using Haskell, I prototyped a formal verification tool for <a href="https://www.michelson.org/">Michelson</a> –
+the bytecode format for Tezos.
+</li>
+<li>Implemented a genetic algorithm to breed and procedurally generate
+digital pets with their custom avatars and varying attributes.
+</li>
+<li>Worked on a React based web client to interact with NFTs generated using
+the aforementioned genetic algorithm.
+</li>
+</ul>
+<div class="workplaceHeader">
+  <div class="workplaceHeader-left">
+    <div class="workplaceHeader-logo">
+      <img src="/assets/work/lablua-logo.png" alt="LabLua logo"></img>
+    </div>
+  </div>
+  <div class="workplaceHeader-right">
+    <h2>Google Summer of Code</h2>
+    <div class="workplaceHeader-designation">
+      Student Developer @ LabLua
+    </div>
+    <em class="workplaceHeader-duration">
+      May 2021 – August 2021 
+    </em>
+  </div>
+</div>
+<p><em><strong>Tools</strong>: C, Lua, and Python (for benchmark and codegen scripts, etc).</em></p>
+<p>A Brazilian research lab that works on the Lua
+programming language and its ecosystem.
+This was my first time working on a production compiler,
+and I&#39;m still grateful to have had th</p>
+<ul>
+<li>Implemented Higher Order Functions in the Pallene compiler.
+</li>
+<li>Implemented Closures and lexical capturing.
+</li>
+<li>Worked on some IR-level compiler optimizatons.
+</li>
+<li>Improved error messages and diagnostics.
+</li>
+</ul>
+
+	</div>
+</body>
+
+</html>
