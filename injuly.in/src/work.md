@@ -123,10 +123,11 @@ the bytecode format for Tezos.
 A Brazilian research lab that works on the Lua
 programming language and its ecosystem.
 This was my first time working on a production compiler,
-and I'm still grateful to have had th 
+and I'm still happy that I was able to get my foot out the door
+by working on the [Pallene compiler](https://github.com/pallene-lang/pallene).
 
-- Implemented Higher Order Functions in the Pallene compiler.
-- Implemented Closures and lexical capturing.
-- Worked on some IR-level compiler optimizatons.
+- Implemented Higher Order Functions in the Pallene compiler using lambda lifting.
+- Added Closures and lexical capturing to the runtime.
+- Implemented on IR-level compiler optimizatons.
 - Improved error messages and diagnostics.
 
