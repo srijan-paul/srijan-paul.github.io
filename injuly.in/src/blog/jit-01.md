@@ -5,45 +5,40 @@ tags:
   - compilers 
   - zig
   - programming-languages
-date: 2024-08-16
-title: JIT Compiler from scratch – 1/2
+date: 2024-09-18
+title: JIT compiler from scratch – 1/3
 meta: Write a JIT compiler from first principles in Zig. 
 ---
 
-Have you perhaps written a programming language interpreter, or a bytecode VM?
-Me too.
+In one of my discord livestreams, I did this little challenge
+where I write a JIT compiler from scratch using only four tools at
+my disposal: The Zig compiler, the ARM reference manual, `objdump`,
+and the `man` pages.
+The code is now available [on my GitHub](https://github.com/srijan-paul/tinyjit).
 
-So then, tried to squeeze more performance out of it by 
-adding computed-gotos, pointer tagging, a peephole optimizer,
-or instruction re-ordering?
-Yeah... me neither.
-Vanilla bytecode VMs are okay for many workloads – 
-databases still use them.
+Last month, I also gave [a talk](/jit-basics) on the fundamentals of JIT compilation,
+using the repo as a reference implementation.
+Neither of these sessions we're recorded,
+so for completeness sake, I'm writing this three piece guide to explain
+how JIT compilers work without any fancy optimizations or live profiling.
 
-But it doesn't hurt to get on with the times, right?
-Even Python—the language that stores *integers on the heap*(!)—is getting
-a JIT compiler.
-Think about it, what mainstream interpreted language *doesn't* have a JIT today?[^1]
+In three small steps, we'll write a working JIT compiler:
 
-Bytecode-only VMs will soon be a thing of past, and download links to them will re-direct to
-the wayback machine.
-But you don't want your interpreter on the internet's cemetery, do you?
+1. Describe the language, then write a bytecode VM for it.
+2. Experiment with ARM assembly instructions and the `mmap` syscall.
+3. Add a JIT compiler and measure performance.
 
-Thought so. Well, I have you covered.
+For every step of the process, I'll leave a link to the code at that stage.
+I'll be using Zig, but you could use any language you like to follow along.
 
-We'll learn the ins-and-outs of a JIT compiler by implementing one from scratch
-with zero dependencies.
-No LLVM.
+# A Bytecode interpreter
 
-# A Bytecode Machine
+This is the easiest part of the process,
+yet the one I'll expend the most words on.
+No matter how simple, understanding the interpreter's model
+thoroughly will allow us to focus on implementing the JIT compiler.
 
-## The Instruction set
-
-For the rest of this guide, we will be optimizing a friendly stack based
-assembly-like language.
-
-To focus on implementing a JIT from first principles, I've kept the language simple.
-This will help speed past the parser and bytecode VM implementation.
+For similar reasons, I've kept the language simple.
 I should caution you though, do not be fooled by the small instruction set;
 It is capable of non-trivial programs, and can be extended with higher level
 syntax for statements, loops, and functions if you so desire.
@@ -51,7 +46,11 @@ syntax for statements, loops, and functions if you so desire.
 And let's be honest, you've probably already read [crafting interpreters](https://craftinginterpreters.com/)
 (or something similar) if you're learning about JITs.
 
-We'll be writing a stack-based VM. Here's the instruction set:
+## The Instruction set
+
+For the rest of this guide, we will be optimizing a stack based
+assembly-like language.
+Here's the instruction set:
 
 - `push <value>`: Pushes a value onto the stack.
 - `add`: Pops two values, pushes their sum.
@@ -89,7 +88,7 @@ This allows us to cast a `u8` to an `Opcode` and vice-versa.
 Next, a small helper to spare you the pain of writing `@intFromEnum` to convert an op-code to a number:
 
 ```rs
-/// Shorthand to convert an Opcode to a number
+/// Shorthand to convert an Opcode to a `u8`.
 pub inline fn Op(num: Opcode) u8 {
     return @intFromEnum(num);
 }
@@ -124,16 +123,17 @@ pub fn main() void {
 
 A program in our virtual machine is represented as a list of blocks.
 This way, jump instructions can reference blocks using their index in the program array.
-We store the constants separately, and instructions refer to them using their index (
-`push 0` will push `constants[0]` onto the stack).
-This is because our instructions are 64-bit, but an operand can only store 8 bits of data.
+We store the constants separately, and instructions refer to them using their index
+(`push 0` will push `constants[0]` onto the stack).
+This is because our instructions are 64-bit integers,
+but an operand can only store 8 bits of data.
 
 Notice how when referencing the instructions, we prefix them with a dot.
 Zig enum types are inferred based on usage,
 so the compiler will interpret `.push` as `Opcode.push`.
 
 
-Finally, the skeleton for the interpreter:
+Finally, a skeleton for the interpreter:
 
 ```zig
 const CodeBlock = struct {
@@ -179,7 +179,7 @@ It is no different from assigning the struct type definition to the `Interpreter
 Before we flesh out the `run` function, we'll need a few more helpers:
 
 ```rs
-// Inside `Interpreter`:
+// main.zig -> struct Interpreter
 
 pub inline fn push(self: *Self, value: i64) void {
     self.stack[self.stack_ptr] = value;
@@ -216,8 +216,61 @@ pub fn run(self: *Self) void {
     }
 }
 ```
+If you run the program again with `zig build run`,
+you should see `30` printed to the console.
 
+The `eq`, `load_var`, and `store_var` instructions are just as trivial to implement:
 
-### Setting up
+```rs
+// main.zig -> struct Interpreter -> fn run
+switch (op) {
+     // .add, .push -> implemented above
+    .eq => self.push(if self.pop() == self.pop() 1 else 0),
+    .load_var => {
+        const stack_index = self.operand();
+        self.push(self.stakc[stack_index]);
+    },
+    .store_var => {
+        const stack_index = self.operand();
+        self.stack[stack_index] = self.pop();
+    },
+    else => @panic("Not implemented"),
+}
+```
+
+The jump instructions are only slightly more complex.
+Since we have two jump instructions, we'll use a helper function:
+
+```rs
+// main.zig -> struct Interpreter
+fn jump(self: *Interpreter) void {
+    var block_index = self.operand();
+    self.current_block = self.program[block_index];
+    // start from the first instruction in the new block
+    self.instr_ptr = 0;
+}
+```
+
+With that, the interpreter loop is complete:
+
+```rs
+// main.zig -> struct Interpreter -> fn run
+
+// while (..) {
+// switch (..) {
+.jump => try self.jump(),
+.jump_nz => {
+    if (self.pop() != 0) {
+        try self.jump();
+    } else {
+        // skip the block index operand
+        _ = self.operand(); 
+    }
+},
+```
+
+You can now run a slightly more compelx program,
+such as [this one](https://github.com/srijan-paul/tinyjit/blob/1dabf1cb9bec88edcd7054bca5fe2c99294fa435/src/main.zig#L26-L67)
+that computes the sum of the first million natural numbers.
 
 [^1]: Technically, PHP, Perl, and Lua without the JIT are still mainstream.

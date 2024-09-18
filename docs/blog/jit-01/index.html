@@ -6,8 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
     <meta name="description" content="Write a JIT compiler from first principles in Zig."></meta>
-    <meta property="og:title" content="JIT Compiler from scratch – 1/2"></meta>
-    <meta property="twitter:title" content="JIT Compiler from scratch – 1/2"></meta>
+    <meta property="og:title" content="JIT compiler from scratch – 1/3"></meta>
+    <meta property="twitter:title" content="JIT compiler from scratch – 1/3"></meta>
     <meta property="twitter:description" content="Write a JIT compiler from first principles in Zig."></meta>
 
      
@@ -28,7 +28,7 @@
     <script data-goatcounter="https://injuly.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 
 
-    <title>JIT Compiler from scratch – 1/2</title>
+    <title>JIT compiler from scratch – 1/3</title>
   </head>
 
   <body>
@@ -44,45 +44,50 @@
       </div>
 
       <div class="leader">
-        <h1> JIT Compiler from scratch – 1/2 </h1>
-				<div class="post-date"> Aug 16 </div>
+        <h1> JIT compiler from scratch – 1/3 </h1>
+				<div class="post-date"> Sep 18 </div>
         <div class="tags" id="tags">
             <a class="tag" href="/tags/compilers.html">compilers</a>
             <a class="tag" href="/tags/zig.html">zig</a>
             <a class="tag" href="/tags/programming-languages.html">programming-languages</a>
         </div>
       </div>
-      <p>Have you perhaps written a programming language interpreter, or a bytecode VM?
-Me too.</p>
-<p>So then, tried to squeeze more performance out of it by
-adding computed-gotos, pointer tagging, a peephole optimizer,
-or instruction re-ordering?
-Yeah... me neither.
-Vanilla bytecode VMs are okay for many workloads –
-databases still use them.</p>
-<p>But it doesn&#39;t hurt to get on with the times, right?
-Even Python—the language that stores <em>integers on the heap</em>(!)—is getting
-a JIT compiler.
-Think about it, what mainstream interpreted language <em>doesn&#39;t</em> have a JIT today?<sup class="footnote-ref"><a href="#fn-1" id="fnref-1">1</a></sup></p>
-<p>Bytecode-only VMs will soon be a thing of past, and download links to them will re-direct to
-the wayback machine.
-But you don&#39;t want your interpreter on the internet&#39;s cemetery, do you?</p>
-<p>Thought so. Well, I have you covered.</p>
-<p>We&#39;ll learn the ins-and-outs of a JIT compiler by implementing one from scratch
-with zero dependencies.
-No LLVM.</p>
-<h1 id="a-bytecode-machine">A Bytecode Machine</h1>
-<h2 id="the-instruction-set">The Instruction set</h2>
-<p>For the rest of this guide, we will be optimizing a friendly stack based
-assembly-like language.</p>
-<p>To focus on implementing a JIT from first principles, I&#39;ve kept the language simple.
-This will help speed past the parser and bytecode VM implementation.
+      <p>In one of my discord livestreams, I did this little challenge
+where I write a JIT compiler from scratch using only four tools at
+my disposal: The Zig compiler, the ARM reference manual, <code>objdump</code>,
+and the <code>man</code> pages.
+The code is now available <a href="https://github.com/srijan-paul/tinyjit">on my GitHub</a>.</p>
+<p>Last month, I also gave <a href="/jit-basics">a talk</a> on the fundamentals of JIT compilation,
+using the repo as a reference implementation.
+Neither of these sessions we&#39;re recorded,
+so for completeness sake, I&#39;m writing this three piece guide to explain
+how JIT compilers work without any fancy optimizations or live profiling.</p>
+<p>In three small steps, we&#39;ll write a working JIT compiler:</p>
+<ol>
+<li>Describe the language, then write a bytecode VM for it.
+</li>
+<li>Experiment with ARM assembly instructions and the <code>mmap</code> syscall.
+</li>
+<li>Add a JIT compiler and measure performance.
+</li>
+</ol>
+<p>For every step of the process, I&#39;ll leave a link to the code at that stage.
+I&#39;ll be using Zig, but you could use any language you like to follow along.</p>
+<h1 id="a-bytecode-interpreter">A Bytecode interpreter</h1>
+<p>This is the easiest part of the process,
+yet the one I&#39;ll expend the most words on.
+No matter how simple, understanding the interpreter&#39;s model
+thoroughly will allow us to focus on implementing the JIT compiler.</p>
+<p>For similar reasons, I&#39;ve kept the language simple.
 I should caution you though, do not be fooled by the small instruction set;
 It is capable of non-trivial programs, and can be extended with higher level
 syntax for statements, loops, and functions if you so desire.</p>
 <p>And let&#39;s be honest, you&#39;ve probably already read <a href="https://craftinginterpreters.com/">crafting interpreters</a>
 (or something similar) if you&#39;re learning about JITs.</p>
-<p>We&#39;ll be writing a stack-based VM. Here&#39;s the instruction set:</p>
+<h2 id="the-instruction-set">The Instruction set</h2>
+<p>For the rest of this guide, we will be optimizing a stack based
+assembly-like language.
+Here&#39;s the instruction set:</p>
 <ul>
 <li><code>push &lt;value&gt;</code>: Pushes a value onto the stack.
 </li>
@@ -117,7 +122,7 @@ So we write a &quot;virtual&quot; machine to execute our custom instruction set.
 the instructions.
 This allows us to cast a <code>u8</code> to an <code>Opcode</code> and vice-versa.</p>
 <p>Next, a small helper to spare you the pain of writing <code>@intFromEnum</code> to convert an op-code to a number:</p>
-<code class="language-rs"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">/// Shorthand to convert an Opcode to a number</span></span>
+<code class="language-rs"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">/// Shorthand to convert an Opcode to a `u8`.</span></span>
 <span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> inline <span class="kw">fn</span> Op(num<span class="op">:</span> Opcode) <span class="dt">u8</span> <span class="op">{</span></span>
 <span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">@</span>intFromEnum(num)<span class="op">;</span></span>
 <span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></code></pre>
@@ -146,13 +151,14 @@ and bang out a main function:</p>
 <span id="21"><a href="#21" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></code></pre>
 <p>A program in our virtual machine is represented as a list of blocks.
 This way, jump instructions can reference blocks using their index in the program array.
-We store the constants separately, and instructions refer to them using their index (
-<code>push 0</code> will push <code>constants[0]</code> onto the stack).
-This is because our instructions are 64-bit, but an operand can only store 8 bits of data.</p>
+We store the constants separately, and instructions refer to them using their index
+(<code>push 0</code> will push <code>constants[0]</code> onto the stack).
+This is because our instructions are 64-bit integers,
+but an operand can only store 8 bits of data.</p>
 <p>Notice how when referencing the instructions, we prefix them with a dot.
 Zig enum types are inferred based on usage,
 so the compiler will interpret <code>.push</code> as <code>Opcode.push</code>.</p>
-<p>Finally, the skeleton for the interpreter:</p>
+<p>Finally, a skeleton for the interpreter:</p>
 <code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>const CodeBlock = struct {</span>
 <span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>    instructions: []u8,</span>
 <span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>    constants:    []i64</span>
@@ -189,7 +195,7 @@ We don&#39;t necessarily need this alias, but it&#39;s a common convention and s
 can assign a type to a variable, and then use it in type annotations.
 It is no different from assigning the struct type definition to the <code>Interpreter</code> variable.</p>
 <p>Before we flesh out the <code>run</code> function, we&#39;ll need a few more helpers:</p>
-<code class="language-rs"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">// Inside `Interpreter`:</span></span>
+<code class="language-rs"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">// main.zig -&gt; struct Interpreter</span></span>
 <span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> inline <span class="kw">fn</span> push(<span class="kw">self</span><span class="op">:</span> <span class="op">*</span><span class="dt">Self</span><span class="op">,</span> value<span class="op">:</span> <span class="dt">i64</span>) void <span class="op">{</span></span>
 <span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">self</span><span class="op">.</span>stack[<span class="kw">self</span><span class="op">.</span>stack_ptr] <span class="op">=</span> value<span class="op">;</span></span>
@@ -221,7 +227,49 @@ It is no different from assigning the struct type definition to the <code>Interp
 <span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span> </span>
 <span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></code></pre>
-<h3 id="setting-up">Setting up</h3>
+<p>If you run the program again with <code>zig build run</code>,
+you should see <code>30</code> printed to the console.</p>
+<p>The <code>eq</code>, <code>load_var</code>, and <code>store_var</code> instructions are just as trivial to implement:</p>
+<code class="language-rs"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">// main.zig -&gt; struct Interpreter -&gt; fn run</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>switch (op) <span class="op">{</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>     <span class="co">// .add, .push -&gt; implemented above</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>eq <span class="op">=&gt;</span> <span class="kw">self</span><span class="op">.</span>push(<span class="cf">if</span> <span class="kw">self</span><span class="op">.</span>pop() <span class="op">==</span> <span class="kw">self</span><span class="op">.</span>pop() <span class="dv">1</span> <span class="cf">else</span> <span class="dv">0</span>)<span class="op">,</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>load_var <span class="op">=&gt;</span> <span class="op">{</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>        <span class="kw">const</span> stack_index <span class="op">=</span> <span class="kw">self</span><span class="op">.</span>operand()<span class="op">;</span></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>        <span class="kw">self</span><span class="op">.</span>push(<span class="kw">self</span><span class="op">.</span>stakc[stack_index])<span class="op">;</span></span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>    <span class="op">},</span></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>store_var <span class="op">=&gt;</span> <span class="op">{</span></span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>        <span class="kw">const</span> stack_index <span class="op">=</span> <span class="kw">self</span><span class="op">.</span>operand()<span class="op">;</span></span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>        <span class="kw">self</span><span class="op">.</span>stack[stack_index] <span class="op">=</span> <span class="kw">self</span><span class="op">.</span>pop()<span class="op">;</span></span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a>    <span class="op">},</span></span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span> <span class="op">=&gt;</span> <span class="op">@</span>panic(<span class="st">&quot;Not implemented&quot;</span>)<span class="op">,</span></span>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></code></pre>
+<p>The jump instructions are only slightly more complex.
+Since we have two jump instructions, we&#39;ll use a helper function:</p>
+<code class="language-rs"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">// main.zig -&gt; struct Interpreter</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> jump(<span class="kw">self</span><span class="op">:</span> <span class="op">*</span>Interpreter) void <span class="op">{</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>    var block_index <span class="op">=</span> <span class="kw">self</span><span class="op">.</span>operand()<span class="op">;</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">self</span><span class="op">.</span>current_block <span class="op">=</span> <span class="kw">self</span><span class="op">.</span>program[block_index]<span class="op">;</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>    <span class="co">// start from the first instruction in the new block</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">self</span><span class="op">.</span>instr_ptr <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></code></pre>
+<p>With that, the interpreter loop is complete:</p>
+<code class="language-rs"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">// main.zig -&gt; struct Interpreter -&gt; fn run</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="co">// while (..) {</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a><span class="co">// switch (..) {</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>jump <span class="op">=&gt;</span> <span class="kw">try</span> <span class="kw">self</span><span class="op">.</span>jump()<span class="op">,</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>jump_nz <span class="op">=&gt;</span> <span class="op">{</span></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="kw">self</span><span class="op">.</span>pop() <span class="op">!=</span> <span class="dv">0</span>) <span class="op">{</span></span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>        <span class="kw">try</span> <span class="kw">self</span><span class="op">.</span>jump()<span class="op">;</span></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>        <span class="co">// skip the block index operand</span></span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>        _ <span class="op">=</span> <span class="kw">self</span><span class="op">.</span>operand()<span class="op">;</span> </span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a><span class="op">},</span></span></code></pre></div></code></pre>
+<p>You can now run a slightly more compelx program,
+such as <a href="https://github.com/srijan-paul/tinyjit/blob/1dabf1cb9bec88edcd7054bca5fe2c99294fa435/src/main.zig#L26-L67">this one</a>
+that computes the sum of the first million natural numbers.</p>
 <section class="footnotes">
 <div class="footnote" id="fn-1">
 <div class="footnote-number">
