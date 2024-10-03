@@ -65,7 +65,8 @@ generateTagPages = AfterBuild $ do
   where
     tagToHtmlPage :: T.Text -> Project -> [Post] -> ExceptT ErrorMessage IO HTMLPage
     tagToHtmlPage tag project posts = do
-      let taggedPosts = postsByTag tag posts
+      let taggedPosts_ = filterPostsByTag tag posts
+          taggedPosts = sortByDate taggedPosts_
           templatePath = projectTemplateDir project </> "tags.mustache"
           content = toHtmlUl taggedPosts
           compileData = Object $ HM.fromList [("tag", String tag), ("content", content)]
@@ -78,38 +79,44 @@ generateTagPages = AfterBuild $ do
             htmlPageContent = compiledHtml
           }
 
-    postsByTag :: T.Text -> [Post] -> [Post]
-    postsByTag tag = filter (\p -> tag `elem` getTags (postFrontMatter p))
+    filterPostsByTag :: T.Text -> [Post] -> [Post]
+    filterPostsByTag tag = filter (\p -> tag `elem` getTags (postFrontMatter p))
+
+    sortByDate :: [Post] -> [Post]
+    sortByDate = sortOn (Down . (getDate >=> parseDate))
 
     -- return an HTML rendered unordered list of posts.
     toHtmlUl :: [Post] -> Value
     toHtmlUl posts = do
-      let titleUrlPairs = mapMaybe pairPost posts
-          listItems = T.concat $ map li titleUrlPairs
+      let linkPieces = mapMaybe postLinkPieces posts
+          listItems = T.concat $ map li linkPieces
        in String $ "<ul class=\"post-list\">" <> listItems <> "</ul>"
       where
-        -- \| returns a (URL, title, date) triple from a post.
-        pairPost :: Post -> Maybe (T.Text, T.Text, T.Text)
-        pairPost post = case (postTitle post, postDate post) of
+        --  returns a (URL, title, date) triple from a post.
+        postLinkPieces :: Post -> Maybe (T.Text, T.Text, T.Text)
+        postLinkPieces post = case (postTitle post, postYear post) of
           (Just title, Just date) -> Just (T.pack $ postUrl post, title, date)
           _ -> Nothing
 
-        postDate :: Post -> Maybe T.Text
-        postDate post =
-          getDate post >>= parseDate >>= Just . showt . dateYear
+        postYear :: Post -> Maybe T.Text
+        postYear post = do
+          dateStr <- getDate post
+          date <- parseDate dateStr
+          return $ showt (dateYear date)
 
         -- returns an HTML list item from a (URL, title, date) triple of a post.
         li :: (T.Text, T.Text, T.Text) -> T.Text
         li (url, text, date) =
-          "<li><a href=\"/"
-            <> url
-            <> "\">"
-            <> text
-            <> "</a>"
-            <> " <span class=\"post-list-date\">"
-            <> date
-            <> "</span>"
-            <> "</li>\n"
+          T.concat
+            [ "<li><a href=\"/",
+              url,
+              "\">",
+              text,
+              "</a><span class=\"post-list-date\">",
+              date,
+              "</span>",
+              "</li>\n"
+            ]
 
 getDate :: Post -> Maybe T.Text
 getDate post = do
@@ -216,6 +223,4 @@ main = do
   let processors = builtinPlugins ++ customPlugins
       cli = BarkCLI processors
   maybeCommand <- parseCommand <$> getArgs
-  case maybeCommand of
-    Just command -> doCommand cli command
-    Nothing -> putStrLn "Invalid command"
+  maybe (return ()) (doCommand cli) maybeCommand

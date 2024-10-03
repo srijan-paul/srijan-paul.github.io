@@ -4,6 +4,7 @@ is_blog_post: true
 tags:
   - haskell
   - FP
+  - compilers
 date: 2024-05-09
 title: Compiling higher order functions with GADTs
 meta: Compile higher order functions using the defunctionalization transform. Compiler authors HATE this one weird trick!

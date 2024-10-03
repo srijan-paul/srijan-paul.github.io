@@ -1,6 +1,6 @@
 ---
 template: "post"
-tags: ["lua", "programming-languages", "gsoc"]
+tags: ["lua", "programming-languages", "gsoc", "pallene", "compilers"]
 title: "GSoC'21 - Lifting lambdas & Pallene [2/2]"
 date: "2021-08-16"
 meta: "implementing closures in a compiled language during GSoC at LabLua"
