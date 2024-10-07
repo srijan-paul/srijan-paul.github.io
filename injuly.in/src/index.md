@@ -4,7 +4,7 @@ template: home
 
 ## Ahoy,
 
-I'm **Srijan** – Maker of compilers, web servers, games, and other things.
+I'm **Srijan** – Maker of compilers, web servers, games, and, well, other things.
 
 This website is an archive of my musings and research.
 Currently, I'm into functional programming and databases.

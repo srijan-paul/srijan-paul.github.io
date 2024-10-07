@@ -14,7 +14,7 @@
 	<link rel="stylesheet" href="/assets/css/post.css">
 
    <script data-goatcounter="https://injuly.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
-	<title>injuly / Now (6th May 2024) </title>
+	<title>injuly / Now (7th October 2024) </title>
 </head>
 
 <body>
@@ -28,66 +28,19 @@
 				<a href="/now/" class="nav-link active-nav-link">now</a>
 			</nav>
 		</div>
-		<h1 id="24th-july-2024">24th July 2024</h1>
-<p><em>previous entry: <a href="/now/may-2024">May 2024</a></em></p>
-<p>I&#39;ve been making decent progress on some of my hobby projects,
-and taking care not to burn out in the process.</p>
-<p>To cope with my growing backlog,
-I&#39;ve become comfortable with this idea of managing a stack of on-going projects.
-I maintain a pile of three projects that are &quot;active&quot;.
-At any given time, I can only be working on one of these.
-When work gets too mundane, or if I feel I&#39;m risking burnout,
-I put the project back in the pile and draw another one.
-The pile must not grow – I get to add a new project <em>only</em> when an active
-one is finished.</p>
-<p>Here&#39;s the two projects I last drew from the pile:</p>
-<h2 id="projects">Projects</h2>
-<h3 id="nez--nes-emulator"><a href="https://github.com/srijan-paul/nez">nez</a> – NES Emulator</h3>
-<p><img src="/assets/img/jul-2024/fceux_nez_comparison_1200.png" alt="FCEUX (top) and nez (bottom)"></img></p>
-<p>Nez can now run games like Final Fantasy 2, Journey to Silius, and Robocop 3.
-The emulator is also more accurate than before,
-passing more PPU test ROMs than <a href="https://fceux.com/web/home.html">FCEUX</a>, as pictured above.</p>
-<p>Currently, I&#39;m working on emulating the APU to finally have some audio.
-This turned out to be much harder than I expected, but it wouldn&#39;t be so rewarding if it wasn&#39;t hard.</p>
-<p>As fun as this project is, I wish the Famicom had a more diverse game library.
-Most games simply don&#39;t hold up well today, though there are some notable exceptions to this.
-To challenge myself some more, I wish to try my hand at a Game Boy Advance
-or PlayStation emulator sometime.
-Maybe then I&#39;ll have a virtual console that I&#39;ll enjoy using myself :)</p>
-<h3 id="frametap--screen-capture-library-with-gif-support">Frametap – Screen capture library with GIF support</h3>
-<p>The screen capture library hasn&#39;t seen as much progress as I had hoped for.
-I&#39;ve managed to cobble together a CLI tool that can quantize PNG images and record a GIF
-from any region of the screen.
-Some problems still remain – like large GIF sizes and flickering colors.</p>
-<p>When I get back to it, I&#39;ll be adding WebP support, along with the ability to record on Windows.</p>
-<h2 id="work">Work</h2>
-<h3 id="sniper--language-agnostic-call-stack-analysis">Sniper – Language agnostic call stack analysis</h3>
-<p>I usually don&#39;t write about my full time job here.
-This is a <em>personal</em> website, and I like to think that my personhood goes beyond a payslip,
-but that doesn&#39;t mean my job is boring.
-This past week, <a href="https://tushar.lol">Tushar</a> and I have been hacking on a language agnostic call stack analyzer.</p>
-<p>In simpler terms: for any codebase, it generates a graph of all function calls made inside an expression.
-As an example, take this little program:</p>
-<code class="language-py"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gcd(a, b):</span>
-<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> a <span class="cf">if</span> b <span class="op">==</span> <span class="dv">0</span> <span class="cf">else</span> gcd_helper(a, b)</span>
-<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gcd_helper(a, b):</span>
-<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> gcd(b, a <span class="op">%</span> b)</span>
-<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> main():</span>
-<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>  gcd(<span class="dv">48</span>, <span class="dv">18</span>)</span>
-<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a><span class="co"># perform stack analysis for this call expression</span></span>
-<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>main()</span></code></pre></div></code></pre>
-<p>For this Python snippet, the analyzer emits a graph like this:</p>
-<img src="/assets/img/jul-2024/d2_graph_gcd.png" width="200">
-<p>Not so impressive when you run it for a trivial program,
-but this tool proves to be very useful when scanning vulnerable code.</p>
-<h2 id="other">Other</h2>
-<p>I recently bought a Switch, and have been enjoying my time playing <a href="https://en.wikipedia.org/wiki/The_Legend_of_Zelda:_Breath_of_the_Wild">Breath of the Wild</a>
-and <a href="https://en.wikipedia.org/wiki/Overcooked">Overcooked</a>.
-As for reading, I&#39;m currently working my way through <a href="https://danfesperman.com/novels/safe-houses/">Safe Houses</a>.</p>
-<p>Until next time o/</p>
+		<h1 id="october-2024">October, 2024</h1>
+<p><em>previous entry: <a href="/now/jul-2024/">July 2024</a></em></p>
+<p>I&#39;ve been relatively busy these past two months,
+so fewer updates than usual:</p>
+<ul>
+<li>Playing <a href="https://www.celestegame.com/">celeste</a> – attempting a speedrun of the first few chapters :)
+</li>
+<li>Sending patches to the <a href="https://github.com/zigtools/zls">zig language server</a> with some bugfixes,
+and trying to see if I can improve performance.
+</li>
+<li>Hosting small meetups with <a href="https://zigindia.org">zigindia.org</a>
+</li>
+</ul>
 
 
 		<script src="https://giscus.app/client.js" data-repo="srijan-paul/srijan-paul.github.io" data-repo-id="MDEwOlJlcG9zaXRvcnkzMTY0MTg0NTk=" data-category="Announcements" data-category-id="DIC_kwDOEtwpm84Cdokt" data-mapping="title" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" defer>

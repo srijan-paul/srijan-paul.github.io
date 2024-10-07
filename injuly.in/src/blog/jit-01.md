@@ -271,4 +271,4 @@ like [summing up the first million natural numbers](https://github.com/srijan-pa
 
 [^1]: This indirection is necessary because while values are 64-bit integers, the opcodes are only 8-bit.
 [^2]: In fact, the only way to declare types in zig is by assigning them to a variable.
-Even our interpreter is defined like that: `const Interpretr = struct { .. };`
+Even our interpreter is defined like that: `const Interpreter = struct { .. };`

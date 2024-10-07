@@ -419,3 +419,7 @@ a.button:active {
 	border-left-width: var(--btn-bezel-pressed);
 	transform: translateY(var(--btn-bezel));
 }
+
+.giscus {
+	margin-top: 3em;
+}
