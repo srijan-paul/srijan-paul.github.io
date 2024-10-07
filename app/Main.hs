@@ -61,7 +61,11 @@ generateTagPages = AfterBuild $ do
         return $ page : pages
 
   tagPages <- foldM combine [] tags
-  put $ compilation {compilationPages = compilationPages compilation ++ tagPages}
+  put $
+    compilation
+      { compilationPages =
+          compilationPages compilation ++ tagPages
+      }
   where
     tagToHtmlPage :: T.Text -> Project -> [Post] -> ExceptT ErrorMessage IO HTMLPage
     tagToHtmlPage tag project posts = do
@@ -71,7 +75,8 @@ generateTagPages = AfterBuild $ do
           content = toHtmlUl taggedPosts
           compileData = Object $ HM.fromList [("tag", String tag), ("content", content)]
       compiledHtml <- template2Html templatePath compileData
-      let dstPath = projectOutDir project </> "tags" </> (T.unpack tag <> ".html")
+      let fileName = T.toLower (T.replace " " "-" tag) <> ".html"
+      let dstPath = projectOutDir project </> "tags" </> T.unpack fileName
       return $
         HTMLPage
           { htmlPagePost = Nothing,
@@ -80,7 +85,9 @@ generateTagPages = AfterBuild $ do
           }
 
     filterPostsByTag :: T.Text -> [Post] -> [Post]
-    filterPostsByTag tag = filter (\p -> tag `elem` getTags (postFrontMatter p))
+    filterPostsByTag tag =
+      filter
+        (\p -> tag `elem` getTags (postFrontMatter p))
 
     sortByDate :: [Post] -> [Post]
     sortByDate = sortOn (Down . (getDate >=> parseDate))
