@@ -52,7 +52,7 @@
             <a class="tag" href="/tags/programming-languages.html">programming-languages</a>
         </div>
       </div>
-      <p>On a discord call with a friend, I did this little challenge
+      <p>On a discord call with <a href="https://github.com/theteachr">a friend</a>, I did this little challenge
 where I attempt to write a JIT compiler from scratch with only four tools at
 my disposal: a Zig compiler, the ARM reference manual,
 <code>objdump</code>, and the man pages.
@@ -199,19 +199,19 @@ so we can assign a type to a variable,
 then use it in annotations <sup class="footnote-ref"><a href="#fn-2" id="fnref-2">2</a></sup>.</p>
 <p>Before we flesh out the <code>run</code> function, we&#39;ll need a few more helpers:</p>
 <code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">// main.zig -&gt; struct Interpreter</span></span>
-<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">inline</span> <span class="kw">fn</span> push(<span class="va">self</span><span class="op">:</span> <span class="op">*</span>Self<span class="op">,</span> value<span class="op">:</span> <span class="dt">i64</span>) <span class="dt">void</span> {</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">fn</span> push(<span class="va">self</span><span class="op">:</span> <span class="op">*</span>Self<span class="op">,</span> value<span class="op">:</span> <span class="dt">i64</span>) <span class="dt">void</span> {</span>
 <span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>  <span class="va">self</span><span class="op">.</span>stack[<span class="va">self</span><span class="op">.</span>stack_ptr] <span class="op">=</span> value;</span>
 <span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>  <span class="va">self</span><span class="op">.</span>stack_ptr <span class="op">-=</span> <span class="dv">1</span>;</span>
 <span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">inline</span> <span class="kw">fn</span> pop(<span class="va">self</span><span class="op">:</span> <span class="op">*</span>Self) <span class="dt">i64</span> {</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">fn</span> pop(<span class="va">self</span><span class="op">:</span> <span class="op">*</span>Self) <span class="dt">i64</span> {</span>
 <span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>  <span class="va">self</span><span class="op">.</span>stack_ptr <span class="op">-=</span> <span class="dv">1</span>;</span>
 <span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>  <span class="at">const</span> value <span class="op">=</span> <span class="va">self</span><span class="op">.</span>stack[<span class="va">self</span><span class="op">.</span>stack_ptr];</span>
 <span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> value;</span>
 <span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a><span class="co">/// Read one byte from the instructions array, and cast to u8</span></span>
-<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">inline</span> <span class="kw">fn</span> operand(<span class="va">self</span><span class="op">:</span> <span class="op">*</span>Self) <span class="dt">u8</span> {</span>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">fn</span> operand(<span class="va">self</span><span class="op">:</span> <span class="op">*</span>Self) <span class="dt">u8</span> {</span>
 <span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a>  <span class="at">const</span> op <span class="op">=</span> <span class="va">self</span><span class="op">.</span>instructions[<span class="va">self</span><span class="op">.</span>instr_ptr];</span>
 <span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a>  <span class="va">self</span><span class="op">.</span>instr_ptr <span class="op">+=</span> <span class="dv">1</span>;</span>
 <span id="17"><a href="#17" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> @intFromEnum(op);</span>

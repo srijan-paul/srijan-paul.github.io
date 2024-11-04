@@ -10,7 +10,7 @@ title: JIT compiler from scratch – 1/3
 meta: Write a JIT compiler from first principles in Zig. 
 ---
 
-On a discord call with a friend, I did this little challenge
+On a discord call with [a friend](https://github.com/theteachr), I did this little challenge
 where I attempt to write a JIT compiler from scratch with only four tools at
 my disposal: a Zig compiler, the ARM reference manual,
 `objdump`, and the man pages.
@@ -183,19 +183,19 @@ Before we flesh out the `run` function, we'll need a few more helpers:
 
 ```zig
 // main.zig -> struct Interpreter
-pub inline fn push(self: *Self, value: i64) void {
+pub fn push(self: *Self, value: i64) void {
   self.stack[self.stack_ptr] = value;
   self.stack_ptr -= 1;
 }
 
-pub inline fn pop(self: *Self) i64 {
+pub fn pop(self: *Self) i64 {
   self.stack_ptr -= 1;
   const value = self.stack[self.stack_ptr];
   return value;
 }
 
 /// Read one byte from the instructions array, and cast to u8
-pub inline fn operand(self: *Self) u8 {
+pub fn operand(self: *Self) u8 {
   const op = self.instructions[self.instr_ptr];
   self.instr_ptr += 1;
   return @intFromEnum(op);

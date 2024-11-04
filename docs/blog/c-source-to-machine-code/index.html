@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+    <meta name="description" content="Some basic terminology that you&#39;ll come across when programming in systems languages."></meta>
+    <meta property="og:title" content="C Source to machine code – step by step"></meta>
+    <meta property="twitter:title" content="C Source to machine code – step by step"></meta>
+    <meta property="twitter:description" content="Some basic terminology that you&#39;ll come across when programming in systems languages."></meta>
+
+     
+    <meta property="og:image" content></meta>
+		<meta name="twitter:image" content>
+    
+
+    <meta property="og:site_name" content="InJuly"></meta>
+
+		<link rel="preconnect" href="https://rsms.me/">
+		<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+
+    <link rel="stylesheet" href="/assets/css/common.css">
+    <link rel="stylesheet" href="/assets/css/post.css">
+    <link rel="stylesheet" href="/assets/css/theme.css">
+    
+
+    <script data-goatcounter="https://injuly.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+
+    <title>C Source to machine code – step by step</title>
+  </head>
+
+  <body>
+    <div class="main">
+      <div class="nav-container">
+        <nav>
+          <a href="/" class="nav-link">index</a>
+          <a href="/about/" class="nav-link">about</a>
+          <a href="/blog/" class="nav-link active-nav-link">blog</a>
+          <a href="/work/" class="nav-link">work</a>
+          <a href="/now/" class="nav-link">now</a>
+        </nav>
+      </div>
+
+      <div class="leader">
+        <h1> C Source to machine code – step by step </h1>
+				<div class="post-date"> Nov 04 </div>
+        <div class="tags" id="tags">
+            <a class="tag" href="/tags/assembler.html">assembler</a>
+            <a class="tag" href="/tags/linker.html">linker</a>
+            <a class="tag" href="/tags/C programming.html">C programming</a>
+            <a class="tag" href="/tags/low-level.html">low-level</a>
+        </div>
+      </div>
+      <!--
+In the [previous post](/jit-01/), we set up a simple bytecode interpreter for a stack-based language.
+Now, we'll study the ARM instruction-set, and see how we can generate and execute machine code at runtime. 
+
+I am on an apple silicon laptop, but you may not be.
+To run ARM code on your machine, you can use [qemu](https://www.qemu.org/download/).
+
+Alternatively, you can grab the x86-64 manual, and follow along with that instead.
+-->
+<p>Originally, I wrote this short article as a part of my <a href="/blog/jit-01/">JIT fundamentals</a> series.
+In retrospect, this may be useful as a quick-reference to beginner programmers
+wanting to gain clarity about how a computer runs C programs, or how a compiler goes from
+source text to machine code.</p>
+<p>We&#39;ll write an extremely simple  C-program,
+and see how it goes from a text to assembly, then to an object file, and finally an executable.</p>
+<p>If you don&#39;t know what architecture your computer is based on, try running the <code>arch</code> command:</p>
+<code class="language-sh"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> arch</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="ex">arm64</span></span></code></pre></div></code></pre>
+<p>You may see <code>x86_64</code> instead, and that just means your CPU has a different architecture than mine.</p>
+<p>At the end of the day,
+both our CPUs only understand machine code expressed in raw bytes.
+Well-formed instructions are expected to be laid out in a specific format.
+For instance, when an ARM-64 CPU sees a 4-byte integer with the value <code>0xd65f03c0</code>, it
+knows to <em>return</em> from the current function.</p>
+<p>Take this C program as an example that simply exits with 5 as the exit code:</p>
+<code class="language-sh"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&#39;int main(){ return 5; }&#39;</span> <span class="op">&gt;</span> hello.c</span></code></pre></div></code></pre>
+<p>A compiler like gcc or clang can convert this high-level program to
+readable <em><sup>(citation needed)</sup></em> assembly:</p>
+<code class="language-sh"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="fu">gcc</span> <span class="at">-S</span> <span class="at">-O2</span> <span class="at">-fverbose-asm</span> ./hello.c <span class="at">-o</span> hello.s</span></code></pre></div></code></pre>
+<p>Allow me a moment to explain what some of these flags do:</p>
+<ol>
+<li><code>-S</code>: Do not produce an executable or <code>.o</code> file, translate to assembly instead.
+</li>
+<li><code>-O2</code>: Optimize the code. Unoptimized assembly is usually long and verbose.
+</li>
+<li><code>-fverbose-asm</code>: Insert comments where necessary.
+</li>
+</ol>
+<p>Within the <code>hello.s</code> file you&#39;ll find this snippet of assembly code
+with some safe-to-ignore debugging noise strewn about:</p>
+<code class="language-asm"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="fu">_main:</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>	<span class="bu">mov</span>	w0<span class="op">,</span> <span class="op">#</span><span class="dv">5</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>	<span class="cf">ret</span></span></code></pre></div></code></pre>
+<p>If you&#39;re on an x86-64 machine, you will see this instead:</p>
+<code class="language-asm"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="fu">main:</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>  <span class="bu">mov</span>  <span class="kw">eax</span><span class="op">,</span><span class="dv">5</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">ret</span></span></code></pre></div></code></pre>
+<p>In the first line, we move the constant integer <code>5</code> into the 32-bit register <code>w0</code> (<code>eax</code> for x86).
+Then, the <code>ret</code> instruction is used to exit the current function.</p>
+<p>The respective manuals for ARM and x86 will tell you that the return value for functions are
+placed in the <code>w0</code> register for ARM, and <code>eax</code> for x86.</p>
+<p>This assembly then naturally follows from our <code>return 5;</code> statement in <code>main()</code>.</p>
+<p>Moving on, lets use <a href="https://en.wikipedia.org/wiki/GNU_Assembler">as – the GNU assembler</a> to
+convert the text-file with assembly code to raw CPU instructions:</p>
+<code class="language-sh"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="fu">as</span> ./hello.s <span class="at">-o</span> ./hello.o</span></code></pre></div></code></pre>
+<p>What you have now is an <em>object file</em> that contains the machine instructions.
+We can use the <code>objdump</code> utility to disassemble the file and make sense of its contents:</p>
+<code class="language-sh"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="ex">objdump</span> <span class="at">-d</span> ./hello.o</span></code></pre></div></code></pre>
+<code><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>./hello.o:	file format mach-o arm64</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>Disassembly of section __TEXT,__text:</span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>0000000000000000 &lt;ltmp0&gt;:</span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>       0: 528000a0     	mov	w0, #0x5                ; =5</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>       4: d65f03c0     	ret</span></code></pre></div></code></pre>
+<p>At the bottom we find the <code>0xd65f03c0</code> number once again – the ARM machine code instruction for <code>ret</code>.
+The <code>4: </code> prefix is the byte-offset of that instruction from the beginning of the file.
+In this case, there are only two four-byte instructions (<code>mov w0 #5</code> and <code>ret</code>),
+so our file should be 8 bytes total.</p>
+<p>Let&#39;s verify:</p>
+<code class="language-sh"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> du ./hello.o</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="ex">8</span>	./hello.o</span></code></pre></div></code></pre>
+<p>Looking good so far!</p>
+<p>But the operating wouldn&#39;t know how to make sense of this file.
+It doesn&#39;t know where to start executing the code from, or whether this file
+is even meant to be run directly.
+For all the OS knows, it could be a random string of bytes saved to a file that happens
+to resemble machine instructions by sheer chance.</p>
+<p>To convince the operating system that it&#39;s a program worth running,
+we have to fit our CPU instructions inside a larger file that the OS
+knows to read.</p>
+<p>To do so, we will use the GNU linker, or <a href="https://ftp.gnu.org/old-gnu/Manuals/ld-2.9.1/html_node/ld_toc.html">ld</a>.
+A linker&#39;s job is to patch multiple object files together to produce a binary that OS can interpret.
+For a single object file, we can pass it to the linker directly:</p>
+<code class="language-sh"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="fu">ld</span>  ./hello.o <span class="at">-o</span> hello</span></code></pre></div></code></pre>
+<p>Using the <code>file</code> command, we can see how our OS interprets this file:</p>
+<code><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>$ file ./hello</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>./hello: Mach-O 64-bit executable arm64</span></code></pre></div></code></pre>
+<p>Finally, we have a valid executable in a binary format that Apple calls <code>Mach-O</code>.
+You may see <code>ELF</code> on Linux, or <code>PE</code> on Windows.
+We can now run this binary and check the exit code:</p>
+<code><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>$ ./hello </span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>$ echo $?</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>5</span></code></pre></div></code></pre>
+<p>We&#39;re done, congratulations if you made it this far.
+If tools like <code>objdump</code>, <code>ld</code>, and <code>file</code> were new to you, play with them some more to gain familiarity.</p>
+<h2 id="further-reading">Further reading</h2>
+<p>If anything in here was new to you, it might be a good idea to see if you can use or understand
+these closely related terms:</p>
+<ul>
+<li>Static and dynamic linking
+</li>
+<li>Shared libraries (<code>.dll</code>, <code>.dylib</code>, and <code>.so</code>) v/s static libraries (<code>.a</code> and <code>.lib</code>).
+</li>
+<li>Word sizes, <code>QWORD</code> and <code>DWORD</code> – helpful when reading assembly, necessary when writing it.
+</li>
+<li>Stack v/s Heap – is one really slower than the other? Can the heap be equivalent in speed?
+</li>
+<li>Hardware traps and interrupts.
+</li>
+<li>Page protection and virtual memory. What does a segfault <em>really</em> mean?
+</li>
+</ul>
+
+
+			<script src="https://giscus.app/client.js" data-repo="srijan-paul/srijan-paul.github.io" data-repo-id="MDEwOlJlcG9zaXRvcnkzMTY0MTg0NTk=" data-category="Announcements" data-category-id="DIC_kwDOEtwpm84Cdokt" data-mapping="title" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" defer>
+			</script>
+		</div>
+  </body>
+</html>

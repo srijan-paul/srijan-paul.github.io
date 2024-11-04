@@ -1,1 +1,166 @@
-<rss version="2.0"><channel><title/><link>https://injuly.in:443/blog</link><description/><docs>http://www.rssboard.org/rss-specification</docs><language>en-us</language><copyright>Srijan Paul</copyright><generator>Bark</generator><item><title>Solving the Honjin murders</title><description>A couple is killed on the night of their wedding, and I try to find the culprit.</description><author>srijan@injuly.in</author><link>https://injuly.in:443/blog/honjin-murders/index.html</link></item><item><title>Monadic parser combinators</title><description>Using monads to write parser combinators in Haskell</description><author>srijan@injuly.in</author><link>https://injuly.in:443/blog/monparsing/index.html</link></item><item><title>Functional TypeScript #1: Algebraic Data Types</title><description>Introduction to typeclasses, ADTs, and HKTs TypeScript</description><author>srijan@injuly.in</author><link>https://injuly.in:443/blog/ts-adt/index.html</link></item><item><title>My gripes with NFTs and Web3</title><description>My probelm with the blockchain ecosystem.</description><author>srijan@injuly.in</author><link>https://injuly.in:443/blog/web3/index.html</link></item><item><title>GSoC&apos;21 - Lifting lambdas &amp; Pallene [2/2]</title><description>implementing closures in a compiled language during GSoC at LabLua</description><author>srijan@injuly.in</author><link>https://injuly.in:443/blog/gsoc-2/index.html</link></item><item><title>The internet is slipping out of our reach</title><description>With AI encroaching every open forum on the internet, the future of human discourse is bleak.</description><author>srijan@injuly.in</author><link>https://injuly.in:443/blog/darker-internet/index.html</link></item><item><title>Compiling to Brainf#ck - Meep.</title><description>Writing a brainfuck interpreter in brainfuck, using a language that compiles down to brainfuck</description><author>srijan@injuly.in</author><link>https://injuly.in:443/blog/bfinbf/index.html</link></item><item><title>GSoC&apos;21 - Lifting lambdas &amp; Pallene [1/2]</title><description>Implementing closures in a compiled language during GSoC at LabLua</description><author>srijan@injuly.in</author><link>https://injuly.in:443/blog/gsoc/index.html</link></item><item><title>Data.Maybe, and thoughts on library design</title><description>No program comes out right the first time. Libraries aren&apos;t an exception, and shouldn&apos;t be treated as such</description><author>srijan@injuly.in</author><link>https://injuly.in:443/blog/monoid-maybe/index.html</link></item><item><title>Frametap: decoding screen capture with Zig</title><description>A guide to using OS native screen capture APIs</description><author>srijan@injuly.in</author><link>https://injuly.in:443/blog/screen-capture/index.html</link></item><item><title>Intro to lazy evaluation and functional DP</title><description>Dynamic programming in Haskell with lazy evaluation</description><author>srijan@injuly.in</author><link>https://injuly.in:443/blog/lazy-fib/index.html</link></item><item><title>Of Phantoms, witches, and type driven design in Haskell</title><description>Type driven design with Phantom types in Haskell</description><author>srijan@injuly.in</author><link>https://injuly.in:443/blog/phantom-types/index.html</link></item><item><title>BoOHoO JaVaScRiPT!!</title><description>JavaScript may be terrible, but it&apos;s not as bad as you think</description><author>srijan@injuly.in</author><link>https://injuly.in:443/blog/boohoo-js/index.html</link></item><item><title>An interactive guide to Fourier series</title><description>Drawing with the Fourier Series</description><author>srijan@injuly.in</author><link>https://injuly.in:443/blog/fourier-series/index.html</link></item><item><title>A visual explanation of Gaussian Elimination</title><description>Intuition behind how Gaussian Elimination works</description><author>srijan@injuly.in</author><link>https://injuly.in:443/blog/gaussian-elimination/index.html</link></item><item><title>Compiling higher order functions with GADTs</title><description>Compile higher order functions using the defunctionalization transform. Compiler authors HATE this one weird trick!</description><author>srijan@injuly.in</author><link>https://injuly.in:443/blog/defunct/index.html</link></item><item><title>On digital gardens.</title><description>Digital Gardens</description><author>srijan@injuly.in</author><link>https://injuly.in:443/blog/digital-garden/index.html</link></item><item><title>Hindsight - 2021</title><description>2021, in Hindsight</description><author>srijan@injuly.in</author><link>https://injuly.in:443/blog/2022/index.html</link></item><item><title>But can you give up GitHub?</title><description>If GitHub is so good, why isn&apos;t there a GitHub 2?</description><author>srijan@injuly.in</author><link>https://injuly.in:443/blog/give-up-github/index.html</link></item><item><title>Water surface shader for 2D Pixel art games</title><description>Using displacement shaders to create reflections with Lua, Love2D and GLSL</description><author>srijan@injuly.in</author><link>https://injuly.in:443/blog/water-shader/index.html</link></item><item><title>How I set up PureScript projects with ESBuild and Spago</title><description>Setting up a PureScript project with dev-server and JS interop</description><author>srijan@injuly.in</author><link>https://injuly.in:443/blog/purescript-setup/index.html</link></item><item><title>JIT compiler from scratch &#8211; 1/3</title><description>Write a JIT compiler from first principles in Zig.</description><author>srijan@injuly.in</author><link>https://injuly.in:443/blog/jit-01/index.html</link></item><item><title>Ave - JS with static types</title><description>A statically typed language that compiles to JavaScript</description><author>srijan@injuly.in</author><link>https://injuly.in:443/blog/ave-intro/index.html</link></item><item><title>Book Review: The Master Key</title><description>A review of Masako Togawa&apos;s mystery novel that won the Edogawa Rampo Prize.</description><author>srijan@injuly.in</author><link>https://injuly.in:443/blog/the-master-key/index.html</link></item></channel></rss>
+<rss version="2.0">
+	<channel>
+		<title />
+		<link>https://injuly.in:443/blog</link>
+		<description />
+		<docs>http://www.rssboard.org/rss-specification</docs>
+		<language>en-us</language>
+		<copyright>Srijan Paul</copyright>
+		<generator>Bark</generator>
+		<item>
+			<title>Solving the Honjin murders</title>
+			<description>A couple is killed on the night of their wedding, and I try to find the culprit.</description>
+			<author>srijan@injuly.in</author>
+			<link>https://injuly.in:443/blog/honjin-murders/index.html</link>
+		</item>
+		<item>
+			<title>Monadic parser combinators</title>
+			<description>Using monads to write parser combinators in Haskell</description>
+			<author>srijan@injuly.in</author>
+			<link>https://injuly.in:443/blog/monparsing/index.html</link>
+		</item>
+		<item>
+			<title>Functional TypeScript #1: Algebraic Data Types</title>
+			<description>Introduction to typeclasses, ADTs, and HKTs TypeScript</description>
+			<author>srijan@injuly.in</author>
+			<link>https://injuly.in:443/blog/ts-adt/index.html</link>
+		</item>
+		<item>
+			<title>My gripes with NFTs and Web3</title>
+			<description>My probelm with the blockchain ecosystem.</description>
+			<author>srijan@injuly.in</author>
+			<link>https://injuly.in:443/blog/web3/index.html</link>
+		</item>
+		<item>
+			<title>C Source to machine code &#8211; step by step</title>
+			<description>Some basic terminology that you&apos;ll come across when programming in systems languages.
+			</description>
+			<author>srijan@injuly.in</author>
+			<link>https://injuly.in:443/blog/c-source-to-machine-code/index.html</link>
+		</item>
+		<item>
+			<title>GSoC&apos;21 - Lifting lambdas &amp; Pallene [2/2]</title>
+			<description>implementing closures in a compiled language during GSoC at LabLua</description>
+			<author>srijan@injuly.in</author>
+			<link>https://injuly.in:443/blog/gsoc-2/index.html</link>
+		</item>
+		<item>
+			<title>The internet is slipping out of our reach</title>
+			<description>With AI encroaching every open forum on the internet, the future of human discourse is bleak.
+			</description>
+			<author>srijan@injuly.in</author>
+			<link>https://injuly.in:443/blog/darker-internet/index.html</link>
+		</item>
+		<item>
+			<title>Compiling to Brainf#ck - Meep.</title>
+			<description>Writing a brainfuck interpreter in brainfuck, using a language that compiles down to brainfuck
+			</description>
+			<author>srijan@injuly.in</author>
+			<link>https://injuly.in:443/blog/bfinbf/index.html</link>
+		</item>
+		<item>
+			<title>GSoC&apos;21 - Lifting lambdas &amp; Pallene [1/2]</title>
+			<description>Implementing closures in a compiled language during GSoC at LabLua</description>
+			<author>srijan@injuly.in</author>
+			<link>https://injuly.in:443/blog/gsoc/index.html</link>
+		</item>
+		<item>
+			<title>Data.Maybe, and thoughts on library design</title>
+			<description>No program comes out right the first time. Libraries aren&apos;t an exception, and shouldn&apos;t be
+				treated as such</description>
+			<author>srijan@injuly.in</author>
+			<link>https://injuly.in:443/blog/monoid-maybe/index.html</link>
+		</item>
+		<item>
+			<title>Frametap: decoding screen capture with Zig</title>
+			<description>A guide to using OS native screen capture APIs</description>
+			<author>srijan@injuly.in</author>
+			<link>https://injuly.in:443/blog/screen-capture/index.html</link>
+		</item>
+		<item>
+			<title>Intro to lazy evaluation and functional DP</title>
+			<description>Dynamic programming in Haskell with lazy evaluation</description>
+			<author>srijan@injuly.in</author>
+			<link>https://injuly.in:443/blog/lazy-fib/index.html</link>
+		</item>
+		<item>
+			<title>Of Phantoms, witches, and type driven design in Haskell</title>
+			<description>Type driven design with Phantom types in Haskell</description>
+			<author>srijan@injuly.in</author>
+			<link>https://injuly.in:443/blog/phantom-types/index.html</link>
+		</item>
+		<item>
+			<title>BoOHoO JaVaScRiPT!!</title>
+			<description>JavaScript may be terrible, but it&apos;s not as bad as you think</description>
+			<author>srijan@injuly.in</author>
+			<link>https://injuly.in:443/blog/boohoo-js/index.html</link>
+		</item>
+		<item>
+			<title>An interactive guide to Fourier series</title>
+			<description>Drawing with the Fourier Series</description>
+			<author>srijan@injuly.in</author>
+			<link>https://injuly.in:443/blog/fourier-series/index.html</link>
+		</item>
+		<item>
+			<title>A visual explanation of Gaussian Elimination</title>
+			<description>Intuition behind how Gaussian Elimination works</description>
+			<author>srijan@injuly.in</author>
+			<link>https://injuly.in:443/blog/gaussian-elimination/index.html</link>
+		</item>
+		<item>
+			<title>Compiling higher order functions with GADTs</title>
+			<description>Compile higher order functions using the defunctionalization transform. Compiler authors HATE this
+				one weird trick!</description>
+			<author>srijan@injuly.in</author>
+			<link>https://injuly.in:443/blog/defunct/index.html</link>
+		</item>
+		<item>
+			<title>On digital gardens.</title>
+			<description>Digital Gardens</description>
+			<author>srijan@injuly.in</author>
+			<link>https://injuly.in:443/blog/digital-garden/index.html</link>
+		</item>
+		<item>
+			<title>Hindsight - 2021</title>
+			<description>2021, in Hindsight</description>
+			<author>srijan@injuly.in</author>
+			<link>https://injuly.in:443/blog/2022/index.html</link>
+		</item>
+		<item>
+			<title>But can you give up GitHub?</title>
+			<description>If GitHub is so good, why isn&apos;t there a GitHub 2?</description>
+			<author>srijan@injuly.in</author>
+			<link>https://injuly.in:443/blog/give-up-github/index.html</link>
+		</item>
+		<item>
+			<title>Water surface shader for 2D Pixel art games</title>
+			<description>Using displacement shaders to create reflections with Lua, Love2D and GLSL</description>
+			<author>srijan@injuly.in</author>
+			<link>https://injuly.in:443/blog/water-shader/index.html</link>
+		</item>
+		<item>
+			<title>How I set up PureScript projects with ESBuild and Spago</title>
+			<description>Setting up a PureScript project with dev-server and JS interop</description>
+			<author>srijan@injuly.in</author>
+			<link>https://injuly.in:443/blog/purescript-setup/index.html</link>
+		</item>
+		<item>
+			<title>JIT compiler from scratch &#8211; 1/3</title>
+			<description>Write a JIT compiler from first principles in Zig.</description>
+			<author>srijan@injuly.in</author>
+			<link>https://injuly.in:443/blog/jit-01/index.html</link>
+		</item>
+		<item>
+			<title>Ave - JS with static types</title>
+			<description>A statically typed language that compiles to JavaScript</description>
+			<author>srijan@injuly.in</author>
+			<link>https://injuly.in:443/blog/ave-intro/index.html</link>
+		</item>
+		<item>
+			<title>Book Review: The Master Key</title>
+			<description>A review of Masako Togawa&apos;s mystery novel that won the Edogawa Rampo Prize.</description>
+			<author>srijan@injuly.in</author>
+			<link>https://injuly.in:443/blog/the-master-key/index.html</link>
+		</item>
+	</channel>
+</rss>
