@@ -162,7 +162,7 @@ code span.fu {
 } /* Function */
 
 code span.im {
-  color: var(--keyword);
+  color: var(--number);
 } /* Import */
 code span.in {
   color: #60a0b0;
