@@ -303,8 +303,8 @@ It's entirely possible that I never get around to this.
 Jam is very early in its life, and it will be a while 
 before I can recommend people use it on production projects,
 (unless you need a fast JS parser in Zig, in which case,
-I can recommend the Jam as a parsing library).
-But if you have any thoughts what you read so far, I'd love to hear them.
+I can recommend Jam as a parsing library).
+But if you have any thoughts on what you read so far, I'd love to hear them.
 
 ## Contributing to existing tools 
 
@@ -318,12 +318,12 @@ As an example, the [Kiesel JavaScript engine](https://kiesel.dev) uses Jam's
 [unicode-id](https://codeberg.org/injuly/unicode-id) library to 
 efficiently parse identifiers.
 Since that commit, I've been frequently contributing to Kiesel.
-I've have also started to see if I can to contribute to [Rolldown](https://rolldown.rs)
+I have also started to see if I can to contribute to [Rolldown](https://rolldown.rs)
 and learn more about implementing a bundler in the process.
 
 However, some ideas behind Jam—like the optimizing compiler and taint analyzer—
 truly warrant an implementation built from the ground up.
-I want to do this way I believe is right, even if it takes longer.
+I want to do this the way I believe is right, even if it takes longer.
 After all, [Rome](https://github.com/rome/tools) wasn't built in a day[^5].
 
 ## Backmatter
