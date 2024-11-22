@@ -341,5 +341,5 @@ After all, [Rome](https://github.com/rome/tools) wasn't built in a day[^5].
 
 [^4]: I'll update the repository with some comparison benchmarks shortly after I publish this post.
 
-[^5]: The title of word salad was taken from [a notgull post](https://notgull.net/announcing-dozer/) I liked. Give it a read.
+[^5]: The title this post was taken from [notgull's dozer announcement](https://notgull.net/announcing-dozer/). Give it a read.
    
