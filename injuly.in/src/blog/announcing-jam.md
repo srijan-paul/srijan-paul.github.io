@@ -91,7 +91,7 @@ function doCommand(cmd) {
 Take a moment to spot the security flaw here.
 The URL parameters in `req.params` are passed to `exec` without any safety checks.
 Ideally, a linter should flag this, but the possibility of arbitrary control flow
-and function calls between `req.params` and `exec` make it hard to track.
+and function calls between `req.params` and `exec` makes it hard to track.
 An AST alone isn't enough to reliably sniff out this flow of data.
 
 Even with its security plugins, ESLint is incapable of doing sufficiently
@@ -121,9 +121,9 @@ was an excellent reference.
 Once you see what's possible with just a little more effort, it's hard to
 sleep on this knowledge.
 An open source tool capable of advanced static code analysis and taint checking
-would be great addition to the ecosystem.
+would be a great asset to the ecosystem.
 
-There are several more improvements can be made to current linting techniques.
+There are several more improvements that can be made to current linting techniques.
 I'll list a few of them. 
 
 ### Lossless, cache efficient syntax trees
@@ -198,7 +198,7 @@ But every time I use an esquery match over if statements,
 I wonder about the performance overhead of parsing query strings
 at runtime.
 Since each query is only compiled once, would
-it make a measurable difference if the queries processed were at compile time?
+it make a measurable difference if the queries were processed at compile time?
 
 Languages with pattern matching offer this feature for free—a nice property of 
 the Rust based language tooling like Oxc and Ruff—

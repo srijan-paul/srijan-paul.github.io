@@ -1,6 +1,6 @@
 ---
 template: post
-is_blog_post: true
+is_blog_post: false
 tags:
   - compilers 
   - assembly 

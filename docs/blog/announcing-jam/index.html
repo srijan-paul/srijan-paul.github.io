@@ -119,7 +119,7 @@ and often results in inefficient, cache-unfriendly traversals.</p>
 <p>Take a moment to spot the security flaw here.
 The URL parameters in <code>req.params</code> are passed to <code>exec</code> without any safety checks.
 Ideally, a linter should flag this, but the possibility of arbitrary control flow
-and function calls between <code>req.params</code> and <code>exec</code> make it hard to track.
+and function calls between <code>req.params</code> and <code>exec</code> makes it hard to track.
 An AST alone isn&#39;t enough to reliably sniff out this flow of data.</p>
 <p>Even with its security plugins, ESLint is incapable of doing sufficiently
 advanced call-stack analysis to spot this, and probably won&#39;t be for at least a while.</p>
@@ -142,8 +142,8 @@ was an excellent reference.
 Once you see what&#39;s possible with just a little more effort, it&#39;s hard to
 sleep on this knowledge.
 An open source tool capable of advanced static code analysis and taint checking
-would be great addition to the ecosystem.</p>
-<p>There are several more improvements can be made to current linting techniques.
+would be a great asset to the ecosystem.</p>
+<p>There are several more improvements that can be made to current linting techniques.
 I&#39;ll list a few of them.</p>
 <h3 id="lossless-cache-efficient-syntax-trees">Lossless, cache efficient syntax trees</h3>
 <p>I believe it was <a href="https://github.com/carbon-language/carbon-lang">Carbon</a> that popularized
@@ -201,7 +201,7 @@ But every time I use an esquery match over if statements,
 I wonder about the performance overhead of parsing query strings
 at runtime.
 Since each query is only compiled once, would
-it make a measurable difference if the queries processed were at compile time?</p>
+it make a measurable difference if the queries were processed at compile time?</p>
 <p>Languages with pattern matching offer this feature for free—a nice property of
 the Rust based language tooling like Oxc and Ruff—
 until you decide to represent your AST nodes using the data-oriented
