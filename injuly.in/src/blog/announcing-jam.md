@@ -13,48 +13,56 @@ is_blog_post: true
          class="self-image"
          style="float: left;"
      />
-     <div style="padding-top: 3px;">
+     <div style="padding-top: 3px; line-height: 1.5;">
         <b style="font-size: 17px;">injuly:</b> I understand not everyone will be psyched about
-        JavaScript tooling.
-        Feel free to skip the prose,
-        and try the <a href="https://injuly.in/js-playground">WASM playground </a> for the parser,
+        JavaScript.
+        You can feel free to skip the prose
+        and try the <a href="https://injuly.in/js-playground">online playground </a>
+        for the parser (compiled to WASM),
         or browse the code on <a href="https://codeberg.org/injuly/jam">Codeberg</a>
         and <a href="https://github.com/srijan-paul/jam">GitHub</a>.
         All feedback is welcome!
      </div>
 </div>
 
-Few things keep me up at night like knowing there are problems out there 
-that we've learned to live with, simply because doing it right demands 
-concentrated effort, but doesn't bear any monetary incentive.
+Few things keep me up at night more than the 
+untapped potential in current developer tooling.
+The research exists; all that's needed is focused effort to improve the tools we rely on every day.
+For years, these thoughts have simmered in my mind, and
+now they've led me to start building something tangible:
+a new JS toolchain called Jam.
+It includes a static analyzer, formatter, and code optimizer.
 
-The JavaScript ecosystem—bundlers, formatters, static analyzers, even TypeScript—
-can be vastly better than what we've to come to accept as standard.
+The JavaScript ecosystem—bundlers, formatters, linters,
+and even TypeScript—has significant room for improvement.
+We’ve either accepted some limitations as the standard,
+or aren't cognizant to what better ecosystems are like.
+Fortunately, these hurdles are nowhere near the frontiers of Computer Science,
+meaning that I, the grug brained programmer, get to take a stab at it.
 
-Fortunately, competent people have invested their time into the ecosystem 
+I'm thankful that competent people have invested their time into the ecosystem 
 for those of us who couldn't.
-Evan Wallace, for example, significantly reduced JS build times 
-with the [ESBuild bundler](https://esbuild.github.io/).
-Compared to tools like webpack, esbuild finishes instantly,
-and is my go-to build tool for JavaScript/JSX/TypeScript, and even PureScript. 
+Take Evan Wallace, for example, who put JavaScript build times on the chopping block 
+with his amazing work on esbuild.
+Compared to tools like webpack, esbuild finishes before I can lift my finger off the `Enter` key,
+and has become my default choice for building JavaScript, JSX, TypeScript, [even PureScript](/blog/purescript-setup/).
 
-Like esbuild, performance issues are starting to disappear
-as devtools are ported to Rust ([Biome](https://biomejs.dev), [Rolldown](https://rolldown.rs/)),
-or are written with a performance conscious approach ([Vite](https://github.com/vitejs/vite), [Meriyah](https://github.com/meriyah/meriyah)).
-As long as the [release cadence of new JS frameworks](https://dayssincelastjavascriptframework.com/) doesn't outpace
+Like esbuild, performance issues are steadily fading as tools are ported to Rust
+([Biome](https://biomejs.dev), [Rolldown](https://rolldown.rs/))
+or take a performance-conscious approach ([Vite](https://github.com/vitejs/vite), [Meriyah](https://github.com/meriyah/meriyah)).
+So long as the release cadence of new JavaScript frameworks doesn't outpace 
 the tools that have to support them,
-there is good reason to believe that JavaScript developers will have access 
-to significantly better devtools in the future.
+the future looks promising for JS users.
 
-And yet, I believe we can do better.
+So, why am I convinced we can do better still?
 
-## Linting with more than syntax trees
+## Re-imagining JavaScript linters
 
-JavaScript linters solely rely on a syntax tree
-for information about the source code, although newer tools like Biome
-also support [control flow graphs](https://github.com/biomejs/biome/blob/main/crates/biome_control_flow/src/lib.rs).
-Using only an AST severely limits the extent to which source code can be studied,
-and often makes the linting process cache unfriendly and less performant.
+JavaScript linters traditionally rely on a syntax tree
+to analyze source code, with newer tools like Biome
+supporting [control flow graphs](https://github.com/biomejs/biome/blob/main/crates/biome_control_flow/src/lib.rs).
+Just using ASTs limits the extent to which source code can be examined, 
+and often results in inefficient, cache-unfriendly traversals. 
 
 As an example, consider this snippet:
 
@@ -70,6 +78,8 @@ app.get((req, res) => {
     res.json({});
 })
 
+
+const execCommand = cp.exec;
 function doCommand(cmd) {
     if (typeof cmd === "string") {
         const fullCmd = `ls ${cmd}`;
@@ -77,19 +87,16 @@ function doCommand(cmd) {
     } 
 }
 
-const execCommand = () => cp.exec(fullCmd);
 ```
 
-There is a security vulnerability here.
-It might have taken you a second to notice that the URL parameters present in
-`req.params` are being indirectly passed to `cp.exec` without any safety checks.
-Ideally, a linter should warn you about this, but there can be arbitrary control flow
-and function calls between `req.params` and `exec`. An AST isn't enough to
-reliably sniff out the flow of data.
+Take a moment to spot the security flaw here.
+The URL parameters in `req.params` are passed to `exec` without any safety checks.
+Ideally, a linter should flag this, but the possibility of arbitrary control flow
+and function calls between `req.params` and `exec` make it hard to track.
+An AST alone isn't enough to reliably sniff out this flow of data.
 
-Even with security plugins, ESLint is currently incapable of doing sufficiently
-advanced call-graph analysis. Even if it was, the current architecture of ESLint
-would have to retrofit an implementation that isn't exactly ideal.
+Even with its security plugins, ESLint is incapable of doing sufficiently
+advanced call-stack analysis to spot this, and probably won't be for at least a while.
 
 <div class="note" style="float: left; width: 100%; margin-bottom: 20px;">
      <img
@@ -98,38 +105,124 @@ would have to retrofit an implementation that isn't exactly ideal.
          style="float: left;"
      />
      <div style="padding-top: 3px;">
-        <b style="font-size: 17px;">injuly:</b> Don't get me wrong, ESLint is fantastic,
-        and the only linter that supports all JS flavors under the sun.
+        <b style="font-size: 17px;">injuly:</b> Don't get me wrong, ESLint is a fantastic
+        linter that supports every JavaScript flavor under the sun.
         <a href="https://humanwhocodes.com/about/">N.C Zakas</a>'s
-        foundational work has tremendously helped me at my day-job.
-        But nobody gets it right the first time.
+        foundational work has been a huge help at my day-job.
+        But hey, nobody gets it right the first time.
+        See: <a href="https://github.com/eslint/eslint/discussions/16557">#16557</a>
      </div>
 </div>
 
 I've worked on proprietary static analyzers that are capable of detecting security
-hot-spots like the one you just saw.
-While working on those projects, the source code for [Pyre](https://github.com/facebook/pyre-check),
-Facebook's Python static analyzer written in OCaml, turned out to be a great reference implementation.
-Once you find out what's possible with just a little more effort, you can't really
-sleep on this forbidden knowledge.
-An open source tool capable of advanced static code analysis can be *extremely* useful
-for the ecosystem as a whole.
+hot-spots like the one you just saw[^1].
+While writing them, I found that the source for [Pyre](https://github.com/facebook/pyre-check),
+Facebook's Python static analyzer written in OCaml,
+was an excellent reference.
+Once you see what's possible with just a little more effort, it's hard to
+sleep on this knowledge.
+An open source tool capable of advanced static code analysis and taint checking
+would be great addition to the ecosystem.
 
-There's many more ways a modern JS linter can improve over the norm:
+There are several more improvements can be made to current linting techniques.
+I'll list a few of them. 
 
-1. Cache efficient and compact parse trees, like Jam's, for faster traversal.
-2. Lossless syntax trees, like Oilshell or Rowan.
-3. Data flow IR to optimize code, like [the Closure compiler for JS](https://github.com/google/closure-compiler).
-4. An AST query language like [esquery](https://estools.github.io/esquery/), but with *zero* runtime overhead.
+### Lossless, cache efficient syntax trees
 
-All of these are things that I'm actively working on, but it will be a while before I
-can share significant updates, primarily because I'm more concerned with doing things
-the way I believe is right, even if it takes time.
+I believe it was [Carbon](https://github.com/carbon-language/carbon-lang) that popularized 
+data-oriented design for compilers.
+This approach has since been adopted by several other tools 
+(see the "Futher Reading" section of [this write-up](https://www.cs.cornell.edu/~asampson/blog/flattening.html)).
+The idea is that you store your AST/IR nodes in memory 
+so that the most common traversal order becomes a forward iteration over a buffer,
+making the traversal a cache-friendly operation.
 
-## Smart, opinionated code formatting 
+The standard format for representing JS syntax trees is called [ESTree](https://github.com/estree/estree).
+While its design is neat, I've found that it tends to be inefficient for traversal in practice.
+Most devtools do at least a few passes over the AST before anything can be reported
+to the user[^2], and nothing makes a CPU stall like a tree that's a web of pointers.
+Fortunately, compact AST representation
+isn't a complex problem to solve, and the open source Carbon compiler 
+has been a great reference for me.
+
+The other issue with ASTs is loss of information. 
+Being *abstract* by design, the full source cannot be re-constructed from a syntax tree alone.
+This has implications when developing tools that need to generate code,
+especially when dealing with whitespaces and comments.
+[Red-green trees](https://github.com/KirillOsenkov/Bliki/wiki/Roslyn-Immutable-Trees) are a well-known solution to this,
+and are used by Biome, Roslyn, and Swift's LibSyntax.
+For Jam's parser, I used the [the oilshell approach](https://www.oilshell.org/blog/2017/02/11.html) instead,
+as it goes better with a flattened syntax tree.
+
+### Optimizing code with data-flow aware IR 
+
+Rather than explain myself in words, I'll flail my arms and gesture at the 
+[Closure compiler for JavaScript](https://github.com/google/closure-compiler).
+It is not as popular as it is useful, likely because it doesn't
+gel well with existing build tools, occasionally errors out on some (rare) JS code patterns,
+and doesn't support TypeScript or JSX[^3].
+
+But the idea is there, a JavaScript code optimizer is certainly feasible,
+and something that I'm intent on experimenting with.
+
+### Compile time AST query processing 
+
+Many linting rules are really just pattern detection,
+where a part of the logic devolves into a series of nested if statements.
+To simply writing these lints, ESLint uses a handy tool called [esquery](https://estools.github.io/esquery/),
+which spares plugin authors from writing this: 
+
+```js
+if (
+  node.type == "CallExpression" && 
+  node.callee.type === "MemberExpression" &&
+  node.callee.object.type === "Identifier" &&
+  node.callee.object.name === "child_process"
+) {
+ // many of these checks are to satisfy typescript^
+}
+```
+
+And lets them write this instead:
+
+```js
+if (matches(
+    'CallExpression[callee.object.name = child_process]',
+     node
+  )) {
+  // much better 
+}
+```
+
+I owe thousands of saved keystrokes to this tool.
+But every time I use an esquery match over if statements,
+I wonder about the performance overhead of parsing query strings
+at runtime.
+Since each query is only compiled once, would
+it make a measurable difference if the queries processed were at compile time?
+
+Languages with pattern matching offer this feature for free—a nice property of 
+the Rust based language tooling like Oxc and Ruff—
+until you decide to represent your AST nodes using the data-oriented
+approach I mentioned earlier.
+
+Fortunately, Zig's `comptime` features makes it feasible,
+easy even, to implement an esquery port where the queries are processed
+and optimized at compile time, while still being able to operate on a compact
+syntax tree.
+I can also add custom syntax to the pattern language
+that Scala/Rust/Haskell pattern matching can't have.
+
+Although my intention isn't to compete with rust-based tools in speed,
+I'd like to design the toolchain in a way that ensures no obvious performance
+opportunities are left on the table, and users don't get surprise invoices after running
+Jam on their CI.
+
+## Opinionated code formatting 
 
 Of all the formatters I've used across languages, I like
 [gofumpt](https://github.com/mvdan/gofumpt) and `zig fmt` the most.
+Say I have this (already formatted) snippet of code:
 
 ```zig
 fn addFourAndPrint(firstNumber: u32, secondNumber: u32, thirdNumber: u32, fourthNumber: u32) void {
@@ -141,8 +234,8 @@ fn addFourAndPrint(firstNumber: u32, secondNumber: u32, thirdNumber: u32, fourth
 ```
 
 You probably had to scroll to read the whole thing.
-Now, if I place a comma after the last parameter in the function, and after the last argument in `print`,
-the formatter prints the code like this:
+If I place a comma after the last parameter in the function, and the last argument in `print`,
+the formatter prints it like this:
 
 ```zig
 fn addFourAndPrint(
@@ -161,14 +254,93 @@ fn addFourAndPrint(
 This behavior is slightly different in `gofumpt`, where you can break after any number of parameters,
 instead of breaking on all of them.
 
-The thing I like most about both these tools is that I can, in some capacity,
-communicate with the formatter on a case-by-case basis, without needing a config file or `// formatter-off`
-comments.
-Both formatters are strict, and projects using them will be fine without any configuration whatsoever.
+The thing I like about both these tools is that I can,
+in some capacity, communicate with the formatter on a case-by-case basis,
+without needing a config file or `// formatter-off` comments.
+Both formatters are strict,
+and projects using them will be fine without any configuration whatsoever.
 
 Although I appreciate how malleable prettier is, I'd prefer a stricter formatter
-that doesn't shy away from enforcing rules and having a rigid style.
+that doesn't shy away from enforcing rules and has a rigid style.
 I realize that this might make Jam's formatter less appealing for some, in which case, 
-it's a good thing that prettier and biome exist :)
+it's a great thing that prettier and biome both exist.
+Personally, I'd like to have fewer `rc` files if I can.
 
-## Jam's roadmap and progress
+## Roadmap and progress
+
+I drafted this essay after finishing up a fast[^4], 100% spec compliant JavaScript parser in Zig. 
+Shortly after, I made an [an online playground](https://injuly.in/js-playground/) for the parser's WASM build.
+I've since been working on adding JSX and TypeScript support,
+and have set aside some time to work on the following tools as well:
+
+1. A source-to-source JavaScript code optimizer
+2. Performant Zig ports of [esquery](https://github.com/estools/esquery) and [eslint-scope](https://github.com/eslint/eslint-scope)
+3. The runtime for Jam's analyzer
+4. An import resolver
+
+Eventually, I would like to build on the foundation laid by [stc](https://github.com/dudykr/stc/),
+and implement a TypeScript type checker that is reasonably fast and doesn't hog all memory.
+A faster compiler, and an accessible API for querying types would vastly improve the quality of TypeScript 
+tooling across the board.
+
+However, doing so is a gargantuan task for somebody with a day job,
+so no grand promises about this one just yet.
+It's entirely possible that I never get around to this.
+
+<div class="note" style="float: left; width: 100%; margin-bottom: 20px;">
+     <img
+         src="/assets/img/oshiro-dramatic.png" width="100px"
+         class="self-image"
+         style="float: left;"
+     />
+     <div style="padding-top: 3px; line-height: 1.5;">
+        <b style="font-size: 17px;">injuly:</b> Reading the <code>tsc</code> codebase,
+        its clear the authors have tried to make it as performant
+        as is feasible within the realm of JavaScript.
+        Alas, swords don't win gunfights. 
+     </div>
+</div>
+
+Jam is very early in its life, and it will be a while 
+before I can recommend people use it on production projects,
+(unless you need a fast JS parser in Zig, in which case,
+I can recommend the Jam as a parsing library).
+But if you have any thoughts what you read so far, I'd love to hear them.
+
+## Contributing to existing tools 
+
+Wouldn't it be easier to improve Oxc, Biome, or deno_lint,
+than write another toolchain from the ground up?
+For some parts, yes, it would be.
+In fact, whenever I chance upon something that other tools
+can benefit from, I send patches to them.
+
+As an example, the [Kiesel JavaScript engine](https://kiesel.dev) uses Jam's 
+[unicode-id](https://codeberg.org/injuly/unicode-id) library to 
+efficiently parse identifiers.
+Since that commit, I've been frequently contributing to Kiesel.
+I've have also started to see if I can to contribute to [Rolldown](https://rolldown.rs)
+and learn more about implementing a bundler in the process.
+
+However, some ideas behind Jam—like the optimizing compiler and taint analyzer—
+truly warrant an implementation built from the ground up.
+I want to do this way I believe is right, even if it takes longer.
+After all, [Rome](https://github.com/rome/tools) wasn't built in a day[^5].
+
+## Backmatter
+
+[^1]: An early prototype for Jam I wrote in TypeScript can also detect these vulnerabilities.
+
+[^2]: As an example, ESLint does at least four passes, first to assign `parent` property to every AST node,
+    then another for scope analysis to collect variable references, then a third
+    to prepare a list of queries that might match every node, followed by one final pass to execute the lint rules.
+
+[^3]: Is supporting JSX and TypeScript really necessary when the generated code can be optimized by Closure anyway?
+    I believe that optics are important here.
+    I'd prefer a tool that edits my TypeScript code directly over one that opaquely changes the generated code.
+    It's also much harder to review changes made to machine generated JavaScript.
+
+[^4]: I'll update the repository with some comparison benchmarks shortly after I publish this post.
+
+[^5]: The title of word salad was taken from [a notgull post](https://notgull.net/announcing-dozer/) I liked. Give it a read.
+   

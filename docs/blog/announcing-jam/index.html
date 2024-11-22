@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+    <meta name="description" content="Announcing the existence of Jam – An robust JS toolchain in Zig"></meta>
+    <meta property="og:title" content="Why am I writing a JavaScript toolchain in Zig?"></meta>
+    <meta property="twitter:title" content="Why am I writing a JavaScript toolchain in Zig?"></meta>
+    <meta property="twitter:description" content="Announcing the existence of Jam – An robust JS toolchain in Zig"></meta>
+
+     
+    <meta property="og:image" content></meta>
+		<meta name="twitter:image" content>
+    
+
+    <meta property="og:site_name" content="InJuly"></meta>
+
+		<link rel="preconnect" href="https://rsms.me/">
+		<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+
+    <link rel="stylesheet" href="/assets/css/common.css">
+    <link rel="stylesheet" href="/assets/css/post.css">
+    <link rel="stylesheet" href="/assets/css/theme.css">
+    
+
+    <script data-goatcounter="https://injuly.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+
+    <title>Why am I writing a JavaScript toolchain in Zig?</title>
+  </head>
+
+  <body>
+    <div class="main">
+      <div class="nav-container">
+        <nav>
+          <a href="/" class="nav-link">index</a>
+          <a href="/about/" class="nav-link">about</a>
+          <a href="/blog/" class="nav-link active-nav-link">blog</a>
+          <a href="/work/" class="nav-link">work</a>
+          <a href="/now/" class="nav-link">now</a>
+        </nav>
+      </div>
+
+      <div class="leader">
+        <h1> Why am I writing a JavaScript toolchain in Zig? </h1>
+				<div class="post-date"> Nov 21 </div>
+        <div class="tags" id="tags">
+            <a class="tag" href="/tags/jam.html">jam</a>
+            <a class="tag" href="/tags/personal.html">personal</a>
+        </div>
+      </div>
+      <div class="note" style="float: left; width: 100%; margin-bottom: 20px;">
+     <img src="/assets/img/oshiro-serious.png" width="100px" class="self-image" style="float: left;"></img>
+     <div style="padding-top: 3px; line-height: 1.5;">
+        <b style="font-size: 17px;">injuly:</b> I understand not everyone will be psyched about
+        JavaScript.
+        You can feel free to skip the prose
+        and try the <a href="https://injuly.in/js-playground">online playground </a>
+        for the parser (compiled to WASM),
+        or browse the code on <a href="https://codeberg.org/injuly/jam">Codeberg</a>
+        and <a href="https://github.com/srijan-paul/jam">GitHub</a>.
+        All feedback is welcome!
+     </div>
+</div>
+<p>Few things keep me up at night more than the
+untapped potential in current developer tooling.
+The research exists; all that&#39;s needed is focused effort to improve the tools we rely on every day.
+For years, these thoughts have simmered in my mind, and
+now they&#39;ve led me to start building something tangible:
+a new JS toolchain called Jam.
+It includes a static analyzer, formatter, and code optimizer.</p>
+<p>The JavaScript ecosystem—bundlers, formatters, linters,
+and even TypeScript—has significant room for improvement.
+We’ve either accepted some limitations as the standard,
+or aren&#39;t cognizant to what better ecosystems are like.
+Fortunately, these hurdles are nowhere near the frontiers of Computer Science,
+meaning that I, the grug brained programmer, get to take a stab at it.</p>
+<p>I&#39;m thankful that competent people have invested their time into the ecosystem
+for those of us who couldn&#39;t.
+Take Evan Wallace, for example, who put JavaScript build times on the chopping block
+with his amazing work on esbuild.
+Compared to tools like webpack, esbuild finishes before I can lift my finger off the <code>Enter</code> key,
+and has become my default choice for building JavaScript, JSX, TypeScript, <a href="/blog/purescript-setup/">even PureScript</a>.</p>
+<p>Like esbuild, performance issues are steadily fading as tools are ported to Rust
+(<a href="https://biomejs.dev">Biome</a>, <a href="https://rolldown.rs/">Rolldown</a>)
+or take a performance-conscious approach (<a href="https://github.com/vitejs/vite">Vite</a>, <a href="https://github.com/meriyah/meriyah">Meriyah</a>).
+So long as the release cadence of new JavaScript frameworks doesn&#39;t outpace
+the tools that have to support them,
+the future looks promising for JS users.</p>
+<p>So, why am I convinced we can do better still?</p>
+<h2 id="re-imagining-javascript-linters">Re-imagining JavaScript linters</h2>
+<p>JavaScript linters traditionally rely on a syntax tree
+to analyze source code, with newer tools like Biome
+supporting <a href="https://github.com/biomejs/biome/blob/main/crates/biome_control_flow/src/lib.rs">control flow graphs</a>.
+Just using ASTs limits the extent to which source code can be examined,
+and often results in inefficient, cache-unfriendly traversals.</p>
+<p>As an example, consider this snippet:</p>
+<code class="language-js"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> express <span class="im">from</span> <span class="st">&quot;express&quot;</span><span class="op">;</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> cp <span class="im">from</span> <span class="st">&quot;child_process&quot;</span><span class="op">;</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> app <span class="op">=</span> <span class="fu">express</span>()<span class="op">;</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>app<span class="op">.</span><span class="fu">get</span>((req<span class="op">,</span> res) <span class="kw">=&gt;</span> {</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> cmd <span class="op">=</span> req<span class="op">.</span><span class="at">params</span><span class="op">.</span><span class="at">command</span><span class="op">;</span></span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">doCommand</span>(cmd)<span class="op">;</span></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>    res<span class="op">.</span><span class="fu">json</span>({})<span class="op">;</span></span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> execCommand <span class="op">=</span> cp<span class="op">.</span><span class="at">exec</span><span class="op">;</span></span>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">doCommand</span>(cmd) {</span>
+<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="kw">typeof</span> cmd <span class="op">===</span> <span class="st">&quot;string&quot;</span>) {</span>
+<span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a>        <span class="kw">const</span> fullCmd <span class="op">=</span> <span class="vs">`ls </span><span class="sc">${</span>cmd<span class="sc">}</span><span class="vs">`</span><span class="op">;</span></span>
+<span id="17"><a href="#17" aria-hidden="true" tabindex="-1"></a>        <span class="fu">execCommand</span>(fullCmd)</span>
+<span id="18"><a href="#18" aria-hidden="true" tabindex="-1"></a>    } </span>
+<span id="19"><a href="#19" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="20"><a href="#20" aria-hidden="true" tabindex="-1"></a></span></code></pre></div></code></pre>
+<p>Take a moment to spot the security flaw here.
+The URL parameters in <code>req.params</code> are passed to <code>exec</code> without any safety checks.
+Ideally, a linter should flag this, but the possibility of arbitrary control flow
+and function calls between <code>req.params</code> and <code>exec</code> make it hard to track.
+An AST alone isn&#39;t enough to reliably sniff out this flow of data.</p>
+<p>Even with its security plugins, ESLint is incapable of doing sufficiently
+advanced call-stack analysis to spot this, and probably won&#39;t be for at least a while.</p>
+<div class="note" style="float: left; width: 100%; margin-bottom: 20px;">
+     <img src="/assets/img/oshiro-normal.png" width="100px" class="self-image" style="float: left;"></img>
+     <div style="padding-top: 3px;">
+        <b style="font-size: 17px;">injuly:</b> Don&#39;t get me wrong, ESLint is a fantastic
+        linter that supports every JavaScript flavor under the sun.
+        <a href="https://humanwhocodes.com/about/">N.C Zakas</a>&#39;s
+        foundational work has been a huge help at my day-job.
+        But hey, nobody gets it right the first time.
+        See: <a href="https://github.com/eslint/eslint/discussions/16557">#16557</a>
+     </div>
+</div>
+<p>I&#39;ve worked on proprietary static analyzers that are capable of detecting security
+hot-spots like the one you just saw<sup class="footnote-ref"><a href="#fn-1" id="fnref-1">1</a></sup>.
+While writing them, I found that the source for <a href="https://github.com/facebook/pyre-check">Pyre</a>,
+Facebook&#39;s Python static analyzer written in OCaml,
+was an excellent reference.
+Once you see what&#39;s possible with just a little more effort, it&#39;s hard to
+sleep on this knowledge.
+An open source tool capable of advanced static code analysis and taint checking
+would be great addition to the ecosystem.</p>
+<p>There are several more improvements can be made to current linting techniques.
+I&#39;ll list a few of them.</p>
+<h3 id="lossless-cache-efficient-syntax-trees">Lossless, cache efficient syntax trees</h3>
+<p>I believe it was <a href="https://github.com/carbon-language/carbon-lang">Carbon</a> that popularized
+data-oriented design for compilers.
+This approach has since been adopted by several other tools
+(see the &quot;Futher Reading&quot; section of <a href="https://www.cs.cornell.edu/~asampson/blog/flattening.html">this write-up</a>).
+The idea is that you store your AST/IR nodes in memory
+so that the most common traversal order becomes a forward iteration over a buffer,
+making the traversal a cache-friendly operation.</p>
+<p>The standard format for representing JS syntax trees is called <a href="https://github.com/estree/estree">ESTree</a>.
+While its design is neat, I&#39;ve found that it tends to be inefficient for traversal in practice.
+Most devtools do at least a few passes over the AST before anything can be reported
+to the user<sup class="footnote-ref"><a href="#fn-2" id="fnref-2">2</a></sup>, and nothing makes a CPU stall like a tree that&#39;s a web of pointers.
+Fortunately, compact AST representation
+isn&#39;t a complex problem to solve, and the open source Carbon compiler
+has been a great reference for me.</p>
+<p>The other issue with ASTs is loss of information.
+Being <em>abstract</em> by design, the full source cannot be re-constructed from a syntax tree alone.
+This has implications when developing tools that need to generate code,
+especially when dealing with whitespaces and comments.
+<a href="https://github.com/KirillOsenkov/Bliki/wiki/Roslyn-Immutable-Trees">Red-green trees</a> are a well-known solution to this,
+and are used by Biome, Roslyn, and Swift&#39;s LibSyntax.
+For Jam&#39;s parser, I used the <a href="https://www.oilshell.org/blog/2017/02/11.html">the oilshell approach</a> instead,
+as it goes better with a flattened syntax tree.</p>
+<h3 id="optimizing-code-with-data-flow-aware-ir">Optimizing code with data-flow aware IR</h3>
+<p>Rather than explain myself in words, I&#39;ll flail my arms and gesture at the
+<a href="https://github.com/google/closure-compiler">Closure compiler for JavaScript</a>.
+It is not as popular as it is useful, likely because it doesn&#39;t
+gel well with existing build tools, occasionally errors out on some (rare) JS code patterns,
+and doesn&#39;t support TypeScript or JSX<sup class="footnote-ref"><a href="#fn-3" id="fnref-3">3</a></sup>.</p>
+<p>But the idea is there, a JavaScript code optimizer is certainly feasible,
+and something that I&#39;m intent on experimenting with.</p>
+<h3 id="compile-time-ast-query-processing">Compile time AST query processing</h3>
+<p>Many linting rules are really just pattern detection,
+where a part of the logic devolves into a series of nested if statements.
+To simply writing these lints, ESLint uses a handy tool called <a href="https://estools.github.io/esquery/">esquery</a>,
+which spares plugin authors from writing this:</p>
+<code class="language-js"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>  node<span class="op">.</span><span class="at">type</span> <span class="op">==</span> <span class="st">&quot;CallExpression&quot;</span> <span class="op">&amp;&amp;</span> </span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>  node<span class="op">.</span><span class="at">callee</span><span class="op">.</span><span class="at">type</span> <span class="op">===</span> <span class="st">&quot;MemberExpression&quot;</span> <span class="op">&amp;&amp;</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>  node<span class="op">.</span><span class="at">callee</span><span class="op">.</span><span class="at">object</span><span class="op">.</span><span class="at">type</span> <span class="op">===</span> <span class="st">&quot;Identifier&quot;</span> <span class="op">&amp;&amp;</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>  node<span class="op">.</span><span class="at">callee</span><span class="op">.</span><span class="at">object</span><span class="op">.</span><span class="at">name</span> <span class="op">===</span> <span class="st">&quot;child_process&quot;</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>) {</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a> <span class="co">// many of these checks are to satisfy typescript^</span></span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
+<p>And lets them write this instead:</p>
+<code class="language-js"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">matches</span>(</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;CallExpression[callee.object.name = child_process]&#39;</span><span class="op">,</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>     node</span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>  )) {</span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>  <span class="co">// much better </span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
+<p>I owe thousands of saved keystrokes to this tool.
+But every time I use an esquery match over if statements,
+I wonder about the performance overhead of parsing query strings
+at runtime.
+Since each query is only compiled once, would
+it make a measurable difference if the queries processed were at compile time?</p>
+<p>Languages with pattern matching offer this feature for free—a nice property of
+the Rust based language tooling like Oxc and Ruff—
+until you decide to represent your AST nodes using the data-oriented
+approach I mentioned earlier.</p>
+<p>Fortunately, Zig&#39;s <code>comptime</code> features makes it feasible,
+easy even, to implement an esquery port where the queries are processed
+and optimized at compile time, while still being able to operate on a compact
+syntax tree.
+I can also add custom syntax to the pattern language
+that Scala/Rust/Haskell pattern matching can&#39;t have.</p>
+<p>Although my intention isn&#39;t to compete with rust-based tools in speed,
+I&#39;d like to design the toolchain in a way that ensures no obvious performance
+opportunities are left on the table, and users don&#39;t get surprise invoices after running
+Jam on their CI.</p>
+<h2 id="opinionated-code-formatting">Opinionated code formatting</h2>
+<p>Of all the formatters I&#39;ve used across languages, I like
+<a href="https://github.com/mvdan/gofumpt">gofumpt</a> and <code>zig fmt</code> the most.
+Say I have this (already formatted) snippet of code:</p>
+<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> addFourAndPrint(firstNumber<span class="op">:</span> <span class="dt">u32</span><span class="op">,</span> secondNumber<span class="op">:</span> <span class="dt">u32</span><span class="op">,</span> thirdNumber<span class="op">:</span> <span class="dt">u32</span><span class="op">,</span> fourthNumber<span class="op">:</span> <span class="dt">u32</span>) <span class="dt">void</span> {</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>    std<span class="op">.</span>debug<span class="op">.</span>print(</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;sum={d}&quot;</span><span class="op">,</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span>{firstNumber <span class="op">+</span> secondNumber <span class="op">+</span> thirdNumber <span class="op">+</span> fourthNumber}<span class="op">,</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>    );</span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
+<p>You probably had to scroll to read the whole thing.
+If I place a comma after the last parameter in the function, and the last argument in <code>print</code>,
+the formatter prints it like this:</p>
+<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> addFourAndPrint(</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>    firstNumber<span class="op">:</span> <span class="dt">u32</span><span class="op">,</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>    secondNumber<span class="op">:</span> <span class="dt">u32</span><span class="op">,</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>    thirdNumber<span class="op">:</span> <span class="dt">u32</span><span class="op">,</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>    fourthNumber<span class="op">:</span> <span class="dt">u32</span><span class="op">,</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>) <span class="dt">void</span> {</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>    std<span class="op">.</span>debug<span class="op">.</span>print(</span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;sum={d}&quot;</span><span class="op">,</span></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span>{firstNumber <span class="op">+</span> secondNumber <span class="op">+</span> thirdNumber <span class="op">+</span> fourthNumber}<span class="op">,</span></span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>    );</span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
+<p>This behavior is slightly different in <code>gofumpt</code>, where you can break after any number of parameters,
+instead of breaking on all of them.</p>
+<p>The thing I like about both these tools is that I can,
+in some capacity, communicate with the formatter on a case-by-case basis,
+without needing a config file or <code>// formatter-off</code> comments.
+Both formatters are strict,
+and projects using them will be fine without any configuration whatsoever.</p>
+<p>Although I appreciate how malleable prettier is, I&#39;d prefer a stricter formatter
+that doesn&#39;t shy away from enforcing rules and has a rigid style.
+I realize that this might make Jam&#39;s formatter less appealing for some, in which case,
+it&#39;s a great thing that prettier and biome both exist.
+Personally, I&#39;d like to have fewer <code>rc</code> files if I can.</p>
+<h2 id="roadmap-and-progress">Roadmap and progress</h2>
+<p>I drafted this essay after finishing up a fast<sup class="footnote-ref"><a href="#fn-4" id="fnref-4">4</a></sup>, 100% spec compliant JavaScript parser in Zig.
+Shortly after, I made an <a href="https://injuly.in/js-playground/">an online playground</a> for the parser&#39;s WASM build.
+I&#39;ve since been working on adding JSX and TypeScript support,
+and have set aside some time to work on the following tools as well:</p>
+<ol>
+<li>A source-to-source JavaScript code optimizer
+</li>
+<li>Performant Zig ports of <a href="https://github.com/estools/esquery">esquery</a> and <a href="https://github.com/eslint/eslint-scope">eslint-scope</a>
+</li>
+<li>The runtime for Jam&#39;s analyzer
+</li>
+<li>An import resolver
+</li>
+</ol>
+<p>Eventually, I would like to build on the foundation laid by <a href="https://github.com/dudykr/stc/">stc</a>,
+and implement a TypeScript type checker that is reasonably fast and doesn&#39;t hog all memory.
+A faster compiler, and an accessible API for querying types would vastly improve the quality of TypeScript
+tooling across the board.</p>
+<p>However, doing so is a gargantuan task for somebody with a day job,
+so no grand promises about this one just yet.
+It&#39;s entirely possible that I never get around to this.</p>
+<div class="note" style="float: left; width: 100%; margin-bottom: 20px;">
+     <img src="/assets/img/oshiro-dramatic.png" width="100px" class="self-image" style="float: left;"></img>
+     <div style="padding-top: 3px; line-height: 1.5;">
+        <b style="font-size: 17px;">injuly:</b> Reading the <code>tsc</code> codebase,
+        its clear the authors have tried to make it as performant
+        as is feasible within the realm of JavaScript.
+        Alas, swords don&#39;t win gunfights. 
+     </div>
+</div>
+<p>Jam is very early in its life, and it will be a while
+before I can recommend people use it on production projects,
+(unless you need a fast JS parser in Zig, in which case,
+I can recommend the Jam as a parsing library).
+But if you have any thoughts what you read so far, I&#39;d love to hear them.</p>
+<h2 id="contributing-to-existing-tools">Contributing to existing tools</h2>
+<p>Wouldn&#39;t it be easier to improve Oxc, Biome, or deno_lint,
+than write another toolchain from the ground up?
+For some parts, yes, it would be.
+In fact, whenever I chance upon something that other tools
+can benefit from, I send patches to them.</p>
+<p>As an example, the <a href="https://kiesel.dev">Kiesel JavaScript engine</a> uses Jam&#39;s
+<a href="https://codeberg.org/injuly/unicode-id">unicode-id</a> library to
+efficiently parse identifiers.
+Since that commit, I&#39;ve been frequently contributing to Kiesel.
+I&#39;ve have also started to see if I can to contribute to <a href="https://rolldown.rs">Rolldown</a>
+and learn more about implementing a bundler in the process.</p>
+<p>However, some ideas behind Jam—like the optimizing compiler and taint analyzer—
+truly warrant an implementation built from the ground up.
+I want to do this way I believe is right, even if it takes longer.
+After all, <a href="https://github.com/rome/tools">Rome</a> wasn&#39;t built in a day<sup class="footnote-ref"><a href="#fn-5" id="fnref-5">5</a></sup>.</p>
+<h2 id="backmatter">Backmatter</h2>
+<section class="footnotes">
+<div class="footnote" id="fn-1">
+<div class="footnote-number">
+<a href="#fnref-1">1</a>
+</div>
+<div class="footnote-contents">
+<p>An early prototype for Jam I wrote in TypeScript can also detect these vulnerabilities.</p>
+</div>
+</div>
+<div class="footnote" id="fn-2">
+<div class="footnote-number">
+<a href="#fnref-2">2</a>
+</div>
+<div class="footnote-contents">
+<p>As an example, ESLint does at least four passes, first to assign <code>parent</code> property to every AST node,
+then another for scope analysis to collect variable references, then a third
+to prepare a list of queries that might match every node, followed by one final pass to execute the lint rules.</p>
+</div>
+</div>
+<div class="footnote" id="fn-3">
+<div class="footnote-number">
+<a href="#fnref-3">3</a>
+</div>
+<div class="footnote-contents">
+<p>Is supporting JSX and TypeScript really necessary when the generated code can be optimized by Closure anyway?
+I believe that optics are important here.
+I&#39;d prefer a tool that edits my TypeScript code directly over one that opaquely changes the generated code.
+It&#39;s also much harder to review changes made to machine generated JavaScript.</p>
+</div>
+</div>
+<div class="footnote" id="fn-4">
+<div class="footnote-number">
+<a href="#fnref-4">4</a>
+</div>
+<div class="footnote-contents">
+<p>I&#39;ll update the repository with some comparison benchmarks shortly after I publish this post.</p>
+</div>
+</div>
+<div class="footnote" id="fn-5">
+<div class="footnote-number">
+<a href="#fnref-5">5</a>
+</div>
+<div class="footnote-contents">
+<p>The title of word salad was taken from <a href="https://notgull.net/announcing-dozer/">a notgull post</a> I liked. Give it a read.</p>
+</div>
+</div>
+</section>
+
+
+			<script src="https://giscus.app/client.js" data-repo="srijan-paul/srijan-paul.github.io" data-repo-id="MDEwOlJlcG9zaXRvcnkzMTY0MTg0NTk=" data-category="Announcements" data-category-id="DIC_kwDOEtwpm84Cdokt" data-mapping="title" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" defer>
+			</script>
+		</div>
+  </body>
+</html>
