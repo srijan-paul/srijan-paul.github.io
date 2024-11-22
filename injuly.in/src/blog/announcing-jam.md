@@ -40,8 +40,7 @@ or aren't cognizant to what better ecosystems are like.
 Fortunately, these hurdles are nowhere near the frontiers of Computer Science,
 meaning that I, the grug brained programmer, get to take a stab at it.
 
-I'm thankful that competent people have invested their time into the ecosystem 
-for those of us who couldn't.
+I'm thankful that people more competent than I have invested their time into the ecosystem.
 Take Evan Wallace, for example, who put JavaScript build times on the chopping block 
 with his amazing work on esbuild.
 Compared to tools like webpack, esbuild finishes before I can lift my finger off the `Enter` key,
