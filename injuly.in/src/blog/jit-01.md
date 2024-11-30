@@ -10,6 +10,8 @@ title: JIT compiler from scratch – 1/3
 meta: Write a JIT compiler from first principles in Zig. 
 ---
 
+*[Part 2](/blog/jit-02/)*
+
 On a discord call with [a friend](https://github.com/theteachr), I did this little challenge
 where I attempt to write a JIT compiler from scratch with only four tools at
 my disposal: a Zig compiler, the ARM reference manual,
@@ -213,7 +215,7 @@ pub fn run(self: *Self) void {
     switch (op) {
       .add  => self.push(self.pop() + self.pop()),
       .push => self.push(self.operand()),
-      else  =>  @panic("Not implemented"),
+      else  =>  std.debug.panic("Not implemented"),
     } 
   }
 }
@@ -235,7 +237,7 @@ are similarly trivial:
   const stack_index = self.operand();
   self.stack[stack_index] = self.pop();
 },
-else => @panic("Not implemented"),
+else => std.debug.panic("Not implemented"),
 ```
 
 The jump instructions are only slightly more complex.

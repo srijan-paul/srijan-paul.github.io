@@ -19,8 +19,9 @@ code.sourceCode {
 }
 div.sourceCode {
   margin: 1em 0;
-  /*padding: 10px;*/
-  background-color: var(--background);
+  /* border: 1.5px solid #e5e7eb; */
+  border-radius: 0.5em;
+  /* background-color: var(--background); */
 }
 pre.sourceCode {
   margin: 0;
@@ -67,8 +68,6 @@ pre.numberSource {
   border-left: 1px solid #aaaaaa;
   padding-left: 4px;
 }
-div.sourceCode {
-}
 
 @media screen {
   a.sourceLine::before {
@@ -77,31 +76,34 @@ div.sourceCode {
 }
 
 :root {
-  --background: #fafafa;
-  --foreground: black;
+  --background: #fef7e5;
+  --foreground: #586e75;
 
-  --keyword: #444;
-  --number: #900;
-  --comment: rgba(85, 85, 85, 0.8);
-  --type: #444;
-  --builtin: var(--type);
-  --function: var(--keyword);
+  --keyword: #9a456f;
+  --number: #007a9f;
+  --comment: #4e6e94;
+  --type: #065fbf;
+  --builtin: #d7827e;
+  --function: #bf456a;
   --operator: #555555;
-  --string: #066;
-  --var: var(--foreground);
+  --string: #a2604f;
+  --var: #006f0b;
   --constant: var(--foreground);
 
-	/* e.g - ${} in JS template strings */
-	--specialChar: var(--type);
+  /* #defines etc */
+  --preprocessor: #9f0d0f;
+
+  /* e.g - ${} in JS template strings */
+  --specialChar: #007a9f;
 
   /* diffs */
-  --diff-added: #047857;
-  --diff-removed: #f43f5e;
+  --diff-added: #005000;
+  --diff-removed: #8f1313;
 }
 
 code span.al {
   color: #ff0000;
-  font-weight: bold;
+  /* font-weight: bold; */
 } /* Alert */
 code span.an {
   color: #60a0b0;
@@ -109,7 +111,7 @@ code span.an {
   font-style: italic;
 } /* Annotation */
 code span.at {
-	/* TODO */
+  color: var(--keyword);
 } /* Attribute */
 code span.bn {
   color: #40a070;
@@ -119,7 +121,7 @@ code span.bu {
 } /* BuiltIn */
 code span.cf {
   color: var(--keyword);
-  font-weight: bold;
+  /* font-weight: bold; */
 } /* ControlFlow */
 code span.ch {
   color: #4070a0;
@@ -158,11 +160,11 @@ code span.fl {
 
 code span.fu {
   color: var(--function);
-	font-weight: bold;
+  /* font-weight: bold; */
 } /* Function */
 
 code span.im {
-  color: var(--number);
+  color: var(--keyword);
 } /* Import */
 code span.in {
   color: #60a0b0;
@@ -171,7 +173,7 @@ code span.in {
 } /* Information */
 code span.kw {
   color: var(--keyword);
-  font-weight: bold;
+  /* font-weight: bold; */
 } /* Keyword */
 code span.op {
   color: var(--operator);
@@ -180,7 +182,7 @@ code span.ot {
   color: var(--function);
 } /* Other */
 code span.pp {
-  color: #bc7a00;
+  color: var(--preprocessor);
 } /* Preprocessor */
 code span.sc {
   color: var(--specialChar);
@@ -212,10 +214,10 @@ code span.wa {
 }
 
 pre > code {
-	font-weight: normal;
+  font-weight: normal;
 }
 
 :not(pre) > code:not(:has(> div)) {
-  background-color: var(--background);
-	font-weight: normal;
+  background-color: #fafafa;
+  font-weight: normal;
 }
