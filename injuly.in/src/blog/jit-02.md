@@ -12,13 +12,13 @@ is_blog_post: true
 ---
 
 In the [previous post](/jit-01/), we set up a simple stack-based bytecode interpreter.
-Now, we'll study the Arm instruction-set, then generate and execute machine code
-while a program is running.
+Now, we'll study the Arm instruction-set to generate and execute machine code
+at runtime.
 
 Know that while I'm on an Apple Silicon laptop, 
-you can still use [qemu](https://www.qemu.org/docs/master/system/target-arm.html) to run ARM binaries x86 machines.
-Better yet, you can grab the x86-64 manual and follow along with that instead.
-Lastly, if you're not intimately familiar with the relationship between machine code, assembly files, and C source,
+you can still use [qemu](https://www.qemu.org/docs/master/system/target-arm.html) to run Arm binaries on an x86 machine.
+Better yet, you can grab the x86-64 manual and follow along with a different flavor of assembly instead.
+Lastly, if you're not familiar with the relationship between machine code, assembly files, and C source,
 you can read [this short guide](/blog/c-source-to-machine-code/) I wrote as a supplement.
 
 Everything I explain here was sourced from [the Arm reference manual](https://developer.arm.com/documentation/ddi0487/latest).
@@ -122,11 +122,11 @@ There are more of them than what I will cover, but here is all we need to keep i
 ## Generating machine code at runtime
 
 Since machine code is merely a sequence of integers,
-does that mean we can generate stuff a bunch of them
-somewhere in memory, then ask the CPU to start executing
-the said memory location as if it were machine code?
+does that mean we can write a bunch of them to some place
+in memory, then ask the CPU to treat 
+the said memory address as machine code instead of data?
 
-We can try:
+Let's try:
 
 ```c
 #include <stdio.h>
@@ -156,17 +156,17 @@ int main() {
 }
 ```
 
-Attempting to run this program will most likely end in a `bus error`.
-This is because of page protection. In most operating systems, memory
-is split up into chunks called "pages", and not all pages are created equal.
+Because of page protection, attempting to run this program will result in a `bus error`.
+In most operating systems, memory is split up into chunks called "pages",
+and not all pages are created equal.
 When an executable is loaded into memory, only the `.text` section—the part
 that stores the code—has the privilege to run as machine code.
 
-The heap, where `instrs` points, doesn't have the necessary permissions.
-To execute arbitrary code generated at runtime, we need to request
-the operating system for a page that has the permission to execute.
-On Linux and MacOS, we can do that with the [mmap](https://man7.org/linux/man-pages/man2/mmap.2.html) syscall,
-by passing it flags describing the permissions we want our page to have:
+The heap, where `instrs` points, doesn't have the permission to execute.
+To run arbitrary code generated at runtime, we need to request
+the operating system for a page in memory that can store executable code.
+On Linux and MacOS, we can do that with the [mmap](https://man7.org/linux/man-pages/man2/mmap.2.html) syscall
+by passing it flags that describe the permissions we want our page to have:
 
 ```c
 #ifndef __APPLE__
@@ -176,8 +176,15 @@ by passing it flags describing the permissions we want our page to have:
 #endif
 
 int *alloc_code_buf(size_t size) {
+  // PROT_WRITE: We want to be able to write to this page 
+  // PROT_EXEC: We want to be able to execute code on this page
   int const prot = PROT_EXEC | PROT_WRITE;
+  // MAP_ANON: We don't need to map this memory region to a file.
+  // MAP_PRIVATE: We don't want other processes to see this memory.
+  // MAP_JIT: MacOS only flag to allow JIT compilation.
   int const flags = MAP_ANON | MAP_PRIVATE | MAP_JIT;
+  // -1: We're asking the OS to find a suitable address for us,
+  // instead of specifying one ourselves.
   void *buf = mmap(NULL, size, prot, flags, -1, 0);
   return buf;
 }
@@ -187,7 +194,7 @@ int dealloc_code_buf(int *buf, size_t size) {
 }
 ```
 
-Now, we can replace `malloc` and `free` with
+Now, we can replace the `malloc` and `free` calls with
 `alloc_code_buf` and `dealloc_code_buf`:
 
 ```c
@@ -226,7 +233,7 @@ int main() {
 }
 ```
 
-Now, let's run this program again:
+Let's run this program again:
 
 ```
 $ gcc -O2 ./main.c -o ./main && ./main
@@ -234,6 +241,8 @@ twice of x is 200
 ```
 
 Brilliant!
-Using `mmap` is key to the JIT compiler we'll implement in the next part.
-You probably already have an inkling of what's coming next, feel free to
-try yourself.
+Using `mmap` is the trick we needed to implement our JIT compiler,
+as you'll see in the next post.
+You probably already have an inkling of what's coming next, so feel free to
+play around see how far you can get on your own.
+

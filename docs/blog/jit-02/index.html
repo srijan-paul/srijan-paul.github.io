@@ -54,12 +54,12 @@
         </div>
       </div>
       <p>In the <a href="/jit-01/">previous post</a>, we set up a simple stack-based bytecode interpreter.
-Now, we&#39;ll study the Arm instruction-set, then generate and execute machine code
-while a program is running.</p>
+Now, we&#39;ll study the Arm instruction-set to generate and execute machine code
+at runtime.</p>
 <p>Know that while I&#39;m on an Apple Silicon laptop,
-you can still use <a href="https://www.qemu.org/docs/master/system/target-arm.html">qemu</a> to run ARM binaries x86 machines.
-Better yet, you can grab the x86-64 manual and follow along with that instead.
-Lastly, if you&#39;re not intimately familiar with the relationship between machine code, assembly files, and C source,
+you can still use <a href="https://www.qemu.org/docs/master/system/target-arm.html">qemu</a> to run Arm binaries on an x86 machine.
+Better yet, you can grab the x86-64 manual and follow along with a different flavor of assembly instead.
+Lastly, if you&#39;re not familiar with the relationship between machine code, assembly files, and C source,
 you can read <a href="/blog/c-source-to-machine-code/">this short guide</a> I wrote as a supplement.</p>
 <p>Everything I explain here was sourced from <a href="https://developer.arm.com/documentation/ddi0487/latest">the Arm reference manual</a>.
 If you&#39;re going to follow along, I recommend having a local copy of the manual handy.</p>
@@ -172,10 +172,10 @@ There are more of them than what I will cover, but here is all we need to keep i
 </ol>
 <h2 id="generating-machine-code-at-runtime">Generating machine code at runtime</h2>
 <p>Since machine code is merely a sequence of integers,
-does that mean we can generate stuff a bunch of them
-somewhere in memory, then ask the CPU to start executing
-the said memory location as if it were machine code?</p>
-<p>We can try:</p>
+does that mean we can write a bunch of them to some place
+in memory, then ask the CPU to treat
+the said memory address as machine code instead of data?</p>
+<p>Let&#39;s try:</p>
 <code class="language-c"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
 <span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdlib.h&gt;</span></span>
 <span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdint.h&gt;</span></span>
@@ -201,16 +201,16 @@ the said memory location as if it were machine code?</p>
 <span id="23"><a href="#23" aria-hidden="true" tabindex="-1"></a>    free<span class="op">(</span>instrs<span class="op">);</span></span>
 <span id="24"><a href="#24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
 <span id="25"><a href="#25" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></code></pre>
-<p>Attempting to run this program will most likely end in a <code>bus error</code>.
-This is because of page protection. In most operating systems, memory
-is split up into chunks called &quot;pages&quot;, and not all pages are created equal.
+<p>Because of page protection, attempting to run this program will result in a <code>bus error</code>.
+In most operating systems, memory is split up into chunks called &quot;pages&quot;,
+and not all pages are created equal.
 When an executable is loaded into memory, only the <code>.text</code> section—the part
 that stores the code—has the privilege to run as machine code.</p>
-<p>The heap, where <code>instrs</code> points, doesn&#39;t have the necessary permissions.
-To execute arbitrary code generated at runtime, we need to request
-the operating system for a page that has the permission to execute.
-On Linux and MacOS, we can do that with the <a href="https://man7.org/linux/man-pages/man2/mmap.2.html">mmap</a> syscall,
-by passing it flags describing the permissions we want our page to have:</p>
+<p>The heap, where <code>instrs</code> points, doesn&#39;t have the permission to execute.
+To run arbitrary code generated at runtime, we need to request
+the operating system for a page in memory that can store executable code.
+On Linux and MacOS, we can do that with the <a href="https://man7.org/linux/man-pages/man2/mmap.2.html">mmap</a> syscall
+by passing it flags that describe the permissions we want our page to have:</p>
 <code class="language-c"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="pp">#ifndef __APPLE__</span></span>
 <span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// This is a MacOS only flag.</span></span>
 <span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>    <span class="co">// On other OSes, we can default it to 0.</span></span>
@@ -218,16 +218,23 @@ by passing it flags describing the permissions we want our page to have:</p>
 <span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a><span class="pp">#endif</span></span>
 <span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> <span class="op">*</span>alloc_code_buf<span class="op">(</span><span class="dt">size_t</span> size<span class="op">)</span> <span class="op">{</span></span>
-<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">int</span> <span class="dt">const</span> prot <span class="op">=</span> PROT_EXEC <span class="op">|</span> PROT_WRITE<span class="op">;</span></span>
-<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">int</span> <span class="dt">const</span> flags <span class="op">=</span> MAP_ANON <span class="op">|</span> MAP_PRIVATE <span class="op">|</span> MAP_JIT<span class="op">;</span></span>
-<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">void</span> <span class="op">*</span>buf <span class="op">=</span> mmap<span class="op">(</span>NULL<span class="op">,</span> size<span class="op">,</span> prot<span class="op">,</span> flags<span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
-<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> buf<span class="op">;</span></span>
-<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> dealloc_code_buf<span class="op">(</span><span class="dt">int</span> <span class="op">*</span>buf<span class="op">,</span> <span class="dt">size_t</span> size<span class="op">)</span> <span class="op">{</span></span>
-<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> munmap<span class="op">(</span>buf<span class="op">,</span> size<span class="op">);</span></span>
-<span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></code></pre>
-<p>Now, we can replace <code>malloc</code> and <code>free</code> with
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>  <span class="co">// PROT_WRITE: We want to be able to write to this page </span></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>  <span class="co">// PROT_EXEC: We want to be able to execute code on this page</span></span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">int</span> <span class="dt">const</span> prot <span class="op">=</span> PROT_EXEC <span class="op">|</span> PROT_WRITE<span class="op">;</span></span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>  <span class="co">// MAP_ANON: We don&#39;t need to map this memory region to a file.</span></span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a>  <span class="co">// MAP_PRIVATE: We don&#39;t want other processes to see this memory.</span></span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a>  <span class="co">// MAP_JIT: MacOS only flag to allow JIT compilation.</span></span>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a>  <span class="dt">int</span> <span class="dt">const</span> flags <span class="op">=</span> MAP_ANON <span class="op">|</span> MAP_PRIVATE <span class="op">|</span> MAP_JIT<span class="op">;</span></span>
+<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a>  <span class="co">// -1: We&#39;re asking the OS to find a suitable address for us,</span></span>
+<span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a>  <span class="co">// instead of specifying one ourselves.</span></span>
+<span id="17"><a href="#17" aria-hidden="true" tabindex="-1"></a>  <span class="dt">void</span> <span class="op">*</span>buf <span class="op">=</span> mmap<span class="op">(</span>NULL<span class="op">,</span> size<span class="op">,</span> prot<span class="op">,</span> flags<span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="18"><a href="#18" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> buf<span class="op">;</span></span>
+<span id="19"><a href="#19" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="20"><a href="#20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="21"><a href="#21" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> dealloc_code_buf<span class="op">(</span><span class="dt">int</span> <span class="op">*</span>buf<span class="op">,</span> <span class="dt">size_t</span> size<span class="op">)</span> <span class="op">{</span></span>
+<span id="22"><a href="#22" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> munmap<span class="op">(</span>buf<span class="op">,</span> size<span class="op">);</span></span>
+<span id="23"><a href="#23" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></code></pre>
+<p>Now, we can replace the <code>malloc</code> and <code>free</code> calls with
 <code>alloc_code_buf</code> and <code>dealloc_code_buf</code>:</p>
 <code class="language-c"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
 <span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> <span class="dt">size_t</span> codesize <span class="op">=</span> <span class="dv">2</span><span class="op">;</span></span>
@@ -262,13 +269,14 @@ by passing it flags describing the permissions we want our page to have:</p>
 <span id="31"><a href="#31" aria-hidden="true" tabindex="-1"></a></span>
 <span id="32"><a href="#32" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
 <span id="33"><a href="#33" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></code></pre>
-<p>Now, let&#39;s run this program again:</p>
+<p>Let&#39;s run this program again:</p>
 <code><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>$ gcc -O2 ./main.c -o ./main &amp;&amp; ./main</span>
 <span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>twice of x is 200</span></code></pre></div></code></pre>
 <p>Brilliant!
-Using <code>mmap</code> is key to the JIT compiler we&#39;ll implement in the next part.
-You probably already have an inkling of what&#39;s coming next, feel free to
-try yourself.</p>
+Using <code>mmap</code> is the trick we needed to implement our JIT compiler,
+as you&#39;ll see in the next post.
+You probably already have an inkling of what&#39;s coming next, so feel free to
+play around see how far you can get on your own.</p>
 
 
 			<script src="https://giscus.app/client.js" data-repo="srijan-paul/srijan-paul.github.io" data-repo-id="MDEwOlJlcG9zaXRvcnkzMTY0MTg0NTk=" data-category="Announcements" data-category-id="DIC_kwDOEtwpm84Cdokt" data-mapping="title" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" defer>
