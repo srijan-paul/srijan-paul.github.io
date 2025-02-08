@@ -97,7 +97,8 @@ pre.numberSource {
   --specialChar: #007a9f;
 
   /* diffs */
-  --diff-added: #005000;
+  --diff-added: #229f22;
+	--diff-added-bg: #63d2631f;
   --diff-removed: #8f1313;
 }
 
@@ -149,8 +150,7 @@ code span.dv {
   color: var(--number);
 } /* DecVal */
 code span.er {
-  color: #ff0000;
-  font-weight: bold;
+  color: #ca6e6e;
 } /* Error */
 code span.ex {
 } /* Extension */
@@ -207,6 +207,7 @@ code span.wa {
 
 .language-diff span.va {
   color: var(--diff-added);
+  background-color: var(--diff-added-bg);
 }
 
 .language-diff span.st {

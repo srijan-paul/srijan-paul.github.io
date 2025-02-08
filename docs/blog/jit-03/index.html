@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+    <meta name="description" content="Wrapping up our JIT compiler in Zig."></meta>
+    <meta property="og:title" content="JIT compiler from scratch – 3/3"></meta>
+    <meta property="twitter:title" content="JIT compiler from scratch – 3/3"></meta>
+    <meta property="twitter:description" content="Wrapping up our JIT compiler in Zig."></meta>
+
+     
+    <meta property="og:image" content></meta>
+		<meta name="twitter:image" content>
+    
+
+    <meta property="og:site_name" content="InJuly"></meta>
+
+		<link rel="preconnect" href="https://rsms.me/">
+		<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+
+    <link rel="stylesheet" href="/assets/css/common.css">
+    <link rel="stylesheet" href="/assets/css/post.css">
+    <link rel="stylesheet" href="/assets/css/theme.css">
+    
+
+    <script data-goatcounter="https://injuly.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+
+    <title>JIT compiler from scratch – 3/3</title>
+  </head>
+
+  <body>
+    <div class="main">
+      <div class="nav-container">
+        <nav>
+          <a href="/" class="nav-link">index</a>
+          <a href="/about/" class="nav-link">about</a>
+          <a href="/blog/" class="nav-link active-nav-link">blog</a>
+          <a href="/work/" class="nav-link">work</a>
+          <a href="/now/" class="nav-link">now</a>
+        </nav>
+      </div>
+
+      <div class="leader">
+        <h1> JIT compiler from scratch – 3/3 </h1>
+				<div class="post-date"> Feb 07 </div>
+        <div class="tags" id="tags">
+            <a class="tag" href="/tags/compilers.html">compilers</a>
+            <a class="tag" href="/tags/assembly.html">assembly</a>
+            <a class="tag" href="/tags/zig.html">zig</a>
+            <a class="tag" href="/tags/programming-languages.html">programming-languages</a>
+        </div>
+      </div>
+      <p>After <a href="/jit-02/">part 2</a>, you should have a decent understanding of instruction encoding
+for your machine&#39;s CPU architecture—ARMv8a in my case—and how to generate and execute machine instructions
+at runtime with <code>mmap</code>. That we will map our VM opcodes to machine instructions should come at no surprise, then.</p>
+<h2 id="the-unit-of-compilation">The unit of compilation</h2>
+<p>Remember that we use <code>mmap</code> to allocate an executable buffer of instructions,
+then cast it to a function pointer and call it.
+But how do we decide how many instructions to compile at a time?
+The simplest answer to compile one block of instructions at a time,
+where a block is represented using the <code>CodeBlock</code> struct in our toy interpreter.</p>
+<p>Currently, the biggest overhead in our VM is the <code>switch</code> dispatch.
+The core interpreter loop is roughly this
+(find
+<a href="https://github.com/srijan-paul/tinyjit/blob/1dabf1cb9bec88edcd7054bca5fe2c99294fa435/src/interpreter.zig#L71">loadConst</a>
+and
+<a href="https://github.com/srijan-paul/tinyjit/blob/1dabf1cb9bec88edcd7054bca5fe2c99294fa435/src/interpreter.zig#L83">pop</a>
+on the GH repo):</p>
+<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> (<span class="va">self</span><span class="op">.</span>pc <span class="op">&lt;</span> <span class="va">self</span><span class="op">.</span>current_block<span class="op">.</span>instructions<span class="op">.</span>len) {</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> instr<span class="op">:</span> Opcode <span class="op">=</span> @enumFromInt(<span class="va">self</span><span class="op">.</span>nextOp());</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">switch</span> (instr) {</span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span>push <span class="op">=&gt;</span> <span class="va">self</span><span class="op">.</span>push(<span class="va">self</span><span class="op">.</span>loadConst())<span class="op">,</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span>add <span class="op">=&gt;</span> {</span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>            <span class="at">const</span> a <span class="op">=</span> <span class="va">self</span><span class="op">.</span>pop();</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>            <span class="at">const</span> b <span class="op">=</span> <span class="va">self</span><span class="op">.</span>pop();</span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span><span class="op">.</span>push(a <span class="op">+</span> b);</span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>        <span class="co">// ... other opcodes </span></span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
+<p>Meaning that for a block like this:</p>
+<code class="language-asm"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">; CONSTANTS = [10, 20]</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="fu">b0:</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">PUSH</span> <span class="dv">0</span> <span class="co">;pushes 10</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">PUSH</span> <span class="dv">1</span> <span class="co">;pushes 20</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">ADD</span>    <span class="co">;pops twice, pushes 30</span></span></code></pre></div></code></pre>
+<p>Our interpreter performs ~7 memory reads to fetch the opcodes
+and their operands, then a few branches to determine what to do for each
+opcode, as can be seen in the <code>switch</code> statement above.</p>
+<p>If we remove all the op-code fetching and branching,
+our entire block maps to this zig snippet:</p>
+<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="va">self</span><span class="op">.</span>push(<span class="va">self</span><span class="op">.</span>loadConst()); <span class="co">// PUSH 0</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="va">self</span><span class="op">.</span>push(<span class="va">self</span><span class="op">.</span>loadConst()); <span class="co">// PUSH 1</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="co">// ADD</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a><span class="at">const</span> a <span class="op">=</span> <span class="va">self</span><span class="op">.</span>pop();</span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a><span class="at">const</span> b <span class="op">=</span> <span class="va">self</span><span class="op">.</span>pop();</span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a><span class="va">self</span><span class="op">.</span>push(a <span class="op">+</span> b);</span></code></pre></div></code></pre>
+<p>For a second, lets ignore the interpreter state
+and write the <code>b0</code> block as if it were a C function:</p>
+<code class="language-c"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">stack</span><span class="co"> Stack of values </span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="co">///</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">sp</span><span class="co"> Index of the topmost item in the stack.</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a><span class="co">/// Modified when the stack grows or shrinks.</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a><span class="co">///</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">instrs</span><span class="co"> Array of instructions</span></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a><span class="co">///</span></span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">ip</span><span class="co"> Index of the current instruction.</span></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a><span class="co">/// Modified when a new instruction is fetched.</span></span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a><span class="co">///</span></span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="an">@param</span><span class="co"> </span><span class="cv">K</span><span class="co"> Array of constants in the program.</span></span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> b0<span class="op">(</span></span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">long</span> <span class="op">*</span>stack<span class="op">,</span> <span class="dt">size_t</span> <span class="op">*</span>sp<span class="op">,</span> </span>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">long</span> <span class="op">*</span>instrs<span class="op">,</span> <span class="dt">size_t</span> <span class="op">*</span>ip<span class="op">,</span> </span>
+<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">long</span><span class="op">*</span> K</span>
+<span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a><span class="op">)</span> <span class="op">{</span></span>
+<span id="17"><a href="#17" aria-hidden="true" tabindex="-1"></a>    <span class="co">// PUSH 0</span></span>
+<span id="18"><a href="#18" aria-hidden="true" tabindex="-1"></a>    <span class="op">++*</span>ip<span class="op">;</span> <span class="co">// fetch operand for push</span></span>
+<span id="19"><a href="#19" aria-hidden="true" tabindex="-1"></a>    stack<span class="op">[*</span>sp<span class="op">]</span> <span class="op">=</span> K<span class="op">[</span>instrs<span class="op">[*</span>ip<span class="op">]];</span> <span class="co">// put constant on stack</span></span>
+<span id="20"><a href="#20" aria-hidden="true" tabindex="-1"></a>    <span class="op">++*</span>sp<span class="op">;</span> <span class="co">// increment stack size</span></span>
+<span id="21"><a href="#21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="22"><a href="#22" aria-hidden="true" tabindex="-1"></a>    <span class="op">++*</span>ip<span class="op">;</span> <span class="co">// advance instruction pointer</span></span>
+<span id="23"><a href="#23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="24"><a href="#24" aria-hidden="true" tabindex="-1"></a>    <span class="co">// PUSH 1</span></span>
+<span id="25"><a href="#25" aria-hidden="true" tabindex="-1"></a>    <span class="op">++*</span>ip<span class="op">;</span> <span class="co">// fetch operand for push</span></span>
+<span id="26"><a href="#26" aria-hidden="true" tabindex="-1"></a>    stack<span class="op">[*</span>sp<span class="op">]</span> <span class="op">=</span> K<span class="op">[</span>instrs<span class="op">[*</span>ip<span class="op">]];</span> <span class="co">// put constant on stack</span></span>
+<span id="27"><a href="#27" aria-hidden="true" tabindex="-1"></a>    <span class="op">++*</span>sp<span class="op">;</span> <span class="co">// increment stack size</span></span>
+<span id="28"><a href="#28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="29"><a href="#29" aria-hidden="true" tabindex="-1"></a>    <span class="op">++*</span>ip<span class="op">;</span> <span class="co">// advance instruction pointer</span></span>
+<span id="30"><a href="#30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="31"><a href="#31" aria-hidden="true" tabindex="-1"></a>    <span class="co">// ADD</span></span>
+<span id="32"><a href="#32" aria-hidden="true" tabindex="-1"></a>    <span class="dt">long</span> a <span class="op">=</span> stack<span class="op">[*</span>sp<span class="op">];</span> <span class="op">--*</span>sp<span class="op">;</span> <span class="co">// a = pop </span></span>
+<span id="33"><a href="#33" aria-hidden="true" tabindex="-1"></a>    <span class="dt">long</span> b <span class="op">=</span> stack<span class="op">[*</span>sp<span class="op">];</span> <span class="op">--*</span>sp<span class="op">;</span> <span class="co">// a = pop</span></span>
+<span id="34"><a href="#34" aria-hidden="true" tabindex="-1"></a>    stack<span class="op">[*</span>sp<span class="op">]</span> <span class="op">=</span> a <span class="op">+</span> b<span class="op">;</span>         <span class="co">// push(a + b)</span></span>
+<span id="35"><a href="#35" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></code></pre>
+<p>Notice that we&#39;ve removed any branching that our <code>switch</code> based interpreter loop had.
+To verify, we can compile compile this function with gcc (comments added for clarity):</p>
+<code class="language-asm"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">; Register | Parameter</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="co">; ---------|-----------</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="co">; x0       | stack</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a><span class="co">; x1       | sp</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a><span class="co">; x2       | instrs</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a><span class="co">; x3       | ip</span></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a><span class="co">; x4       | K</span></span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a><span class="fu">b0:</span></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>  <span class="co">; &quot;load&quot; the PUSH instruction</span></span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>  <span class="co">; by incrementing the instruction pointer:</span></span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>  <span class="co">; ++*ip;</span></span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a>  ldr     x8<span class="op">,</span> <span class="op">[</span>x3<span class="op">]</span>    <span class="co">; x8 &lt;- *ip</span></span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a>  <span class="bu">add</span>     x8<span class="op">,</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">1</span>  <span class="co">; x8 &lt;- x8 + 1</span></span>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a>  <span class="bu">str</span>     x8<span class="op">,</span> <span class="op">[</span>x3<span class="op">]</span>    <span class="co">; *ip &lt;- x8</span></span>
+<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a>  <span class="co">; fetch the operand for PUSH</span></span>
+<span id="17"><a href="#17" aria-hidden="true" tabindex="-1"></a>  <span class="co">; stack[*sp] = K[instrs[*ip]];</span></span>
+<span id="18"><a href="#18" aria-hidden="true" tabindex="-1"></a>  ldr     x8<span class="op">,</span> <span class="op">[</span>x2<span class="op">,</span> x8<span class="op">,</span> lsl <span class="op">#</span><span class="dv">3</span><span class="op">]</span> <span class="co">; x8 &lt;- instrs[*ip]</span></span>
+<span id="19"><a href="#19" aria-hidden="true" tabindex="-1"></a>  ldr     x9<span class="op">,</span> <span class="op">[</span>x1<span class="op">]</span>             <span class="co">; x9 &lt;- *sp</span></span>
+<span id="20"><a href="#20" aria-hidden="true" tabindex="-1"></a>  ldr     x8<span class="op">,</span> <span class="op">[</span>x4<span class="op">,</span> x8<span class="op">,</span> lsl <span class="op">#</span><span class="dv">3</span><span class="op">]</span> <span class="co">; x8 &lt;- K[x8]</span></span>
+<span id="21"><a href="#21" aria-hidden="true" tabindex="-1"></a>  <span class="bu">str</span>     x8<span class="op">,</span> <span class="op">[</span>x0<span class="op">,</span> x9<span class="op">,</span> lsl <span class="op">#</span><span class="dv">3</span><span class="op">]</span> <span class="co">; stack[*sp] &lt;- x8</span></span>
+<span id="22"><a href="#22" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="23"><a href="#23" aria-hidden="true" tabindex="-1"></a>  <span class="co">; increment the stack size</span></span>
+<span id="24"><a href="#24" aria-hidden="true" tabindex="-1"></a>  <span class="co">; ++*sp;</span></span>
+<span id="25"><a href="#25" aria-hidden="true" tabindex="-1"></a>  ldr     x8<span class="op">,</span> <span class="op">[</span>x1<span class="op">]</span>   <span class="co">; x8 &lt;- *sp</span></span>
+<span id="26"><a href="#26" aria-hidden="true" tabindex="-1"></a>  <span class="bu">add</span>     x8<span class="op">,</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">1</span> <span class="co">; x8 &lt;- x8 + 1</span></span>
+<span id="27"><a href="#27" aria-hidden="true" tabindex="-1"></a>  <span class="bu">str</span>     x8<span class="op">,</span> <span class="op">[</span>x1<span class="op">]</span>   <span class="co">; *sp &lt;- x8</span></span>
+<span id="28"><a href="#28" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="29"><a href="#29" aria-hidden="true" tabindex="-1"></a>  <span class="co">; Advance instruction pointer </span></span>
+<span id="30"><a href="#30" aria-hidden="true" tabindex="-1"></a>  <span class="co">; ++*ip;</span></span>
+<span id="31"><a href="#31" aria-hidden="true" tabindex="-1"></a>  ldr     x8<span class="op">,</span> <span class="op">[</span>x3<span class="op">]</span></span>
+<span id="32"><a href="#32" aria-hidden="true" tabindex="-1"></a>  <span class="bu">add</span>     x8<span class="op">,</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">2</span></span>
+<span id="33"><a href="#33" aria-hidden="true" tabindex="-1"></a>  <span class="bu">str</span>     x8<span class="op">,</span> <span class="op">[</span>x3<span class="op">]</span></span>
+<span id="34"><a href="#34" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="35"><a href="#35" aria-hidden="true" tabindex="-1"></a>  <span class="co">; Repeat for PUSH 1</span></span>
+<span id="36"><a href="#36" aria-hidden="true" tabindex="-1"></a>  ldr     x8<span class="op">,</span> <span class="op">[</span>x2<span class="op">,</span> x8<span class="op">,</span> lsl <span class="op">#</span><span class="dv">3</span><span class="op">]</span></span>
+<span id="37"><a href="#37" aria-hidden="true" tabindex="-1"></a>  ldr     x9<span class="op">,</span> <span class="op">[</span>x1<span class="op">]</span></span>
+<span id="38"><a href="#38" aria-hidden="true" tabindex="-1"></a>  ldr     x8<span class="op">,</span> <span class="op">[</span>x4<span class="op">,</span> x8<span class="op">,</span> lsl <span class="op">#</span><span class="dv">3</span><span class="op">]</span></span>
+<span id="39"><a href="#39" aria-hidden="true" tabindex="-1"></a>  <span class="bu">str</span>     x8<span class="op">,</span> <span class="op">[</span>x0<span class="op">,</span> x9<span class="op">,</span> lsl <span class="op">#</span><span class="dv">3</span><span class="op">]</span></span>
+<span id="40"><a href="#40" aria-hidden="true" tabindex="-1"></a>  ldr     x8<span class="op">,</span> <span class="op">[</span>x1<span class="op">]</span></span>
+<span id="41"><a href="#41" aria-hidden="true" tabindex="-1"></a>  <span class="bu">add</span>     x8<span class="op">,</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
+<span id="42"><a href="#42" aria-hidden="true" tabindex="-1"></a>  <span class="bu">str</span>     x8<span class="op">,</span> <span class="op">[</span>x1<span class="op">]</span></span>
+<span id="43"><a href="#43" aria-hidden="true" tabindex="-1"></a>  ldr     x8<span class="op">,</span> <span class="op">[</span>x3<span class="op">]</span></span>
+<span id="44"><a href="#44" aria-hidden="true" tabindex="-1"></a>  <span class="bu">add</span>     x8<span class="op">,</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
+<span id="45"><a href="#45" aria-hidden="true" tabindex="-1"></a>  <span class="bu">str</span>     x8<span class="op">,</span> <span class="op">[</span>x3<span class="op">]</span></span>
+<span id="46"><a href="#46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="47"><a href="#47" aria-hidden="true" tabindex="-1"></a>  <span class="co">; load the first operand for add into x10</span></span>
+<span id="48"><a href="#48" aria-hidden="true" tabindex="-1"></a>  ldr     x8<span class="op">,</span> <span class="op">[</span>x1<span class="op">]</span></span>
+<span id="49"><a href="#49" aria-hidden="true" tabindex="-1"></a>  <span class="bu">sub</span>     x9<span class="op">,</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
+<span id="50"><a href="#50" aria-hidden="true" tabindex="-1"></a>  ldr     x10<span class="op">,</span> <span class="op">[</span>x0<span class="op">,</span> x8<span class="op">,</span> lsl <span class="op">#</span><span class="dv">3</span><span class="op">]</span></span>
+<span id="51"><a href="#51" aria-hidden="true" tabindex="-1"></a>  <span class="bu">sub</span>     x8<span class="op">,</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">2</span></span>
+<span id="52"><a href="#52" aria-hidden="true" tabindex="-1"></a>  <span class="bu">str</span>     x9<span class="op">,</span> <span class="op">[</span>x1<span class="op">]</span></span>
+<span id="53"><a href="#53" aria-hidden="true" tabindex="-1"></a>  <span class="co">; load second operand for add into x9</span></span>
+<span id="54"><a href="#54" aria-hidden="true" tabindex="-1"></a>  ldr     x9<span class="op">,</span> <span class="op">[</span>x0<span class="op">,</span> x9<span class="op">,</span> lsl <span class="op">#</span><span class="dv">3</span><span class="op">]</span></span>
+<span id="55"><a href="#55" aria-hidden="true" tabindex="-1"></a>  <span class="bu">str</span>     x8<span class="op">,</span> <span class="op">[</span>x1<span class="op">]</span></span>
+<span id="56"><a href="#56" aria-hidden="true" tabindex="-1"></a>  <span class="co">; x9 = x9 + x10</span></span>
+<span id="57"><a href="#57" aria-hidden="true" tabindex="-1"></a>  <span class="bu">add</span>     x9<span class="op">,</span> x9<span class="op">,</span> x10</span>
+<span id="58"><a href="#58" aria-hidden="true" tabindex="-1"></a>  <span class="co">; push result to stack</span></span>
+<span id="59"><a href="#59" aria-hidden="true" tabindex="-1"></a>  <span class="bu">str</span>     x9<span class="op">,</span> <span class="op">[</span>x0<span class="op">,</span> x8<span class="op">,</span> lsl <span class="op">#</span><span class="dv">3</span><span class="op">]</span></span>
+<span id="60"><a href="#60" aria-hidden="true" tabindex="-1"></a>  <span class="cf">ret</span></span></code></pre></div></code></pre>
+<p>We get rid of two kinds of overheads immediately –
+fetching the opcode from memory, and
+branching to the correct opcode handler, like with the <code>switch</code> statement.</p>
+<p>Our strategy for JIT compilation is simple:</p>
+<ol>
+<li>Monitor the interpreter&#39;s execution, and every time a block
+loops back to <em>itself</em>, we recognize that block as the body of a <em>hot loop</em>.
+</li>
+<li>Extract the instructions in that block and compile them to a <code>mmap</code>ed
+function equivalent to <code>b0</code>.
+</li>
+<li>Whenever the block is reached next, call the compiled function instead
+of interpreting the instructions.
+</li>
+</ol>
+<h2 id="assembling-instructions-on-the-fly">Assembling instructions on the fly</h2>
+<p>Before we make any changes to the interpreter, we first need an assembler to compile opcodes to machine code.
+We&#39;ll keep this in a separate file called <a href="https://github.com/srijan-paul/tinyjit/blob/1dabf1cb9bec88edcd7054bca5fe2c99294fa435/src/jit.zig"><code>jit.zig</code></a>.
+Starting with the imports:</p>
+<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">// src/jit.zig</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="at">const</span> std <span class="op">=</span> <span class="bu">@import</span>(<span class="st">&quot;std&quot;</span>);</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="at">const</span> interp <span class="op">=</span> <span class="bu">@import</span>(<span class="st">&quot;interpreter.zig&quot;</span>);</span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a><span class="at">const</span> mman <span class="op">=</span> <span class="bu">@cImport</span>(<span class="bu">@cInclude</span>(<span class="st">&quot;sys/mman.h&quot;</span>));</span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a><span class="at">const</span> pthread <span class="op">=</span> <span class="bu">@cImport</span>(<span class="bu">@cInclude</span>(<span class="st">&quot;pthread.h&quot;</span>));</span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a><span class="at">const</span> CodeBlock <span class="op">=</span> interp<span class="op">.</span>CodeBlock;</span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a><span class="at">const</span> Interpreter <span class="op">=</span> interp<span class="op">.</span>Interpreter;</span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a><span class="at">const</span> Opcode <span class="op">=</span> interp<span class="op">.</span>Opcode;</span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a><span class="at">const</span> Op <span class="op">=</span> interp<span class="op">.</span>Op;</span></code></pre></div></code></pre>
+<p>For architecture specific magic, we define a struct to generate Armv8a instructions,
+and an enum to represent the registers we will be using:</p>
+<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">// src/jit.zig</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="at">const</span> Armv8a <span class="op">=</span> <span class="kw">struct</span> {</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> Reg <span class="op">=</span> <span class="kw">enum</span>(<span class="dt">u32</span>) { </span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>        x0 <span class="op">=</span> <span class="dv">0</span><span class="op">,</span> x1<span class="op">,</span> x2<span class="op">,</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>        x3<span class="op">,</span> x4<span class="op">,</span> x5<span class="op">,</span> x6<span class="op">,</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>        x7<span class="op">,</span> x8<span class="op">,</span> x9<span class="op">,</span> x10<span class="op">,</span></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>        x11<span class="op">,</span> x12</span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>    };</span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>};</span></code></pre></div></code></pre>
+<p>In the previous entry, I had mentioned that the <code>ret</code> instruction has the opcode <code>0xd65f03c0</code> in Armv8a,
+making it the simplest instruction to generate:</p>
+<code class="language-diff"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>// src/jit.zig</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a> const Armv8a = struct {</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>     const Reg = enum(u32) { </span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>         x0 = 0, x1, x2,</span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>         x3, x4, x5, x6,</span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>         x7, x8, x9, x10,</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>         x11, x12</span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>     };</span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a><span class="va">+    pub const ret = 0xd65f03c0;</span></span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a> };</span></code></pre></div></code></pre>
+<p>The <code>ADD</code> instruction is slightly more involved, as it requires three <em>register</em> operands:
+a destination and two sources: <code>ADD &lt;dst&gt; &lt;src1&gt; &lt;src2&gt;</code>.
+I had briefly mentioned instruction encoding in the previous post, to recap:</p>
+<blockquote>
+<p>In the 32-bit integer used to encode an ADD instruction,
+the lowest five bits store the destination register, the next five
+store the first source register, and bits <code>16-20</code> store the other source register.</p>
+</blockquote>
+<blockquote>
+<p>We can ignore the <code>shift</code> and <code>imm</code> bits.
+These are used to scale the addition by 2, 4, 8, etc.
+when computing array indices or doing pointer arithmetic.
+In our case, both of them will always be set to 0.</p>
+</blockquote>
+<blockquote>
+<p>The <code>sf</code> bit is used to differentiate between A64 and A32 modes,
+and will be <code>1</code> for us, since we only ever want A64.</p>
+</blockquote>
+<blockquote>
+<p>Finally, the <code>01101000</code> in bits 24-30 is a unique bit sequence that the CPU
+associates with an ADD instruction; think of it as the opcode.</p>
+</blockquote>
+<p>So to generate an <code>ADD</code> instruction, we just need to set the registers in the right bit positions:</p>
+<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">// src/jit.zig - struct Armv8a {</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">inline</span> <span class="kw">fn</span> addRegs(</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>    dst_reg<span class="op">:</span> Reg<span class="op">,</span> reg_a<span class="op">:</span> Reg<span class="op">,</span> reg_b<span class="op">:</span> Reg</span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>) <span class="dt">u32</span> {</span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> a <span class="op">=</span> @intFromEnum(reg_a);</span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> b <span class="op">=</span> @intFromEnum(reg_b);</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> dst <span class="op">=</span> @intFromEnum(dst_reg);</span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>    <span class="co">// 0x8b000000 is the opcode for ADD</span></span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>    <span class="co">// (or the hex for 0b1101000 &lt;&lt; 24).</span></span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="er">x8b000000</span> <span class="op">|</span> (b <span class="op">&lt;&lt;</span> <span class="dv">16</span>) <span class="op">|</span> (a <span class="op">&lt;&lt;</span> <span class="dv">5</span>) <span class="op">|</span> dst;</span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
+<p>In the call site where we want to generate an <code>ADD</code> instruction,
+we just pass the registers to this helper like so:</p>
+<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="at">const</span> Reg <span class="op">=</span> Armv8a<span class="op">.</span>Reg;</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="at">const</span> add_x0_x1_x0 <span class="op">=</span> Armv8a<span class="op">.</span>addRegs(Reg<span class="op">.</span>x0<span class="op">,</span> Reg<span class="op">.</span>x1<span class="op">,</span> Reg<span class="op">.</span>x0);</span></code></pre></div></code></pre>
+<p>Obviously, we&#39;ll need more than just the <code>add</code> and <code>ret</code> instructions.
+To save you the trouble of reading through all of it, I&#39;ll just link to
+<a href="https://github.com/srijan-paul/tinyjit/blob/1dabf1cb9bec88edcd7054bca5fe2c99294fa435/src/jit.zig#L11">the final implementation</a>
+of the <code>Armv8a</code> struct, which a bunch of functions to generate instructions for branching, comparisons, etc.</p>
+<p>To assert the assembler&#39;s correctness, we can use <code>gcc</code> or <code>as</code> to compile some assembly code on our machine,
+then compare gcc&#39;s output with that of our assembler:</p>
+<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">test</span> <span class="st">&quot;Armv8a code generation&quot;</span> {</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// add x9, x11, x9</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>    <span class="co">// The &quot;0x8b090169&quot; was taken from using `objdump -d` on </span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>    <span class="co">// a binary compiled with `as`.</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span> std<span class="op">.</span>testing<span class="op">.</span>expectEqual(</span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>        <span class="dv">0</span><span class="er">x8b090169</span><span class="op">,</span></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>        Armv8a<span class="op">.</span>addRegs(<span class="op">.</span>x9<span class="op">,</span> <span class="op">.</span>x11<span class="op">,</span> <span class="op">.</span>x9)</span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>    );</span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
+<h2 id="the-jit-compiler">The JIT compiler</h2>
+<p>The functions generated by our JIT compiler will have the same signature as
+the <code>b0</code> function in C  that we wrote earlier.
+We&#39;ll represent this function type with a type alias:</p>
+<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">// src/jit.zig</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="at">const</span> JitFunction <span class="op">=</span> <span class="op">*</span><span class="kw">fn</span> (</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>    stack<span class="op">:</span> [<span class="op">*</span>]<span class="dt">i64</span><span class="op">,</span> <span class="co">// x0</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>    instructions<span class="op">:</span> [<span class="op">*</span>]<span class="at">const</span> <span class="dt">u8</span><span class="op">,</span> <span class="co">// x1</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>    stack_ptr<span class="op">:</span> <span class="op">*</span><span class="dt">usize</span><span class="op">,</span> <span class="co">// x2</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>    instr_ptr<span class="op">:</span> <span class="op">*</span><span class="dt">usize</span><span class="op">,</span> <span class="co">// x3</span></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>    current_block_index<span class="op">:</span> <span class="op">*</span><span class="dt">usize</span><span class="op">,</span> <span class="co">// x5</span></span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>    constants<span class="op">:</span> [<span class="op">*</span>]<span class="at">const</span> <span class="dt">i64</span><span class="op">,</span> <span class="co">// x6</span></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>) <span class="kw">callconv</span>(<span class="op">.</span>C) <span class="dt">void</span>;</span></code></pre></div></code></pre>
+<p>Notice the <code>callconv(.C)</code> attribute, which tells Zig to use the C calling convention for this function.
+Zig is not guaranteed to follow the calling convention we covered in the previous post,
+so we need to be explicit with the annotation.</p>
+<p>Finally, we define the <code>JITCompiler</code> struct, which will hold the state of our JIT compiler:</p>
+<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="at">const</span> JITCompiler <span class="op">=</span> <span class="kw">struct</span> {</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>    allocator<span class="op">:</span> std<span class="op">.</span>mem<span class="op">.</span>Allocator<span class="op">,</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// The interpreter instance that we are compiling for.</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// We need this to access the stack, blocks, and constants.</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>    interpreter<span class="op">:</span> <span class="op">*</span><span class="at">const</span> Interpreter<span class="op">,</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// The compiled instructions go here before we</span></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// place them in an `mmap`-ed buffer. </span></span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>    machine_code<span class="op">:</span> std<span class="op">.</span>ArrayList(<span class="dt">u32</span>)<span class="op">,</span> </span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// Register names where the arguments are stored</span></span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> ArgReg <span class="op">=</span> <span class="kw">struct</span> {</span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a>        <span class="at">const</span> stackAddr <span class="op">=</span> <span class="op">.</span>x0;</span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a>        <span class="at">const</span> instructionsAddr <span class="op">=</span> <span class="op">.</span>x1;</span>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a>        <span class="at">const</span> stackIndexPtr <span class="op">=</span> <span class="op">.</span>x2;</span>
+<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a>        <span class="at">const</span> instrIndexPtr <span class="op">=</span> <span class="op">.</span>x3;</span>
+<span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a>        <span class="at">const</span> currentBlockNumber <span class="op">=</span> <span class="op">.</span>x4;</span>
+<span id="17"><a href="#17" aria-hidden="true" tabindex="-1"></a>        <span class="at">const</span> constantsAddr <span class="op">=</span> <span class="op">.</span>x5;</span>
+<span id="18"><a href="#18" aria-hidden="true" tabindex="-1"></a>    };</span>
+<span id="19"><a href="#19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="20"><a href="#20" aria-hidden="true" tabindex="-1"></a>    <span class="co">/// Register names for local variables</span></span>
+<span id="21"><a href="#21" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> VarReg <span class="op">=</span> <span class="kw">struct</span> {</span>
+<span id="22"><a href="#22" aria-hidden="true" tabindex="-1"></a>        <span class="at">const</span> stackIndex <span class="op">=</span> <span class="op">.</span>x8;</span>
+<span id="23"><a href="#23" aria-hidden="true" tabindex="-1"></a>        <span class="at">const</span> instrIndex <span class="op">=</span> <span class="op">.</span>x12;</span>
+<span id="24"><a href="#24" aria-hidden="true" tabindex="-1"></a>        <span class="at">const</span> tempA <span class="op">=</span> <span class="op">.</span>x9;</span>
+<span id="25"><a href="#25" aria-hidden="true" tabindex="-1"></a>        <span class="at">const</span> tempB <span class="op">=</span> <span class="op">.</span>x10;</span>
+<span id="26"><a href="#26" aria-hidden="true" tabindex="-1"></a>        <span class="at">const</span> tempC <span class="op">=</span> <span class="op">.</span>x11;</span>
+<span id="27"><a href="#27" aria-hidden="true" tabindex="-1"></a>    };</span>
+<span id="28"><a href="#28" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="29"><a href="#29" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> <span class="kw">fn</span> init(</span>
+<span id="30"><a href="#30" aria-hidden="true" tabindex="-1"></a>        allocator<span class="op">:</span> std<span class="op">.</span>mem<span class="op">.</span>Allocator<span class="op">,</span></span>
+<span id="31"><a href="#31" aria-hidden="true" tabindex="-1"></a>        interpreter<span class="op">:</span> <span class="op">*</span>Interpreter</span>
+<span id="32"><a href="#32" aria-hidden="true" tabindex="-1"></a>    ) JITCompiler {</span>
+<span id="33"><a href="#33" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="op">.</span>{</span>
+<span id="34"><a href="#34" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span>allocator <span class="op">=</span> allocator<span class="op">,</span></span>
+<span id="35"><a href="#35" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span>interpreter <span class="op">=</span> interpreter<span class="op">,</span></span>
+<span id="36"><a href="#36" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span>machine_code <span class="op">=</span> std<span class="op">.</span>ArrayList(<span class="dt">u32</span>)<span class="op">.</span>init(allocator)<span class="op">,</span></span>
+<span id="37"><a href="#37" aria-hidden="true" tabindex="-1"></a>        };</span>
+<span id="38"><a href="#38" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="39"><a href="#39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="40"><a href="#40" aria-hidden="true" tabindex="-1"></a>    <span class="kw">pub</span> <span class="kw">fn</span> deinit(<span class="va">self</span><span class="op">:</span> <span class="op">*</span><span class="at">const</span> JITCompiler) <span class="dt">void</span> {</span>
+<span id="41"><a href="#41" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span><span class="op">.</span>machine_code<span class="op">.</span>deinit();</span>
+<span id="42"><a href="#42" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="43"><a href="#43" aria-hidden="true" tabindex="-1"></a>};</span></code></pre></div></code></pre>
+<p>Let&#39;s plop in some code to allocate and free the <code>mmap</code>ed buffers:</p>
+<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">// src/jit.zig -&gt; struct JITCompiler {</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> allocJitBuf(nbytes<span class="op">:</span> <span class="dt">usize</span>) [<span class="op">*</span>]<span class="dt">u32</span> {</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> prot_flags <span class="op">=</span> mman<span class="op">.</span>PROT_WRITE <span class="op">|</span> mman<span class="op">.</span>PROT_EXEC;</span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> mmap_flags <span class="op">=</span> </span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>        mman<span class="op">.</span>MAP_PRIVATE </span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>        <span class="op">|</span> mman<span class="op">.</span>MAP_ANONYMOUS </span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>        <span class="op">|</span> mman<span class="op">.</span>MAP_JIT;</span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> buf<span class="op">:</span> <span class="op">*</span><span class="dt">anyopaque</span> <span class="op">=</span> mman<span class="op">.</span>mmap(</span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>        <span class="cn">null</span><span class="op">,</span> nbytes<span class="op">,</span> prot_flags<span class="op">,</span>  mmap_flags<span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">,</span> <span class="dv">0</span></span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>    ) <span class="kw">orelse</span> <span class="kw">unreachable</span>; <span class="co">// WARN: ideally, return an error </span></span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (buf <span class="op">==</span> mman<span class="op">.</span>MAP_FAILED) {</span>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a>        std<span class="op">.</span>debug<span class="op">.</span>panic(<span class="st">&quot;mmap failed</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> <span class="op">.</span>{});</span>
+<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="17"><a href="#17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">@ptrCast</span>(<span class="bu">@alignCast</span>(buf));</span>
+<span id="18"><a href="#18" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="19"><a href="#19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="20"><a href="#20" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> deallocJitBuf(buf<span class="op">:</span> [<span class="op">*</span>]<span class="dt">u32</span><span class="op">,</span> size<span class="op">:</span> <span class="dt">usize</span>) <span class="dt">void</span> {</span>
+<span id="21"><a href="#21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (mman<span class="op">.</span>munmap(buf<span class="op">,</span> size) <span class="op">!=</span> <span class="dv">0</span>) {</span>
+<span id="22"><a href="#22" aria-hidden="true" tabindex="-1"></a>        std<span class="op">.</span>debug<span class="op">.</span>panic(<span class="st">&quot;munmap failed</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> <span class="op">.</span>{});</span>
+<span id="23"><a href="#23" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="24"><a href="#24" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
+<p>This is nearly identical to the <code>alloc_code_buf</code> and <code>dealloc_code_buf</code> functions in C from the previous post.</p>
+<p>Let&#39;s also write a simple helper that takes a machine code instruction, and writes it to the <code>ArrayList</code>
+that stores all instructions for the block we&#39;re compiling:</p>
+<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">/// src/jit.zig -&gt; struct JITCompiler {</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> emit(<span class="va">self</span><span class="op">:</span> <span class="op">*</span>JITCompiler<span class="op">,</span> instr<span class="op">:</span> <span class="dt">u32</span>) <span class="op">!</span><span class="dt">void</span> {</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span> <span class="va">self</span><span class="op">.</span>machine_code<span class="op">.</span>append(instr);</span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
+<p>To perform fewer memory accesses,
+we will load the stack and instruction pointers into machine registers when the function is called,
+modify them as needed during execution, and then write them back to memory before returning.</p>
+<p>The <code>emitPrologue</code> and <code>emitEpilogue</code> functions will take care of loading and storing the registers respectively:</p>
+<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">// int sp = *stack_ptr;</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="co">// int ip = *instr_ptr;</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="co">// where `sp` and `ip` are stored in </span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a><span class="co">// the registers `.x8` and `.x12` respectively</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a><span class="co">// (aliased as `VarReg.stackIndex` and `VarReg.instrIndex`)</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> emitPrelude(<span class="va">self</span><span class="op">:</span> <span class="op">*</span>JITCompiler) <span class="op">!</span><span class="dt">void</span> {</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>    <span class="co">// deref the stack pointer, store it in a local var</span></span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span> <span class="va">self</span><span class="op">.</span>emit(</span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>        Armv8a<span class="op">.</span>ldrReg(VarReg<span class="op">.</span>stackIndex<span class="op">,</span> ArgReg<span class="op">.</span>stackIndexPtr)</span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>    );</span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>    <span class="co">// deref the instruction pointer, store it in a local var</span></span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span> <span class="va">self</span><span class="op">.</span>emit(</span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a>        Armv8a<span class="op">.</span>ldrReg(VarReg<span class="op">.</span>instrIndex<span class="op">,</span> ArgReg<span class="op">.</span>instrIndexPtr)</span>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a>    );</span>
+<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="17"><a href="#17" aria-hidden="true" tabindex="-1"></a><span class="co">/// Restore the stack and instruction pointers</span></span>
+<span id="18"><a href="#18" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> emitEpilogue(<span class="va">self</span><span class="op">:</span> <span class="op">*</span>JITCompiler) <span class="op">!</span><span class="dt">void</span> {</span>
+<span id="19"><a href="#19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span> <span class="va">self</span><span class="op">.</span>emit(</span>
+<span id="20"><a href="#20" aria-hidden="true" tabindex="-1"></a>        Armv8a<span class="op">.</span>strReg(</span>
+<span id="21"><a href="#21" aria-hidden="true" tabindex="-1"></a>            VarReg<span class="op">.</span>stackIndex<span class="op">,</span></span>
+<span id="22"><a href="#22" aria-hidden="true" tabindex="-1"></a>            ArgReg<span class="op">.</span>stackIndexPtr<span class="op">,</span></span>
+<span id="23"><a href="#23" aria-hidden="true" tabindex="-1"></a>            <span class="dv">0</span><span class="op">,</span></span>
+<span id="24"><a href="#24" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="25"><a href="#25" aria-hidden="true" tabindex="-1"></a>    );</span>
+<span id="26"><a href="#26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span> <span class="va">self</span><span class="op">.</span>emit(</span>
+<span id="27"><a href="#27" aria-hidden="true" tabindex="-1"></a>        Armv8a<span class="op">.</span>strReg(</span>
+<span id="28"><a href="#28" aria-hidden="true" tabindex="-1"></a>            VarReg<span class="op">.</span>instrIndex<span class="op">,</span></span>
+<span id="29"><a href="#29" aria-hidden="true" tabindex="-1"></a>            ArgReg<span class="op">.</span>instrIndexPtr<span class="op">,</span></span>
+<span id="30"><a href="#30" aria-hidden="true" tabindex="-1"></a>            <span class="dv">0</span><span class="op">,</span></span>
+<span id="31"><a href="#31" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="32"><a href="#32" aria-hidden="true" tabindex="-1"></a>    );</span>
+<span id="33"><a href="#33" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
+<p>We&#39;ll also want some helpers to generate machine code that performs
+common operations like pushing and popping from the stack:</p>
+<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">// src/jit.zig -&gt; struct JITCompiler {</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="co">/// emit `sp = sp - 1`</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a><span class="co">/// Where `sp` is stored in the local variable `stackIndex`</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> emitPop(<span class="va">self</span><span class="op">:</span> <span class="op">*</span>JITCompiler) <span class="op">!</span><span class="dt">void</span> {</span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span> <span class="va">self</span><span class="op">.</span>emit(Armv8a<span class="op">.</span>subRegImm(</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>        VarReg<span class="op">.</span>stackIndex<span class="op">,</span></span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>        VarReg<span class="op">.</span>stackIndex<span class="op">,</span></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>        <span class="dv">1</span><span class="op">,</span></span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>    ));</span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a><span class="co">/// emit the `ret` instruction</span></span>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> emitReturn(<span class="va">self</span><span class="op">:</span> <span class="op">*</span>JITCompiler) <span class="op">!</span><span class="dt">void</span> {</span>
+<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span> <span class="va">self</span><span class="op">.</span>emitEpilogue();</span>
+<span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span> <span class="va">self</span><span class="op">.</span>emit(Armv8a<span class="op">.</span>ret);</span>
+<span id="17"><a href="#17" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
+<p>In addition to these, we&#39;ll want four more helpers:</p>
+<ol>
+<li><a href="https://github.com/srijan-paul/tinyjit/blob/1dabf1cb9bec88edcd7054bca5fe2c99294fa435/src/jit.zig#L242">emitPushReg</a>: Push the contents of machine register onto the stack.
+</li>
+<li><a href="https://github.com/srijan-paul/tinyjit/blob/1dabf1cb9bec88edcd7054bca5fe2c99294fa435/src/jit.zig#L261">emitAdvanceIp</a>: Increment the instruction pointer (<code>VarReg.instrIndex</code>).
+</li>
+<li><a href="https://github.com/srijan-paul/tinyjit/blob/1dabf1cb9bec88edcd7054bca5fe2c99294fa435/src/jit.zig#L269">readInstruction</a>: Load the next instruction to a machine register.
+</li>
+<li><a href="https://github.com/srijan-paul/tinyjit/blob/1dabf1cb9bec88edcd7054bca5fe2c99294fa435/src/jit.zig#L279">readStackTop</a>: Load the topmost item in the stack to a machine register.
+</li>
+</ol>
+<p>With these helpers in place, we can now write the <code>compileBlock</code> function that takes a block of instructions
+and compiles them to a function:</p>
+<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">fn</span> compileBlock(<span class="va">self</span><span class="op">:</span> <span class="op">*</span>JITCompiler<span class="op">,</span> block_number<span class="op">:</span> <span class="dt">usize</span><span class="op">,</span> block<span class="op">:</span> <span class="op">*</span><span class="at">const</span> CodeBlock) <span class="op">!</span>CompiledFunction {</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span> <span class="va">self</span><span class="op">.</span>emitPrelude();</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>    <span class="co">// for each instruction in the block,</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>    <span class="co">// increment the instruction pointer, and equivalent generate machine </span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>    <span class="at">var</span> i<span class="op">:</span> <span class="dt">usize</span> <span class="op">=</span> <span class="dv">0</span>;</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> (i <span class="op">&lt;</span> block<span class="op">.</span>instructions<span class="op">.</span>len) {</span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>        <span class="at">const</span> instruction <span class="op">=</span> block<span class="op">.</span>instructions[i];</span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>        <span class="at">const</span> op<span class="op">:</span> Opcode <span class="op">=</span> @enumFromInt(instruction);</span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>        <span class="co">// ip += 1;</span></span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span> <span class="va">self</span><span class="op">.</span>emit(Armv8a<span class="op">.</span>addRegImm(</span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a>            VarReg<span class="op">.</span>instrIndex<span class="op">,</span></span>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a>            VarReg<span class="op">.</span>instrIndex<span class="op">,</span></span>
+<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a>            <span class="dv">1</span><span class="op">,</span></span>
+<span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a>        ));</span>
+<span id="17"><a href="#17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="18"><a href="#18" aria-hidden="true" tabindex="-1"></a>        i <span class="op">+=</span> <span class="dv">1</span>;</span>
+<span id="19"><a href="#19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="20"><a href="#20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">switch</span> (op) {</span>
+<span id="21"><a href="#21" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span> <span class="op">=&gt;</span> <span class="kw">unreachable</span></span>
+<span id="22"><a href="#22" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="23"><a href="#23" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="24"><a href="#24" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="25"><a href="#25" aria-hidden="true" tabindex="-1"></a>    <span class="co">// *stack_ptr = sp;</span></span>
+<span id="26"><a href="#26" aria-hidden="true" tabindex="-1"></a>    <span class="co">// *instr_ptr = ip;</span></span>
+<span id="27"><a href="#27" aria-hidden="true" tabindex="-1"></a>    <span class="co">// return</span></span>
+<span id="28"><a href="#28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span> <span class="va">self</span><span class="op">.</span>emitReturn();</span>
+<span id="29"><a href="#29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="va">self</span><span class="op">.</span>getCompiledFunction();</span>
+<span id="30"><a href="#30" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
+<p>The <code>getCompiledFunction</code> called at the end is a helper that takes the machine code generated so far
+in the <code>ArrayList</code> and copies it to a <code>mmap</code>ed buffer, then returns it:</p>
+<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">// src/jit.zig -&gt; struct JITCompiler {</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="co">/// Take all the machine code instructions emitted so far,</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a><span class="co">/// compile them into a function, then return the function.</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> getCompiledFunction(<span class="va">self</span><span class="op">:</span> <span class="op">*</span>JITCompiler) CompiledFunction {</span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> num_instructions <span class="op">=</span> <span class="va">self</span><span class="op">.</span>machine_code<span class="op">.</span>items<span class="op">.</span>len;</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> bufsize <span class="op">=</span> num_instructions;</span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> buf <span class="op">=</span> allocJitBuf(bufsize);</span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>    pthread<span class="op">.</span>pthread_jit_write_protect_np(<span class="dv">0</span>);</span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">@memcpy</span>(buf<span class="op">,</span> <span class="va">self</span><span class="op">.</span>machine_code<span class="op">.</span>items);</span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a>    pthread<span class="op">.</span>pthread_jit_write_protect_np(<span class="dv">1</span>);</span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> func<span class="op">:</span> JitFunction <span class="op">=</span> <span class="bu">@ptrCast</span>(buf);</span>
+<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> CompiledFunction<span class="op">.</span>init(func<span class="op">,</span> buf<span class="op">,</span> bufsize);</span>
+<span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
+<p>For the <code>loadConst</code> instruction, we will:</p>
+<ol>
+<li>Store the next instruction in the register <code>.x9</code> (aliased as <code>VarReg.tempA</code>).
+</li>
+<li>Load the constant at the address <code>stack[stakcAddr]</code> into the register <code>.x10</code> (aliased as <code>VarReg.tempB</code>).
+</li>
+<li>Push the value in <code>.x10</code> onto the stack.
+</li>
+</ol>
+<code class="language-diff"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a> switch (op) {</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="va">+    .load_var =&gt; {</span></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="va">+        // a = instructions[ip]; ip++;</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a><span class="va">+        try self.readInstruction(VarReg.tempA);</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a><span class="va">+        i += 1;</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a><span class="va">+</span></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a><span class="va">+        try self.emit(Armv8a.ldrRegScaled(</span></span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a><span class="va">+            VarReg.tempB,</span></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a><span class="va">+            ArgReg.stackAddr,</span></span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a><span class="va">+            VarReg.tempA,</span></span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a><span class="va">+        )); // b = stack[a]</span></span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a><span class="va">+        try self.emitPushReg(VarReg.tempB); // push(stack[a]);</span></span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a><span class="va">+    },</span></span>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a>     else =&gt; unreachable,</span>
+<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a> }</span></code></pre></div></code></pre>
+<p>All other opcodes are similar in complexity, except perhaps <code>jump</code>, which needs
+special care to handle the case where the jump destination is the same as the current block:</p>
+<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">// src/jit.zig -&gt; struct JITCompiler -&gt; fn compileBlock</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>jump <span class="op">=&gt;</span> {</span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>    <span class="co">// load the destination block index into</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>    <span class="co">// .x9 (VarReg.tempA)</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span> <span class="va">self</span><span class="op">.</span>readInstruction(VarReg<span class="op">.</span>tempA);</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> dst_block <span class="op">=</span> block<span class="op">.</span>instructions[i];</span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>    i <span class="op">+=</span> <span class="dv">1</span>;</span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (dst_block <span class="op">==</span> block_number) {</span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>        <span class="co">// we&#39;re jumping back the same block. reset ip to 0,</span></span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span> <span class="va">self</span><span class="op">.</span>emit(Armv8a<span class="op">.</span>movRegImm(VarReg<span class="op">.</span>instrIndex<span class="op">,</span> <span class="dv">0</span>));</span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a>        <span class="at">const</span> distance<span class="op">:</span> <span class="dt">i32</span> </span>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a>            <span class="op">=</span> <span class="bu">@intCast</span>(<span class="va">self</span><span class="op">.</span>machine_code<span class="op">.</span>items<span class="op">.</span>len);</span>
+<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span> <span class="va">self</span><span class="op">.</span>emit(Armv8a<span class="op">.</span>branchIfEq(<span class="op">-</span>distance));</span>
+<span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="17"><a href="#17" aria-hidden="true" tabindex="-1"></a>        <span class="co">// set the next block index (stored in .x5,</span></span>
+<span id="18"><a href="#18" aria-hidden="true" tabindex="-1"></a>        <span class="co">// named .currentBlockNumber), to the destination </span></span>
+<span id="19"><a href="#19" aria-hidden="true" tabindex="-1"></a>        <span class="co">// block index (stored in .x9, named .tempA) and return</span></span>
+<span id="20"><a href="#20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span> <span class="va">self</span><span class="op">.</span>emit(</span>
+<span id="21"><a href="#21" aria-hidden="true" tabindex="-1"></a>            Armv8a<span class="op">.</span>strReg(</span>
+<span id="22"><a href="#22" aria-hidden="true" tabindex="-1"></a>                VarReg<span class="op">.</span>tempA<span class="op">,</span></span>
+<span id="23"><a href="#23" aria-hidden="true" tabindex="-1"></a>                ArgReg<span class="op">.</span>currentBlockNumber<span class="op">,</span></span>
+<span id="24"><a href="#24" aria-hidden="true" tabindex="-1"></a>                <span class="dv">0</span>)<span class="op">,</span></span>
+<span id="25"><a href="#25" aria-hidden="true" tabindex="-1"></a>        );</span>
+<span id="26"><a href="#26" aria-hidden="true" tabindex="-1"></a>        <span class="co">// ip = 0</span></span>
+<span id="27"><a href="#27" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span> <span class="va">self</span><span class="op">.</span>emit(Armv8a<span class="op">.</span>movRegImm(VarReg<span class="op">.</span>instrIndex<span class="op">,</span> <span class="dv">0</span>));</span>
+<span id="28"><a href="#28" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span> <span class="va">self</span><span class="op">.</span>emitReturn();</span>
+<span id="29"><a href="#29" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="30"><a href="#30" aria-hidden="true" tabindex="-1"></a>}<span class="op">,</span></span></code></pre></div></code></pre>
+<p>Notice that we&#39;re using the <a href="https://github.com/srijan-paul/tinyjit/blob/1dabf1cb9bec88edcd7054bca5fe2c99294fa435/src/jit.zig#L112">branchIfEq</a>
+helper to generate a <code>b.eq</code>  instruction that jumps back to the start of the block if the condition is true.
+To do so, we must know the distance between the current instruction and the start of the block.
+Fortunately, this is simply the number of machine instructions generated so far (as every ARM instruction is
+is the same size).</p>
+<p>In either case, we want to start from the first instruction in the destination block,
+so we set the instruction pointer to 0.</p>
+<p>Once again, I&#39;ll leave a <a href="https://github.com/srijan-paul/tinyjit/blob/1dabf1cb9bec88edcd7054bca5fe2c99294fa435/src/jit.zig#L304">link to the implementaton</a>
+for all other opcodes, as they&#39;re not particularly interesting once you&#39;ve seen the two examples above.</p>
+<h2 id="interpreter-changes">Interpreter changes</h2>
+<p>Recall that previously, the <code>JUMP</code> opcode called this helper function:</p>
+<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">// OLD jump helper (src/interpreter.zig):</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> jump(<span class="va">self</span><span class="op">:</span> <span class="op">*</span>Interpreter) <span class="op">!</span><span class="dt">void</span> {</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>    <span class="co">// block index is the next &quot;instruction&quot;.</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> block_idx <span class="op">=</span> <span class="va">self</span><span class="op">.</span>nextOp();</span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>    <span class="va">self</span><span class="op">.</span>pc <span class="op">=</span> <span class="dv">0</span>; <span class="co">// start from first instr in the next block</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> dst_block <span class="op">=</span> <span class="op">&amp;</span><span class="va">self</span><span class="op">.</span>blocks[block_idx];</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>    <span class="va">self</span><span class="op">.</span>current_block <span class="op">=</span> dst_block;</span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
+<p>When JIT compilation enabled,  we want to try calling the pre-compiled function instead:</p>
+<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">// src/interpreter.zig -&gt; struct Interpreter</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> jump(<span class="va">self</span><span class="op">:</span> <span class="op">*</span>Interpreter) <span class="op">!</span><span class="dt">void</span> {</span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> block_idx <span class="op">=</span> <span class="va">self</span><span class="op">.</span>nextOp();</span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>    <span class="va">self</span><span class="op">.</span>pc <span class="op">=</span> <span class="dv">0</span>;</span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> dst_block <span class="op">=</span> <span class="op">&amp;</span><span class="va">self</span><span class="op">.</span>blocks[block_idx];</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="va">self</span><span class="op">.</span>is_jit_enabled) {</span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>        <span class="co">// check if the block has been compiled before.</span></span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (<span class="va">self</span><span class="op">.</span>jit_blocks[block_idx]) <span class="op">|*</span>compiled<span class="op">|</span> {</span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span><span class="op">.</span>callJit(compiled);</span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span>;</span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (<span class="va">self</span><span class="op">.</span>current_block <span class="op">==</span> dst_block) {</span>
+<span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a>            <span class="co">// jump destination is the same as the current</span></span>
+<span id="17"><a href="#17" aria-hidden="true" tabindex="-1"></a>            <span class="co">// block potentially a hot loop, so compile this</span></span>
+<span id="18"><a href="#18" aria-hidden="true" tabindex="-1"></a>            <span class="cf">try</span> <span class="va">self</span><span class="op">.</span>doJit(block_idx);</span>
+<span id="19"><a href="#19" aria-hidden="true" tabindex="-1"></a>        } <span class="cf">else</span> {</span>
+<span id="20"><a href="#20" aria-hidden="true" tabindex="-1"></a>            <span class="co">// Not a self-referencing block, interpret.</span></span>
+<span id="21"><a href="#21" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span><span class="op">.</span>current_block <span class="op">=</span> dst_block;</span>
+<span id="22"><a href="#22" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="23"><a href="#23" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="24"><a href="#24" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span><span class="op">.</span>current_block <span class="op">=</span> dst_block;</span>
+<span id="25"><a href="#25" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="26"><a href="#26" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
+<p>The <code>doJit</code> helper compiles a block of instructions to a function, caches it for future re-use,
+and then calls it with <code>callJit</code>:</p>
+<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">// src/interpreter.zig, struct Interpreter {</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> doJit(<span class="va">self</span><span class="op">:</span> <span class="op">*</span>Interpreter<span class="op">,</span> block_index<span class="op">:</span> <span class="dt">usize</span>) <span class="op">!</span><span class="dt">void</span> {</span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> block <span class="op">=</span> <span class="op">&amp;</span><span class="va">self</span><span class="op">.</span>blocks[block_index];</span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> compiled <span class="op">=</span> <span class="cf">try</span> <span class="va">self</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span>jit_compiler</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span>compileBlock(block_index<span class="op">,</span> block);</span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>    <span class="va">self</span><span class="op">.</span>jit_blocks[block_index] <span class="op">=</span> compiled;</span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>    <span class="va">self</span><span class="op">.</span>callJit(<span class="op">&amp;</span>compiled);</span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
+<p>And <code>callJit</code> takes care of calling the compiled function, passing along the interpreter&#39;s state:</p>
+<code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">// src/interpreter.zig, struct Interpreter { ...</span></span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="co">/// Call a JIT compiled function</span></span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> callJit(</span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>    <span class="va">self</span><span class="op">:</span> <span class="op">*</span>Interpreter<span class="op">,</span> </span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>    compiled<span class="op">:</span> <span class="op">*</span><span class="at">const</span> jit<span class="op">.</span>CompiledFunction<span class="op">,</span></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>) <span class="dt">void</span> {</span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>    <span class="co">// inout parameter for JITted function</span></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>    <span class="at">var</span> next_block_idx<span class="op">:</span> <span class="dt">usize</span> <span class="op">=</span> <span class="dv">0</span>;</span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>    compiled<span class="op">.</span>func(</span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>        (<span class="op">&amp;</span><span class="va">self</span><span class="op">.</span>stack)<span class="op">.</span>ptr<span class="op">,</span></span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span><span class="op">.</span>current_block<span class="op">.</span>instructions<span class="op">.</span>ptr<span class="op">,</span></span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a>        <span class="op">&amp;</span><span class="va">self</span><span class="op">.</span>stack_pos<span class="op">,</span></span>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a>        <span class="op">&amp;</span><span class="va">self</span><span class="op">.</span>pc<span class="op">,</span></span>
+<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a>        <span class="op">&amp;</span>next_block_idx<span class="op">,</span></span>
+<span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span><span class="op">.</span>current_block<span class="op">.</span>constants<span class="op">.</span>ptr<span class="op">,</span></span>
+<span id="17"><a href="#17" aria-hidden="true" tabindex="-1"></a>    );</span>
+<span id="18"><a href="#18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="19"><a href="#19" aria-hidden="true" tabindex="-1"></a>    <span class="va">self</span><span class="op">.</span>current_block <span class="op">=</span> <span class="op">&amp;</span><span class="va">self</span><span class="op">.</span>blocks[next_block_idx];</span>
+<span id="20"><a href="#20" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
+<p>Finally, when destroying the interpreter, we need to free the JIT compiled functions:</p>
+<code class="language-diff"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a> pub fn deinit(self: *const Interpreter) void {</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>     self.jit_compiler.deinit();</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a><span class="va">+    // unmap all the JIT functions</span></span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a><span class="va">+    for (self.jit_blocks) |maybe_jit_block| {</span></span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a><span class="va">+        if (maybe_jit_block) |*jit_block| {</span></span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a><span class="va">+            jit_block.deinit();</span></span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a><span class="va">+        }</span></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a><span class="va">+    }</span></span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>     self.allocator.free(self.jit_blocks);</span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a> }</span></code></pre></div></code></pre>
+<h2 id="closing-thoughts">Closing thoughts</h2>
+<p>If you had trouble following parts of this article,
+I&#39;d recommend taking a look at the <a href="https://github.com/srijan-paul/tinyjit">full implementation on GitHub</a>,
+and cross-referencing it with the explanations here.</p>
+<p>Finally, if you&#39;d like to explore more advanced topics in JIT compilation,
+you can either extend the current interpreter with:</p>
+<ul>
+<li>More opcodes
+</li>
+<li>Some optimizations for both the stack machine and the JIT compiled code.
+</li>
+<li>Support more than one architecture with some kind of an interface.
+</li>
+</ul>
+<p>Or, read through any of the following resources:</p>
+<ol>
+<li><a href="https://v8.dev/blog">The V8 blog</a>.
+</li>
+<li><a href="https://webkit.org/blog/10298/inline-caching-delete/">A tour of inline caching</a> – from the Webkit blog.
+</li>
+<li><a href="https://bernsteinbear.com/blog/cinder-jit-inliner/">How the Cinder JIT inliner works</a> – Max Bernstein.
+</li>
+<li><a href="https://github.com/v8/v8">Source code for V8</a> – If you&#39;re familiar with C++, this is surprisingly readable.
+</li>
+</ol>
+<p>If you have any other resources that belong here, feel free to write to me,
+or edit this blog post directly on <a href="https://github.cm/srijan-paul/srijan-paul.github.io">the repository for this site</a>.</p>
+
+
+			<script src="https://giscus.app/client.js" data-repo="srijan-paul/srijan-paul.github.io" data-repo-id="MDEwOlJlcG9zaXRvcnkzMTY0MTg0NTk=" data-category="Announcements" data-category-id="DIC_kwDOEtwpm84Cdokt" data-mapping="title" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" defer>
+			</script>
+		</div>
+  </body>
+</html>
