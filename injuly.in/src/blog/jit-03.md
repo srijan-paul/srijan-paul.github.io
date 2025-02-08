@@ -114,7 +114,7 @@ void b0(
 ```
 
 Notice that we've removed any branching that our `switch` based interpreter loop had.
-To verify, we can compile compile this function with gcc (comments added for clarity):
+To verify, we can compile this function with gcc (comments added for clarity):
 
 ```asm
 ; Register | Parameter
@@ -620,7 +620,63 @@ so we set the instruction pointer to 0.
 Once again, I'll leave a [link to the implementaton](https://github.com/srijan-paul/tinyjit/blob/1dabf1cb9bec88edcd7054bca5fe2c99294fa435/src/jit.zig#L304)
 for all other opcodes, as they're not particularly interesting once you've seen the two examples above.
 
-## Interpreter changes
+## Updating the interpreter 
+
+Before anything else, let's import `jit.zig` into `interpreter.zig`:
+
+```diff
+  const std = @import("std');
++ const jit = @import("jit.zig");
+```
+
+and then add some new fields to the `Interpreter` struct:
+
+```diff
+ pub const Interpreter  = struct {
+     stack: [32_000]i64 = undefined,
+     stack_pos: u64 = 0,
+ 
+     allocator: std.mem.Allocator,
+ 
+     blocks: []const CodeBlock,
++    jit_blocks: []?jit.CompiledFunction,
+ 
+     current_block: *const CodeBlock = undefined,
+     pc: usize = 0,
+ 
++    jit_compiler: jit.JITCompiler,
++    is_jit_enabled: bool = false,
+...
+```
+For every block with index `i` in the `blocks` slice, `jit_blocks[i]` is its corresponding
+`CompiledFunction` that can be called.
+
+Of course, `Interpreter.init` needs to initialize the new fields: 
+
+```diff
+ pub fn init(
+    allocator: std.mem.Allocator,
+    blocks: []const CodeBlock
+) !*Interpreter {
+     const self = try allocator.create(Interpreter);
+     self.* = Interpreter{
+         .blocks = blocks,
+         .current_block = &blocks[0],
++        .jit_compiler = jit.JITCompiler.init(allocator, self),
++        .jit_blocks = try allocator.alloc(
++             ?jit.CompiledFunction,
++             blocks.len,
++         ),
+         .allocator = allocator,
+     };
+ 
++    for (self.jit_blocks) |*jit_block| {
++        jit_block.* = null;
++    }
+ 
+     return self;
+ }
+```
 
 Recall that previously, the `JUMP` opcode called this helper function:
 
@@ -635,7 +691,7 @@ fn jump(self: *Interpreter) !void {
 }
 ```
 
-When JIT compilation enabled,  we want to try calling the pre-compiled function instead:
+With JIT compilation enabled,  we want to try calling the pre-compiled function instead:
 
 ```zig
 // src/interpreter.zig -> struct Interpreter
@@ -725,6 +781,14 @@ Finally, when destroying the interpreter, we need to free the JIT compiled funct
      self.allocator.free(self.jit_blocks);
  }
 ```
+
+Now, you can benchmark this with whatever profiling tool you prefer.
+I've modified [main.zig](https://github.com/srijan-paul/tinyjit/blob/1dabf1cb9bec88edcd7054bca5fe2c99294fa435/src/main.zig)
+to accept a `--jit` flag.
+On my machine, I found that the loop to add numbers between 0 and 10 million
+runs 8x faster with the JIT. 
+This is mostly because of the tight loop that is compiled once and run millions of times,
+but different programs will exhibit different performance characteristics.
 
 ## Closing thoughts
 
