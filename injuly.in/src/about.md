@@ -4,7 +4,6 @@ template: about
 
 ## Me 
 
-
 <blockquote class="small">
   <em>
      To see what I'm up to right now,
@@ -12,21 +11,24 @@ template: about
   </em>
 </blockquote>
 
-A CS and math enthusiast put up in Bangalore, India. <br>
-I'm a programmer by trade, and work at [DeepSource](https://deepsource.com) – a code health monitoring platform.
+A CS and math enthusiast who often writes about programming, technology, and 
+whatever interests me at times.
+By trade I'm a software developer (wait, how could you tell?)
+currently working at [Prasso](https://prasso.ai/).
 
-As of 2024, My interests lie in:
+At the time of writing, my interests are:
 
-- **Programming**: Databases, compilers, computer networks, FP.
+- **Programming**: Graphics, compilers, databases, and FP.
 - **Reading**: High fantasy, golden age Japanese mystery, sci-fi.
 - **Math**: Category theory, linear algebra.
 - **Technology**: Retro console architecture (NES, GBA, PS1/2), gamedev.
 - **Miscellaneous**: Pixel art, typography.
 
-I don't actively play as many video games anymore,
-but have grown up playing Warcraft 3, DotA 2, and Nuclear Throne – in that order.
-These days, I mostly play Mario Kart with friends, the newer Zelda games (ToTK/BotW),
+
+As far as video games go, I've grown up playing Warcraft 3, DotA 2, and Nuclear Throne.
+These days I mostly play Lies of P on PC,
 and [Golden Sun](https://en.wikipedia.org/wiki/Golden_Sun_(video_game)) on the Game Boy Advanced.
+My favorites are Warcraft 3, Dishonored, Celeste, and Breath of the Wild.
 
 To play retro games, I use SBC consoles like this one:
 
@@ -38,7 +40,7 @@ To play retro games, I use SBC consoles like this one:
 />
 
 
-## This site
+## injuly (dot) in
 
 This website is compiled with <a href="https://github.com/srijan-paul/bark" target="_blank">bark</a> – my own static site generator.
 There are no trackers, and all analytics are privacy friendly (courtesy of [GoatCounter](https://www.goatcounter.com)).
@@ -48,7 +50,8 @@ Hosted on GitHub pages.
 
 ## Projects
 
-- <a href="https://github.com/srijan-paul/nez" target="_blank">Nez</a>: An emulator for the NES, written in Zig.
+- <a href="https://github.com/srijan-paul/nez" target="_blank">Jam</a>: A (WIP) JavaScript toolchain in Zig.
+- <a href="https://github.com/srijan-paul/nez" target="_blank">Nez</a>: An emulator for the NES console.
 - <a href="https://github.com/srijan-paul/snap" target="_blank">Vyse</a>: A dynamically typed, interpreted programming language for embedding in applications like web-servers and game engines.
 - <a href="https://github.com/srijan-paul/bonkyon" target="_blank">Bonkyon</a>: A small puzzler game written in LOVE. Play <a href="https://injuly.itch.io/bonkyon" target="_blank">here</a>.
 - <a href="https://github.com/srijan-paul/bark" target="_blank">Bark</a>: A static site generator like Hugo/11ty/Jekyll written in Haskell.

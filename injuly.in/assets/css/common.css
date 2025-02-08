@@ -373,12 +373,6 @@ sup > a {
 /* Buttons */
 
 /* container for buttons */
-.buttons {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
 a.button {
   text-decoration: none;
 
@@ -389,6 +383,8 @@ a.button {
   gap: 5px;
   align-items: center;
   justify-content: center;
+	
+	font-size: calc(var(--font-size) - 1px);
 
   color: var(--sky-600);
   background-color: var(--sky-50);

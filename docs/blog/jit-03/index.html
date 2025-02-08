@@ -136,7 +136,7 @@ and write the <code>b0</code> block as if it were a C function:</p>
 <span id="34"><a href="#34" aria-hidden="true" tabindex="-1"></a>    stack<span class="op">[*</span>sp<span class="op">]</span> <span class="op">=</span> a <span class="op">+</span> b<span class="op">;</span>         <span class="co">// push(a + b)</span></span>
 <span id="35"><a href="#35" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></code></pre>
 <p>Notice that we&#39;ve removed any branching that our <code>switch</code> based interpreter loop had.
-To verify, we can compile compile this function with gcc (comments added for clarity):</p>
+To verify, we can compile this function with gcc (comments added for clarity):</p>
 <code class="language-asm"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">; Register | Parameter</span></span>
 <span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="co">; ---------|-----------</span></span>
 <span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="co">; x0       | stack</span></span>
@@ -577,7 +577,51 @@ is the same size).</p>
 so we set the instruction pointer to 0.</p>
 <p>Once again, I&#39;ll leave a <a href="https://github.com/srijan-paul/tinyjit/blob/1dabf1cb9bec88edcd7054bca5fe2c99294fa435/src/jit.zig#L304">link to the implementaton</a>
 for all other opcodes, as they&#39;re not particularly interesting once you&#39;ve seen the two examples above.</p>
-<h2 id="interpreter-changes">Interpreter changes</h2>
+<h2 id="updating-the-interpreter">Updating the interpreter</h2>
+<p>Before anything else, let&#39;s import <code>jit.zig</code> into <code>interpreter.zig</code>:</p>
+<code class="language-diff"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>  const std = @import(&quot;std&#39;);</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="va">+ const jit = @import(&quot;jit.zig&quot;);</span></span></code></pre></div></code></pre>
+<p>and then add some new fields to the <code>Interpreter</code> struct:</p>
+<code class="language-diff"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a> pub const Interpreter  = struct {</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>     stack: [32_000]i64 = undefined,</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>     stack_pos: u64 = 0,</span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>     allocator: std.mem.Allocator,</span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>     blocks: []const CodeBlock,</span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a><span class="va">+    jit_blocks: []?jit.CompiledFunction,</span></span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>     current_block: *const CodeBlock = undefined,</span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>     pc: usize = 0,</span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a><span class="va">+    jit_compiler: jit.JITCompiler,</span></span>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a><span class="va">+    is_jit_enabled: bool = false,</span></span>
+<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a>...</span></code></pre></div></code></pre>
+<p>For every block with index <code>i</code> in the <code>blocks</code> slice, <code>jit_blocks[i]</code> is its corresponding
+<code>CompiledFunction</code> that can be called.</p>
+<p>Of course, <code>Interpreter.init</code> needs to initialize the new fields:</p>
+<code class="language-diff"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a> pub fn init(</span>
+<span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>    allocator: std.mem.Allocator,</span>
+<span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>    blocks: []const CodeBlock</span>
+<span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>) !*Interpreter {</span>
+<span id="5"><a href="#5" aria-hidden="true" tabindex="-1"></a>     const self = try allocator.create(Interpreter);</span>
+<span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>     self.* = Interpreter{</span>
+<span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>         .blocks = blocks,</span>
+<span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>         .current_block = &amp;blocks[0],</span>
+<span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a><span class="va">+        .jit_compiler = jit.JITCompiler.init(allocator, self),</span></span>
+<span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a><span class="va">+        .jit_blocks = try allocator.alloc(</span></span>
+<span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a><span class="va">+             ?jit.CompiledFunction,</span></span>
+<span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a><span class="va">+             blocks.len,</span></span>
+<span id="13"><a href="#13" aria-hidden="true" tabindex="-1"></a><span class="va">+         ),</span></span>
+<span id="14"><a href="#14" aria-hidden="true" tabindex="-1"></a>         .allocator = allocator,</span>
+<span id="15"><a href="#15" aria-hidden="true" tabindex="-1"></a>     };</span>
+<span id="16"><a href="#16" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="17"><a href="#17" aria-hidden="true" tabindex="-1"></a><span class="va">+    for (self.jit_blocks) |*jit_block| {</span></span>
+<span id="18"><a href="#18" aria-hidden="true" tabindex="-1"></a><span class="va">+        jit_block.* = null;</span></span>
+<span id="19"><a href="#19" aria-hidden="true" tabindex="-1"></a><span class="va">+    }</span></span>
+<span id="20"><a href="#20" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="21"><a href="#21" aria-hidden="true" tabindex="-1"></a>     return self;</span>
+<span id="22"><a href="#22" aria-hidden="true" tabindex="-1"></a> }</span></code></pre></div></code></pre>
 <p>Recall that previously, the <code>JUMP</code> opcode called this helper function:</p>
 <code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">// OLD jump helper (src/interpreter.zig):</span></span>
 <span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> jump(<span class="va">self</span><span class="op">:</span> <span class="op">*</span>Interpreter) <span class="op">!</span><span class="dt">void</span> {</span>
@@ -587,7 +631,7 @@ for all other opcodes, as they&#39;re not particularly interesting once you&#39;
 <span id="6"><a href="#6" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> dst_block <span class="op">=</span> <span class="op">&amp;</span><span class="va">self</span><span class="op">.</span>blocks[block_idx];</span>
 <span id="7"><a href="#7" aria-hidden="true" tabindex="-1"></a>    <span class="va">self</span><span class="op">.</span>current_block <span class="op">=</span> dst_block;</span>
 <span id="8"><a href="#8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></code></pre>
-<p>When JIT compilation enabled,  we want to try calling the pre-compiled function instead:</p>
+<p>With JIT compilation enabled,  we want to try calling the pre-compiled function instead:</p>
 <code class="language-zig"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="co">// src/interpreter.zig -&gt; struct Interpreter</span></span>
 <span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> jump(<span class="va">self</span><span class="op">:</span> <span class="op">*</span>Interpreter) <span class="op">!</span><span class="dt">void</span> {</span>
@@ -661,6 +705,13 @@ and then calls it with <code>callJit</code>:</p>
 <span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a> </span>
 <span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a>     self.allocator.free(self.jit_blocks);</span>
 <span id="12"><a href="#12" aria-hidden="true" tabindex="-1"></a> }</span></code></pre></div></code></pre>
+<p>Now, you can benchmark this with whatever profiling tool you prefer.
+I&#39;ve modified <a href="https://github.com/srijan-paul/tinyjit/blob/1dabf1cb9bec88edcd7054bca5fe2c99294fa435/src/main.zig">main.zig</a>
+to accept a <code>--jit</code> flag.
+On my machine, I found that the loop to add numbers between 0 and 10 million
+runs 8x faster with the JIT.
+This is mostly because of the tight loop that is compiled once and run millions of times,
+but different programs will exhibit different performance characteristics.</p>
 <h2 id="closing-thoughts">Closing thoughts</h2>
 <p>If you had trouble following parts of this article,
 I&#39;d recommend taking a look at the <a href="https://github.com/srijan-paul/tinyjit">full implementation on GitHub</a>,
