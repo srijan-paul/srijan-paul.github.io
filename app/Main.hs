@@ -15,11 +15,10 @@ import Bark.Types
     Post (..),
     Project (..),
     Value (..),
-    foldM,
     fromList,
     toList,
   )
-import Control.Monad ((>=>))
+import Control.Monad ((>=>), foldM)
 import Control.Monad.Except (liftEither)
 import Control.Monad.State (MonadState (get, put))
 import qualified Data.HashMap.Strict as HM
