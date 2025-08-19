@@ -19,7 +19,7 @@ Nevertheless, here's (some of) what I've been up to:
 - Playing WC3, if I can make the time for it.
 
 Progress on [Jam](https://github.com/srijan-paul/jam) has crawled to a halt,
-and my new job leaves me with no time to cater to it.
+and I haven't the time to do a proper release.
 Even in its current state, Jam is an _extremely_ fast JS parser + semantic analyzer. 
 I don't know I'll be able to deliver on [my initial plan](/blog/announcing-jam/) anymore,
 but I have every intention of packaging it up as a library for anyone who needs to process JavaScript code.
