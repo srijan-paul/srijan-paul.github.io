@@ -14,11 +14,11 @@ template: about
 A CS and math enthusiast who often writes about programming, technology, and 
 whatever interests me at times.
 By trade I'm a software developer (wait, how could you tell?)
-currently working at [Prasso](https://prasso.ai/).
+currently working at [Pre6](https://pre6.ai/).
 
 At the time of writing, my interests are:
 
-- **Programming**: Graphics, compilers, databases, and FP.
+- **Programming**: Graphics, Compilers, Deep Learning, and FP.
 - **Reading**: High fantasy, golden age Japanese mystery, sci-fi.
 - **Math**: Category theory, linear algebra.
 - **Technology**: Retro console architecture (NES, GBA, PS1/2), gamedev.
@@ -63,5 +63,5 @@ And many more on my [GitHub](https://github.com/srijan-paul).
 ## Contact
 
 I'm always open to discourse, chit-chat, or helping a fellow human out. <br>
-Feel free to message me on discord (**@injuly.**), [twitter](https://twitter.com/ptrCast), or send an e-mail to [srijan@injuly.in](mailto:srijan@injuly.in).
+Feel free to message me on discord (**@in.july**), [twitter](https://twitter.com/ptrCast), or send an e-mail to [srijan@injuly.in](mailto:srijan@injuly.in).
 
