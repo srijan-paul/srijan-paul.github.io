@@ -42,6 +42,7 @@ executable site
       text,
       mtl,
       rss,
-      network-uri
+      network-uri,
+      time
     hs-source-dirs:   app
     default-language: Haskell2010
