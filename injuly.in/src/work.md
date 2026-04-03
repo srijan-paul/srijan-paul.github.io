@@ -4,9 +4,7 @@ template: work
 
 # Work
 
-This is a publicly available record of my work that goes beyond 
-[my resume](/resume.pdf),
-with some personal commentary and highlights.
+This is a publicly available record of my work with some personal commentary and highlights.
 Most of my career has been spent working on **compilers** and
 **web servers**; but I've have also made a good number of production UIs.
 
