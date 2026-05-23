@@ -84,7 +84,6 @@ postToRssItem post =
     pubDateElem = case getPostDate post of
       Just date -> [RSS.PubDate (dateToUTCTime date)]
       Nothing -> []
-
 rssChannel :: [RSS.ChannelElem]
 rssChannel =
   [ RSS.Language "en-us",

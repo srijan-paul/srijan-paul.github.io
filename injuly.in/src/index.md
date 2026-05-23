@@ -4,11 +4,11 @@ template: home
 
 # Srijan Paul 
 
-I work on **compilers**, **devtools**, **functional programming**, **ML**,
+I work on **deep learning**, **compilers**, **devtools**, **functional programming**,
 **video games**, and **emulation** among other computer-y things.
 
 This website is an archive of my musings and research.
-Currently, I'm into Haskell, and writing [a JS toolchain](/blog/announcing-jam/).
+My most recent work is [a high performance JS toolchain](/blog/announcing-jam/).
 If you fancy a longer introduction, try the [about](/about) page.
 For a monthly log of my goings-on, check the [now](/now) page.
 

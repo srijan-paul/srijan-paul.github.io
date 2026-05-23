@@ -18,30 +18,29 @@ and watch two sets of mechanical alien arms retrace your sketch
    <canvas id="redraw-canvas" width="350" height="350" style="border: 1px solid black;"></canvas>
 </div>
 
-Once you're done with this introduction to Fourier analysis, you'll be capable of making this (and a lot more) yourself.
+Once you're done with this introduction to Fourier analysis, you should be able to make something
+like this (and more) yourself. 
 
-The satisfying animation is made possible by the subject of this post - an infinite sum called [the Fourier series](https://en.wikipedia.org/wiki/Fourier_series).
-The formula is short, and with some effort, you can memorize it.
-However, I implore you to understand where the series comes from, and build deeper intuition for it.
+This animation is made possible by an infinite sum called [the Fourier series](https://en.wikipedia.org/wiki/Fourier_series).
+The formula is short, and with some effort you can memorize it.
+However, I implore you to understand where the series comes from to build deeper intuition for it.
 
 To keep you from clicking off this page,
-I'll defer the proof and origin of this equation to the second half,
+I'll defer the proof and origin of this equation to the second half
 and thread some interactive animations through the body of this write-up.
 
 Before we get to tracing sketches however, let's brush up some basic math.
 
 ## Adding functions
 
-Surely, you're familiar with the addition of numbers, vectors and matrices.
+You're likely familiar with the addition of numbers, vectors and matrices.
 Adding functions is not so different.
-The addition of two functions \\(f\\) and \\(g\\) at input \\(x\\) is simply \\(f(x) + g(x)\\).
+The sum functions \\(f\\) and \\(g\\) at input \\(x\\) is simply \\(f(x) + g(x)\\).
 
-Put more formally - \\((f + g)(x) = f(x) + g(x)\\).
+Put more formally: \\((f + g)(x) = f(x) + g(x)\\).
 
-Let's visualize this by taking an example.
 Assume `f` is \\(2sin(x)\\) and `g` is \\(cos(2x)\\).
-
-Their sum then, can be given by a function: \\(h(x) = 2sin(x) + cos(2x)\\).
+Their sum becomes: \\(h(x) = 2sin(x) + cos(2x)\\).
 
 The graph below plots \\(f\\) and \\(g\\) in shades of gray, and their sum, \\(h\\), in red.
 
@@ -49,19 +48,19 @@ The graph below plots \\(f\\) and \\(g\\) in shades of gray, and their sum, \\(h
    <canvas id="fun-sum" width="350px" height="350px"></canvas>
 </div>
 
-Note how in some places, the values of \\(f\\) and \\(g\\) are both positive, and their sum is therefore a larger positive number,
-while in other places, \\(f\\) and \\(g\\) have opposite signs and their values cancel out to a smaller number.
+Note how in some places the values of \\(f\\) and \\(g\\) are both positive and their sum is therefore a larger positive number;
+where in other places, \\(f\\) and \\(g\\) have opposite signs and their values cancel out to a smaller number.
 
-Through the lens of physics, you could look at the two functions as electromagnetic waves, or visible light rays oscillating in the domain of time.
-When two such waves overlap with each other in space, they're said to be in [superposition](https://www.britannica.com/science/principle-of-superposition-wave-motion).
+In physics, you think of the two functions as electromagnetic waves or visible light rays oscillating in the domain of time.
+When two such waves overlap, they're said to be in [superposition](https://www.britannica.com/science/principle-of-superposition-wave-motion).
 The superposition of two waves results in their sum.
 
-When two points in a wave supplement each other to result in a higher amplitude (the y-value),
+When two points in a wave *supplement* each other to result in a higher amplitude (the y-value),
 their interaction is termed "constructive interference".
 When they cancel each other out, it's called "destructive interference".
 
-Go through the last two paragraphs again, and try to digest this idea.
-Now, imagine if we had to work our way backwards.
+Go through the last two paragraphs again and try to digest this idea.
+Now imagine if we had to work our way backwards.
 Say we are given a list containing the (x, y) coordinates of all points along the curve of \\(h\\),
 where \\(x\\) is time and \\(y\\) is the corresponding output of \\(h\\) at that point in time.
 We have to come up with two simpler periodic functions that sum up to \\(h\\).
@@ -73,17 +72,14 @@ If \\(f\\) and \\(g\\) were sound waves, their constructive interference would m
 If they were light waves instead, their constructive interference would reveal bright spots on a reflective surface,
 and destructive would look like dim patches.
 
-Applications of the Fourier series spill into almost every domain -
+Applications of the Fourier series spill into nearly every domain -
 signal processing, image compression, shape recognition,
 analog transmission, noise cancellation, studying thermodynamic systems
 and fitting equations to datasets.
 
-From this wide array of applications, we show our interest in the science of tracing ugly sketches.
+From this wide array of applications, we show our interest in the science of tracing crude sketches.
 
 ## Decomposing periodic functions.
-
-Imagine you had a machine that could scan any food item and display its recipe.
-Fourier series does exactly that, except for mathematical functions.
 
 The Fourier series of any periodic function \\(f(x)\\) with a frequency of \\(\omega_0\\) is described as:
 
@@ -118,7 +114,7 @@ If that was too wordy and made little sense to you, that's okay.
 We'll prove this equation later in the post.
 Until then, an example will help understand this better.
 
-Consider the square wave - a periodic signal that alternates between 1 and -1 depending on its input.
+Consider the square wave – a periodic signal that alternates between 1 and -1 depending on its input.
 Formally, it is described like so:
 
 $$
@@ -132,7 +128,7 @@ Here's how it looks when graphed out:
 </div>
 
 If we use the first few terms from \\(f\\)'s Fourier series, we can closely approximate the behavior of this function.
-In the following graph, the gray curve represents the the square wave and the red curve represents our approximation of it.
+In the following graph, the gray curve represents the square wave and the red curve represents our approximation of it.
 You can play with the slider to alter the number of terms we take from the series and see how that changes our approximation.
 
 <div class="center">
@@ -149,12 +145,12 @@ You can play with the slider to alter the number of terms we take from the serie
       </div>
 </div>
 
-Clearly, our approximation improves as we take more terms from the series.
+Clearly, our approximation improves as we take more terms.
 The Fourier series can be proven to [converge](https://en.wikipedia.org/wiki/Convergent_series).
 This means that if we take an infinite number of terms from the series, we can get the _exact_ value of \\(f(x)\\) for any \\(x\\).
 
 Of course, it is not possible to add up infinite terms in computers.
-Instead, we decide upon a fixed number of terms that approximate our function well enough for most practical purposes.
+Instead we decide upon a fixed number of terms that approximate our function well enough for most practical purposes.
 
 Whenever I say "Fourier series of a function", I mean a series of simple periodic functions that can be added at any given input to approximate the output of the original function at the same input.
 For the remainder of this post our goal with Fourier series is to **approximate periodic functions with sums of simpler sine/cosine functions**.
@@ -171,11 +167,11 @@ You are to draw your sketch, start to finish, without lifting the nib of your pe
 In other words, your sketch must be _continuous_ with no "breaks" in between.
 
 Assume also that the bottom-left corner of the sheet is its origin.
-Once you start drawing, I can delineate the position of the pen's tip using a pair of coordinates \\((x, y)\\) at any given point in time.
+As you trace out the drawing, imagine the pen's tip is at coordinate \\((x, y)\\) on the sheet of paper.
 
 Much like a cartesian plane, the \\(x\\) coordinate represents the horizontal distance from the origin, and \\(y\\) the vertical.
 Both the x and y coordinates change as the pen moves on the sheet's surface.
-Meaning, the position of the x-coordinate of your pen's tip can be written as a function of time.
+Meaning the position of the x-coordinate of your pen's tip can be written as a function of time.
 Say you draw this figure:
 
 <div class="center">
@@ -313,8 +309,8 @@ Did God whisper it to Joseph Fourier in his dreams?
 Did he just happen to run into it by chance?
 
 Surprisingly, the answer is "yes".
-Of course, he had an unparalleled instinct for math that he whetted with years of practice and research.
-There has to be a certain train of thought that he boarded to arrive at this revelation, that any periodic signal can be represented as a sum of simpler harmonics.
+Of course, he had an unparalleled instinct for math that he whetted with years of practice.
+There has to be a certain train of thought that he boarded to arrive at the revelation that any periodic signal can be represented as a sum of simpler harmonics.
 But that line of thinking was never publicized, and as you'll see in the next section, there have been people who've thought of this even before Fourier himself did!
 
 The important part is that Fourier asked a question that was mocked as stupid and bizarre until he presented a proof.
