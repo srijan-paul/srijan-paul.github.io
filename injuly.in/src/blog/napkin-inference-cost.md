@@ -4,7 +4,7 @@ tags:
   - ai 
   - math
 template: post
-date: 2026-05-14
+date: 2026-06-14
 is_blog_post: true
 title: "Inference cost at scale with napkin math"
 ---
