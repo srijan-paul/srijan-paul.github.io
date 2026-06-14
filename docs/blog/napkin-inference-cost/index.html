@@ -98,7 +98,7 @@ $$
 <ol>
 <li>Load \(A^{i,j}\) from memory.
 </li>
-<li>Load \(B^{i,j}\) from memory.
+<li>Load (B^{j,k}) from memory.
 </li>
 <li>Multiply them together.
 </li>
@@ -141,7 +141,7 @@ by a <a href="https://en.wikipedia.org/wiki/Fermi_problem">Fermi estimation</a>.
 <p>As you saw, the input is a matrix \(X \in \mathbb{R}^{N \times d}\), and \(X_i\) is a single \(d\) dimensional vector.
 For every &quot;layer&quot; in the network, the model stores matrices \( W_Q,W_K, W_V \in \mathbb{R}^{d \times d} \), and computes &quot;attention&quot; as follows:</p>
 <p>\( Q = X.W_Q \),   \( K = X.W_K\) and \( V = X.W_v\)</p>
-<p>\( Attention(Q,K,V) = softmax(Q.K^T/\sqrt{x}).V\)</p>
+<p>\( Attention(Q,K,V) = softmax(Q.K^T/\sqrt{d}).V\)</p>
 <p>Or, in python:</p>
 <code class="language-python"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> attention(X, W_q, W_k, W_v):</span>
 <span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>    Q,K,V <span class="op">=</span> X <span class="op">@</span> W_q, X <span class="op">@</span> W_k, X <span class="op">@</span> W_v</span>
@@ -187,9 +187,9 @@ Meaning that to generate one token for a single user, we need <strong>26 trillio
 inference engines will cache the \(K,V\) pairs for reuse.</p>
 <h2 id="reducing-compute-with-kv-cache">Reducing Compute with KV-Cache</h2>
 <p>The intermediate output on every chat, namely \(K\) and \(V\),
-at is cached at every layer, and stored in a region of VRAM called the
+is cached at every layer, and stored in a region of VRAM called the
 <strong>KV Cache.</strong>
-Inference engines like vLLM allow programmers to assign decide what
+Inference engines like vLLM allow programmers to decide what
 percentage of VRAM should be pre-allocated for this.</p>
 <p>Of course, it&#39;s not as easy as I made it sound. There&#39;s a lot of cleverness applied to make optimal use of the memory vLLM is handed, the details for which you can find in <a href="https://youtu.be/5ZlavKF_98U">this presentation</a> by the original authors.</p>
 <p>For our napkin math,
@@ -229,7 +229,7 @@ So, how many users should we serve to fully exhaust a B200&#39;s compute and ban
 <p>\( 2B = 562 \implies B = 331 \)</p>
 <p>With a single NVIDIA B200 GPU, we should be serving <strong>331 users concurrently</strong> to get the most out of our investment.
 Of course, this is a theoretical ceiling.
-In reality, VRAM is limited. We&#39;ll have squeeze the model weights in there along with the huge KV-cache.</p>
+In reality, VRAM is limited. We&#39;ll have to squeeze the model weights in there along with the huge KV-cache.</p>
 <h2 id="how-many-users-can-you-serve-realistically">How many users can you serve realistically?</h2>
 <p>We&#39;ll assume a 32B dense model – about as much as a 192G chip
 can comfortably support.
@@ -240,7 +240,7 @@ This is <code>32*10^9</code> bytes, or 32GB, in VRAM.
 Let&#39;s assume a context window of \(N\)=200k tokens.
 The input is \(N \times d\)–dimensional at every layer.</p>
 <p>For each layer, we need to store \(2Nd\) bytes for a pair of K and V matrices.
-A model of our size will typically have <code>d=8196</code> and <code>L=64</code>. Giving us:</p>
+A model of our size will typically have <code>d=8192</code> and <code>L=64</code>. Giving us:</p>
 <code class="language-python"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>KV cache size <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span>    N    <span class="op">*</span>  L <span class="op">*</span>  d</span>
 <span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>              <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> <span class="dv">200_000</span> <span class="op">*</span> <span class="dv">64</span> <span class="op">*</span> <span class="dv">8196</span></span>
 <span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>              <span class="op">=</span> <span class="dv">210</span> GB (<span class="op">!!</span>)</span></code></pre></div></code></pre>
@@ -302,7 +302,7 @@ cost of about $133 per user, plus the datacenter/upkeep bill.</p>
 <p>If you rent the GPU, the cost is more straightforward.
 At $3 per hour for a B200, your cost per user per hour is <code>3/num_users</code>.
 for <code>num_users=500</code> you get a cost of about $0.006 per user per hour,
-or 4.32$` per month.</p>
+or <code>$4.32</code> per month.</p>
 <p>So as long as you charge them more than $4.32, your operating costs are covered.</p>
 <p>As an AI company, you&#39;ll have more than one GPU (I hope).
 So you&#39;ll be load balancing users across a cluster of GPUs where our equations change somewhat.

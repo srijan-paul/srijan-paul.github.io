@@ -58,7 +58,7 @@ In this, we find our first insight into the "cost" of a matrix multiplication. F
 
 
 1. Load \\(A^{i,j}\\) from memory.
-2. Load \\(B^{i,j}\\) from memory.
+2. Load \(B^{j,k}\) from memory.
 3. Multiply them together.
 4. Add the result of #3 to the cumulative sum so far.
 
@@ -112,7 +112,7 @@ For every "layer" in the network, the model stores matrices \\( W_Q,W_K, W_V \in
 
 \\( Q = X.W_Q \\),   \\( K = X.W_K\\) and \\( V = X.W_v\\)
 
-\\( Attention(Q,K,V) = softmax(Q.K^T/\sqrt{x}).V\\) 
+\\( Attention(Q,K,V) = softmax(Q.K^T/\sqrt{d}).V\\) 
 
 Or, in python:
 
@@ -176,9 +176,9 @@ inference engines will cache the \\(K,V\\) pairs for reuse.
 ## Reducing Compute with KV-Cache
 
 The intermediate output on every chat, namely \\(K\\) and \\(V\\),
-at is cached at every layer, and stored in a region of VRAM called the
+is cached at every layer, and stored in a region of VRAM called the
 **KV Cache.**
-Inference engines like vLLM allow programmers to assign decide what
+Inference engines like vLLM allow programmers to decide what
 percentage of VRAM should be pre-allocated for this.
 
 Of course, it's not as easy as I made it sound. There's a lot of cleverness applied to make optimal use of the memory vLLM is handed, the details for which you can find in [this presentation](https://youtu.be/5ZlavKF_98U) by the original authors.
@@ -228,7 +228,7 @@ So, how many users should we serve to fully exhaust a B200's compute and bandwid
 
 With a single NVIDIA B200 GPU, we should be serving **331 users concurrently** to get the most out of our investment.
 Of course, this is a theoretical ceiling.
-In reality, VRAM is limited. We'll have squeeze the model weights in there along with the huge KV-cache.
+In reality, VRAM is limited. We'll have to squeeze the model weights in there along with the huge KV-cache.
 
 ## How many users can you serve realistically?
 
@@ -242,7 +242,7 @@ Let's assume a context window of \\(N\\)=200k tokens.
 The input is \\(N \times d\\)–dimensional at every layer.
 
 For each layer, we need to store \\(2Nd\\) bytes for a pair of K and V matrices.
-A model of our size will typically have `d=8196` and `L=64`. Giving us:
+A model of our size will typically have `d=8192` and `L=64`. Giving us:
 
 ```python
 KV cache size = 2 *    N    *  L *  d
@@ -333,7 +333,7 @@ cost of about $133 per user, plus the datacenter/upkeep bill.
 If you rent the GPU, the cost is more straightforward.
 At $3 per hour for a B200, your cost per user per hour is `3/num_users`.
 for `num_users=500` you get a cost of about $0.006 per user per hour,
-or 4.32$` per month.
+or `$4.32` per month.
 
 So as long as you charge them more than $4.32, your operating costs are covered.
 
