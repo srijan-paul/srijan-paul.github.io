@@ -29,9 +29,7 @@ If you were actually working this out on paper, you'd need only the following in
 The specifics of the model architecture matter surprisingly little,
 unless it's something entirely different like diffusion.
 
-This article is 15k+ words.
-If you're rather well-versed in transformer models, use this legend
-to skip to the sections that interest you:
+If you're comfortable/familiar with the architecture of LLMs, use this legend to skip to the sections that interest you:
 
 - [Resources on a single GPU](#resources-on-a-single-gpu)
 - [Cost of a Matrix Multiplication](#cost-of-a-matrix-multiplication)
