@@ -27,7 +27,23 @@ If you were actually working this out on paper, you'd need only the following in
 4. **Some idea about your product**: Whether it's driven by user prompts or programmed loops, duty cycle of your user profile (explained at the end), etc.
 
 The specifics of the model architecture matter surprisingly little,
-unless it's something entirely different like diffusion. So then, let's start with the hardware.
+unless it's something entirely different like diffusion.
+
+This article is 15k+ words.
+If you're rather well-versed in transformer models, use this legend
+to skip to the sections that interest you:
+
+- [Resources on a single GPU](#resources-on-a-single-gpu)
+- [Cost of a Matrix Multiplication](#cost-of-a-matrix-multiplication)
+- [An Overview of Language Models](#an-overview-of-language-models)
+- [Attention in Greater Detail](#attention-in-greater-detail)
+- [Reducing Compute with KV-Cache](#reducing-compute-with-kv-cache)
+- [How much does a token cost?](#how-much-does-a-token-cost)
+- [How many users can you serve realistically?](#how-many-users-can-you-serve-realistically)
+- [Optimizing for hundreds of users on a GPU](#optimizing-for-hundreds-of-users-on-a-gpu)
+- [Tokens Per Second](#tokens-per-second)
+- [Dollar cost per user](#dollar-cost-per-user)
+
 
 ## Resources on a single GPU
 
@@ -207,7 +223,7 @@ Meaning that for every memory access made, we need only perform *two* operations
 For the entire batch, we're doing **2\*B operations per memory access.**
 This is fantastic! Now, let's pull out the spec-sheet for the fastest GPU available and figure out how many tokens we can generate per second (and for how many users).
 
-## The Cost of a Token
+## How much does a token cost?
 
 Let's take the NVIDIA B200 as our leading example for the remainder of this. From a web search, you'll find that it has the following specs:
 

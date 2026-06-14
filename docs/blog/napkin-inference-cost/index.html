@@ -72,7 +72,32 @@ help SaaS products remain profitable.</p>
 </li>
 </ol>
 <p>The specifics of the model architecture matter surprisingly little,
-unless it&#39;s something entirely different like diffusion. So then, let&#39;s start with the hardware.</p>
+unless it&#39;s something entirely different like diffusion.</p>
+<p>This article is 15k+ words.
+If you&#39;re rather well-versed in transformer models, use this legend
+to skip to the sections that interest you:</p>
+<ul>
+<li><a href="#resources-on-a-single-gpu">Resources on a single GPU</a>
+</li>
+<li><a href="#cost-of-a-matrix-multiplication">Cost of a Matrix Multiplication</a>
+</li>
+<li><a href="#an-overview-of-language-models">An Overview of Language Models</a>
+</li>
+<li><a href="#attention-in-greater-detail">Attention in Greater Detail</a>
+</li>
+<li><a href="#reducing-compute-with-kv-cache">Reducing Compute with KV-Cache</a>
+</li>
+<li><a href="#how-much-does-a-token-cost">How much does a token cost?</a>
+</li>
+<li><a href="#how-many-users-can-you-serve-realistically">How many users can you serve realistically?</a>
+</li>
+<li><a href="#optimizing-for-hundreds-of-users-on-a-gpu">Optimizing for hundreds of users on a GPU</a>
+</li>
+<li><a href="#tokens-per-second">Tokens Per Second</a>
+</li>
+<li><a href="#dollar-cost-per-user">Dollar cost per user</a>
+</li>
+</ul>
 <h2 id="resources-on-a-single-gpu">Resources on a single GPU</h2>
 <p>For any GPU on the market, you can find on its spec sheet
 two key metrics:</p>
@@ -211,7 +236,7 @@ we get \(X \in R_{1 \times d}\) (the most recent token).</p>
 <p>Meaning that for every memory access made, we need only perform <em>two</em> operations rather than 10 thousand.
 For the entire batch, we&#39;re doing <strong>2*B operations per memory access.</strong>
 This is fantastic! Now, let&#39;s pull out the spec-sheet for the fastest GPU available and figure out how many tokens we can generate per second (and for how many users).</p>
-<h2 id="the-cost-of-a-token">The Cost of a Token</h2>
+<h2 id="how-much-does-a-token-cost">How much does a token cost?</h2>
 <p>Let&#39;s take the NVIDIA B200 as our leading example for the remainder of this. From a web search, you&#39;ll find that it has the following specs:</p>
 <ol>
 <li>Memory bandwidth: 8 TB/s (Or \(8*10^9 \) bytes accessed per second).
