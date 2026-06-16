@@ -9,25 +9,18 @@ is_blog_post: true
 title: "Inference cost at scale with napkin math"
 ---
 
-If you serve AI models as a part of your product's stack (hard not to in 2026),
-you've done the math on how much juice you can get out of a single
-A100/H100/H200/B200/whatever.
-This directly affects the pricing for subscription-based products.
+If you serve AI models as in your product's stack (hard not to in 2026),
+you've likely done the math on how much juice you can get out of a single GPU.
+For monthly subscription products, this metric directly affects the pricing.
 
-I want to show that even as models, hardware, and inference engines evolve;
-the dollar price-per-user remains straightforward to work out on paper. 
-This exercise should also reveal how various optimizations in inference engines 
-help SaaS products remain profitable.
-
-If you were actually working this out on paper, you'd need only the following information:
+With some rudimentary knowledge about the hardware you're operating,
+you can do a ballpark estimation of how much each user costs you in dollars.
+For this article, we'll assume knowledge of the following:
 
 1. **GPU hardware specs**: Memory bandwidth and peak throughput (explained below).
 2. **Context length:** assumed 200k tokens.
 3. **Active parameter count of the model:** Assumed 32B to keep things simple on a single GPU.
 4. **Some idea about your product**: Whether it's driven by user prompts or programmed loops, duty cycle of your user profile (explained at the end), etc.
-
-The specifics of the model architecture matter surprisingly little,
-unless it's something entirely different like diffusion.
 
 If you're comfortable/familiar with the architecture of LLMs, use this legend to skip to the sections that interest you:
 
@@ -42,21 +35,25 @@ If you're comfortable/familiar with the architecture of LLMs, use this legend to
 - [Tokens Per Second](#tokens-per-second)
 - [Dollar cost per user](#dollar-cost-per-user)
 
+## Methodology
+
 
 ## Resources on a single GPU
 
-For any GPU on the market, you can find on its spec sheet
-two key metrics:
+For any GPU on the market, you can find on its spec sheet:
 
-1. **Peak throughput:** Number of floating-point operations executed per second. Usually in TeraFLOPs
-   (1 TFLOP/s = \\(10^9\\) ops/sec). 
-2. **Memory bandwidth**: Amount of data that can be moved from global memory (VRAM) to registers (SRAM). Usually in TB/sec.
+- **Peak throughput:** Number of floating-point operations executed per second. Usually in TeraFLOPs
+   (1 TFLOP/s = \\(10^12\\) ops/sec). 
+- **Memory bandwidth**: Amount of data that can be moved from global memory (VRAM) to registers (SRAM).Usually in TB/sec.
 
-We'll assume FP-8 quantization to compute throughput, though it's easy to adjust the math for FP-16 as well.
+We'll assume FP-8 quantization to compute throughput,
+though it's easy to adjust the math for FP-16 as well.
 
 ## Cost of a Matrix Multiplication 
 
-If you bothered to click on this article, you know that AI models do *many* matrix multiplications on *massive* matrices. That we start by finding the cost of a matmul should be no surprise then.
+If you bothered to click on this article
+you know that AI models do *many* matrix multiplications on *massive* matrices.
+That we start by finding the cost of a matmul should be no surprise then.
 
 Assume two matrices: \\(A_{N \times d} \\) and \\(B_{d \times M}\\).
 Let their product be the matrix \\( O_{N \times M} \\).

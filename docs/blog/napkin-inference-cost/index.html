@@ -52,15 +52,12 @@
             <a class="tag" href="/tags/math.html">math</a>
         </div>
       </div>
-      <p>If you serve AI models as a part of your product&#39;s stack (hard not to in 2026),
-you&#39;ve done the math on how much juice you can get out of a single
-A100/H100/H200/B200/whatever.
-This directly affects the pricing for subscription-based products.</p>
-<p>I want to show that even as models, hardware, and inference engines evolve;
-the dollar price-per-user remains straightforward to work out on paper.
-This exercise should also reveal how various optimizations in inference engines
-help SaaS products remain profitable.</p>
-<p>If you were actually working this out on paper, you&#39;d need only the following information:</p>
+      <p>If you serve AI models as in your product&#39;s stack (hard not to in 2026),
+you&#39;ve likely done the math on how much juice you can get out of a single GPU.
+For monthly subscription products, this metric directly affects the pricing.</p>
+<p>With some rudimentary knowledge about the hardware you&#39;re operating,
+you can do a ballpark estimation of how much each user costs you in dollars.
+For this article, we&#39;ll assume knowledge of the following:</p>
 <ol>
 <li><strong>GPU hardware specs</strong>: Memory bandwidth and peak throughput (explained below).
 </li>
@@ -71,8 +68,6 @@ help SaaS products remain profitable.</p>
 <li><strong>Some idea about your product</strong>: Whether it&#39;s driven by user prompts or programmed loops, duty cycle of your user profile (explained at the end), etc.
 </li>
 </ol>
-<p>The specifics of the model architecture matter surprisingly little,
-unless it&#39;s something entirely different like diffusion.</p>
 <p>If you&#39;re comfortable/familiar with the architecture of LLMs, use this legend to skip to the sections that interest you:</p>
 <ul>
 <li><a href="#resources-on-a-single-gpu">Resources on a single GPU</a>
@@ -96,19 +91,22 @@ unless it&#39;s something entirely different like diffusion.</p>
 <li><a href="#dollar-cost-per-user">Dollar cost per user</a>
 </li>
 </ul>
+<h2 id="methodology">Methodology</h2>
 <h2 id="resources-on-a-single-gpu">Resources on a single GPU</h2>
-<p>For any GPU on the market, you can find on its spec sheet
-two key metrics:</p>
-<ol>
+<p>For any GPU on the market, you can find on its spec sheet:</p>
+<ul>
 <li><strong>Peak throughput:</strong> Number of floating-point operations executed per second. Usually in TeraFLOPs
-(1 TFLOP/s = \(10^9\) ops/sec).
+(1 TFLOP/s = \(10^12\) ops/sec).
 </li>
-<li><strong>Memory bandwidth</strong>: Amount of data that can be moved from global memory (VRAM) to registers (SRAM). Usually in TB/sec.
+<li><strong>Memory bandwidth</strong>: Amount of data that can be moved from global memory (VRAM) to registers (SRAM).Usually in TB/sec.
 </li>
-</ol>
-<p>We&#39;ll assume FP-8 quantization to compute throughput, though it&#39;s easy to adjust the math for FP-16 as well.</p>
+</ul>
+<p>We&#39;ll assume FP-8 quantization to compute throughput,
+though it&#39;s easy to adjust the math for FP-16 as well.</p>
 <h2 id="cost-of-a-matrix-multiplication">Cost of a Matrix Multiplication</h2>
-<p>If you bothered to click on this article, you know that AI models do <em>many</em> matrix multiplications on <em>massive</em> matrices. That we start by finding the cost of a matmul should be no surprise then.</p>
+<p>If you bothered to click on this article
+you know that AI models do <em>many</em> matrix multiplications on <em>massive</em> matrices.
+That we start by finding the cost of a matmul should be no surprise then.</p>
 <p>Assume two matrices: \(A_{N \times d} \) and \(B_{d \times M}\).
 Let their product be the matrix \( O_{N \times M} \).
 From high school algebra, we know that each element of \(O\) can be computed as:</p>
