@@ -35,8 +35,6 @@ If you're comfortable/familiar with the architecture of LLMs, use this legend to
 - [Tokens Per Second](#tokens-per-second)
 - [Dollar cost per user](#dollar-cost-per-user)
 
-## Methodology
-
 
 ## Resources on a single GPU
 
