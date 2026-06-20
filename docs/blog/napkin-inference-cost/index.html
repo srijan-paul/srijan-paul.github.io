@@ -54,10 +54,11 @@
       </div>
       <p>If you serve AI models as in your product&#39;s stack (hard not to in 2026),
 you&#39;ve likely done the math on how much juice you can get out of a single GPU.
-For a monthly subscription product, this metric directly affects pricing.</p>
+For monthly subscription products, this metric directly affects pricing.</p>
 <p>With some rudimentary knowledge about your hardware and model architecture,
-you can do a ballpark estimation of how much each user costs you in dollars.</p>
-<p>If you&#39;re comfortable/familiar with the architecture of LLMs, use this legend to skip to the sections that interest you:</p>
+you can do a ballpark estimation of how much each user costs in dollars.</p>
+<p>If you&#39;re comfortable/familiar with the architecture of LLMs,
+use this legend to skip to sections of interest:</p>
 <ul>
 <li><a href="#resources-on-a-single-gpu">Resources on a single GPU</a>
 </li>
@@ -81,9 +82,9 @@ you can do a ballpark estimation of how much each user costs you in dollars.</p>
 </li>
 </ul>
 <h2 id="resources-on-a-single-gpu">Resources on a single GPU</h2>
-<p>On a GPU&#39;s spec-sheet you can find.</p>
+<p>On any GPU&#39;s spec-sheet you can find these metrics:</p>
 <ul>
-<li><strong>Peak throughput:</strong> Number of floating-point operations executed per second. Usually in TeraFLOPs
+<li><strong>Peak throughput:</strong> Number of floating-point operations per second. Usually in TeraFLOPs
 (1 TFLOP/s = \(10^12\) ops/sec).
 </li>
 <li><strong>Memory bandwidth</strong>: Amount of data that can be moved from global memory (VRAM) to registers (SRAM).Usually in TB/sec.
@@ -103,7 +104,8 @@ $$
 O^{i,k} = \sum_{j=1}^{d} A^{i,j} * {B}^{j,k}
 $$
 </div>
-<p>In this, we find our first insight into the &quot;cost&quot; of a matrix multiplication. For each \( O^{i,k}\), we need to start with an initial value of 0 and:</p>
+<p>In this, we find our first insight into the &quot;cost&quot; of a matrix multiplication.
+For each \( O^{i,k}\), we need to start with an initial value of 0 and:</p>
 <ol>
 <li>Load \(A^{i,j}\) from memory.
 </li>
@@ -124,10 +126,10 @@ has them for those curious.</p>
 <h2 id="an-overview-of-language-models">An Overview of Language Models.</h2>
 <p>At their core, LLMs are simple –
 they receive a sequence of <code>N</code> words and generate the <code>N+1</code>th.
-Each word is represented as a vector with <code>d</code> entries.
+Each word is represented as a <code>d</code>-dimensional vector.
 Using repeated applications of a function called &quot;attention&quot; (explained later), they predict the next word.</p>
-<p>A single forward pass roughly looks like this:</p>
-<code class="language-python"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> <span class="bu">input</span>() <span class="co"># y = matrix of size N x d</span></span>
+<p>A single forward pass looks roughly like this:</p>
+<code class="language-python"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> <span class="bu">input</span>() <span class="co"># y = a (N x d) matrix</span></span>
 <span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> each layer <span class="kw">in</span> the network:</span>
 <span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>  y <span class="op">=</span> attention(y)</span>
 <span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a> </span>
@@ -138,16 +140,17 @@ Using repeated applications of a function called &quot;attention&quot; (explaine
 <span id="9"><a href="#9" aria-hidden="true" tabindex="-1"></a>token_probs <span class="op">=</span> softmax(y <span class="op">*</span> W_vocab)</span>
 <span id="10"><a href="#10" aria-hidden="true" tabindex="-1"></a>next_tok    <span class="op">=</span> token_probs(argmax(token_probs))</span>
 <span id="11"><a href="#11" aria-hidden="true" tabindex="-1"></a><span class="co"># next_tok is a (1 x d) vector</span></span></code></pre></div></code></pre>
-<p>This is also why LLMs are called auto-regressive. They can keep doing multiple forward passes over their own output until a <code>&lt;stop&gt;</code> token is generated.</p>
+<p>This is also why LLMs are called auto-regressive.
+They can keep doing multiple forward passes over their own output until a <code>&lt;stop&gt;</code> token is generated.</p>
 <p>This is a simplified overview of where I&#39;m skipping RoPE,
 the MLP layers in between, token sampling at the end,
-and much more.
-As mentioned earlier,
-you can add those in and still verify that our math will work out
-by a <a href="https://en.wikipedia.org/wiki/Fermi_problem">Fermi estimation</a>.</p>
+and much more.</p>
+<p>As a fun exercise: you should try to price them in and
+verify that our math still works by a <a href="https://en.wikipedia.org/wiki/Fermi_problem">Fermi estimation</a>.</p>
 <h2 id="attention-in-greater-detail">Attention in Greater Detail</h2>
-<p>Let&#39;s place the <code>attention</code> function under a magnifying glass.</p>
-<p>As you saw, the input is a matrix \(X \in \mathbb{R}^{N \times d}\), and \(X_i\) is a single \(d\) dimensional vector.
+<p>I&#39;m going to assume that you have some familiarity with attention,
+and provide only a refresher here.</p>
+<p>As mentioned, the input is a matrix \(X \in \mathbb{R}^{N \times d}\), and \(X_i\) is a single \(d\) dimensional vector.
 For every &quot;layer&quot; in the network, the model stores matrices \( W_Q,W_K, W_V \in \mathbb{R}^{d \times d} \), and computes &quot;attention&quot; as follows:</p>
 <p>\( Q = X.W_Q \),   \( K = X.W_K\) and \( V = X.W_v\)</p>
 <p>\( Attention(Q,K,V) = softmax(Q.K^T/\sqrt{d}).V\)</p>
@@ -164,7 +167,9 @@ This means our input sequence \( X \in \mathbb{R}_{B \times N \times d}\).</p>
 <p>In our Python code, just the transpose arguments change:</p>
 <code class="language-diff"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a><span class="st">- Q_KT = Q @ K.transpose(2, 1)</span></span>
 <span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a><span class="va">+ Q_KT = Q @ K.transpose(0, 2, 1)</span></span></code></pre></div></code></pre>
-<p>Only, there&#39;s one trouble with our implementation of attention: it <strong>reads too much data from memory.</strong> Let&#39;s look at a single matmul, the \(K = X.W_k\).  Companies that serve models will allow you to chat with them for up to 200k or so tokens.
+<p>Only, there&#39;s one trouble with our implementation of attention: it <strong>reads too much data from memory.</strong>
+Let&#39;s look at a single matmul, the \(K = X.W_k\).
+Companies that serve models will allow you to chat with them for up to 200k or so tokens.
 For a single <code>K@W_k</code> matmul, it looks like this:</p>
 <code class="language-python"><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>X   <span class="op">=</span> tensor(B, N, d) <span class="co"># &quot;B&quot; chats, each with a maximum of &quot;N&quot; &#39;tokens&#39;.</span></span>
 <span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>W_k <span class="op">=</span> tensor(d, d)    <span class="co"># weights have no batch dimension</span></span>
@@ -223,9 +228,9 @@ This is fantastic! Now, let&#39;s pull out the spec-sheet for the fastest GPU av
 <h2 id="how-much-does-a-token-cost">How much does a token cost?</h2>
 <p>Let&#39;s take the NVIDIA B200 as our leading example for the remainder of this. From a web search, you&#39;ll find that it has the following specs:</p>
 <ol>
-<li>Memory bandwidth: 8 TB/s (Or \(8*10^9 \) bytes accessed per second).
+<li>Memory bandwidth: 8 TB/s (Or \(8*10^{12} \) bytes accessed per second).
 </li>
-<li>Compute intensity: 4500 TFLOP/s (Or  \(4500 * 10^9\) bytes crunched per second).
+<li>Compute intensity: 4500 TFLOP/s (Or  \(4500 * 10^{12}\) bytes crunched per second).<sup class="footnote-ref"><a href="#fn-1" id="fnref-1">1</a></sup>
 </li>
 </ol>
 <p>See that?
@@ -233,19 +238,22 @@ A Blackwell class GPU can crunch bytes <strong>562 times faster</strong> than it
 Put differently, to get the most out of such a chip, we should be doing <strong>562 computations for every byte loaded.</strong>
 Any more, and we have memory bandwidth sitting idle (e.g: without a KV-cache).
 Any less, and we have compute cores sitting idle.</p>
-<p>We&#39;re doing <strong>2*B</strong>.
+<p>Currently, we&#39;re doing <strong>2*B</strong> compute-ops per byte read.
 So, how many users should we serve to fully exhaust a B200&#39;s compute and bandwidth budget?</p>
 <p>\( 2B = 562 \implies B = 331 \)</p>
 <p>With a single NVIDIA B200 GPU, we should be serving <strong>331 users concurrently</strong> to get the most out of our investment.
 Of course, this is a theoretical ceiling.
 In reality, VRAM is limited. We&#39;ll have to squeeze the model weights in there along with the huge KV-cache.</p>
 <h2 id="how-many-users-can-you-serve-realistically">How many users can you serve realistically?</h2>
-<p>We&#39;ll assume a 32B dense model – about as much as a 192G chip
-can comfortably support.
-This could be a Gemma, Qwen, DeepSeek, whatever.
-Different techniques and parameter sizes cancel out to yield roughly the same result, off by maybe a 5-10% margin.
-Back to our problem: we have a 32B model.
-This is <code>32*10^9</code> bytes, or 32GB, in VRAM.
+<p>We&#39;ll assume a 32B dense model, as they&#39;ve have gotten quite good for production use
+and a B200 can comfortably serve them.
+This could be a Gemma, Qwen, DeepSeek, whatever.</p>
+<p>Note that we&#39;re assuming a pure transformer architecture,
+even though a lot of open-weight models use &quot;tricks&quot; to reduce KV-cache pressure on long contexts
+(see: <a href="https://sebastianraschka.com/llms-from-scratch/ch04/08_deltanet/">Gated Delta-Nets</a>, and the <a href="https://arxiv.org/pdf/2503.19786">Gemma 3 technical report</a>).
+You can chat with your favorite LLM to figure out how this affects your inference math.</p>
+<p>Back to our problem: we have a 32B model.
+This is 32GB (<code>32*10^9</code> bytes) in VRAM.
 Let&#39;s assume a context window of \(N\)=200k tokens.
 The input is \(N \times d\)–dimensional at every layer.</p>
 <p>For each layer, we need to store \(2Nd\) bytes for a pair of K and V matrices.
@@ -306,18 +314,42 @@ or about 40 tokens per user per second.</p>
 <p>This largely depends on whether you own or rent your hardware.
 At $40,000 per B200, your lifetime cost per user is <code>40_000/num_users</code>.</p>
 <p>In the 100% duty cycle case (worst for cost), that&#39;s 6k$ per user.
-Realistically, serving 500 users per GPU  you&#39;ll spend a lifetime
+Realistically, serving 300 users per GPU  you&#39;ll spend a lifetime
 cost of about $133 per user, plus the datacenter/upkeep bill.</p>
 <p>If you rent the GPU, the cost is more straightforward.
-At $3 per hour for a B200, your cost per user per hour is <code>3/num_users</code>.
-for <code>num_users=500</code> you get a cost of about $0.006 per user per hour,
-or <code>$4.32</code> per month.</p>
-<p>So as long as you charge them more than $4.32, your operating costs are covered.</p>
-<p>As an AI company, you&#39;ll have more than one GPU (I hope),
-and will likely be running models larger than 32B.
-Sadly, we&#39;re out of space on our napki-</p>
+At an hourly rate of $4<sup class="footnote-ref"><a href="#fn-2" id="fnref-2">2</a></sup>, your hourly cost per user is <code>4/num_users</code>.
+for <code>num_users=300</code> you get a cost of about $0.013 per user per hour,
+or <code>$9.36</code> per month.</p>
+<details>
+<summary>Ballpark accuracy of our estimate</summary>
+For a 32B model on a B200, this is a rather conservative estimate.
+<p>I&#39;ve left some headroom for workflows with high duty cycles, like
+an agent that runs in a loop and runs queries.</p>
+</details>
+<p>As an AI company, you&#39;ll have more than one GPU (I pray).
+If you&#39;re serving models that span multiple GPUs,
+the use of napkins to calculate cost is ill-advised :)</p>
+<h2 id="backmatter">Backmatter</h2>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
 </script>
+<section class="footnotes">
+<div class="footnote" id="fn-1">
+<div class="footnote-number">
+<a href="#fnref-1">1</a>
+</div>
+<div class="footnote-contents">
+<p>This is the <em>dense</em> compute throughput of the B200. For sparse matrices, it goes upto 9000 TFLOPs.</p>
+</div>
+</div>
+<div class="footnote" id="fn-2">
+<div class="footnote-number">
+<a href="#fnref-2">2</a>
+</div>
+<div class="footnote-contents">
+<p>At the time of writing, you&#39;ll only find this price on bulk rentals with time commitments.</p>
+</div>
+</div>
+</section>
 
 
 			<script src="https://giscus.app/client.js" data-repo="srijan-paul/srijan-paul.github.io" data-repo-id="MDEwOlJlcG9zaXRvcnkzMTY0MTg0NTk=" data-category="Announcements" data-category-id="DIC_kwDOEtwpm84Cdokt" data-mapping="title" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" defer>
