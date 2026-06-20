@@ -9,15 +9,15 @@ is_blog_post: true
 title: "Inference cost at scale with napkin math"
 ---
 
-If you serve AI models as in your product's stack (hard not to in 2026),
-you've likely done the math on how much juice you can get out of a single GPU.
-For monthly subscription products, this metric directly affects pricing.
+If you serve AI models as a part of your product stack,
+you've likely wondered what kind of scale your GPU cluster tops out at.
 
-With some rudimentary knowledge about your hardware and model architecture, 
-you can do a ballpark estimation of how much each user costs in dollars.
+With some rudimentary knowledge about your hardware and model architecture,
+we can work out the dollar cost-per-user on the back of a napkin[^1].
 
-If you're comfortable/familiar with the architecture of LLMs,
-use this legend to skip to sections of interest:
+If you're comfortable reasoning about GPUs and/or LLMs,
+use this legend to skip to sections of relevance:
+
 
 - [Resources on a single GPU](#resources-on-a-single-gpu)
 - [Cost of a Matrix Multiplication](#cost-of-a-matrix-multiplication)
@@ -36,7 +36,7 @@ use this legend to skip to sections of interest:
 On any GPU's spec-sheet you can find these metrics:
 
 - **Peak throughput:** Number of floating-point operations per second. Usually in TeraFLOPs
-   (1 TFLOP/s = \\(10^12\\) ops/sec). 
+   (1 TFLOP/s = \\(10^{12}\\) ops/sec). 
 - **Memory bandwidth**: Amount of data that can be moved from global memory (VRAM) to registers (SRAM).Usually in TB/sec.
 
 We'll assume FP-8 quantization to compute throughput,
@@ -63,9 +63,9 @@ For each \\( O^{i,k}\\), we need to start with an initial value of 0 and:
 
 
 1. Load \\(A^{i,j}\\) from memory.
-2. Load \(B^{j,k}\) from memory.
-3. Multiply them together.
-4. Add the result of #3 to the cumulative sum so far.
+2. Load \\(B^{j,k}\\) from memory.
+3. Multiply them.
+4. Add result of #3 to the cumulative sum.
 
 And this is done a total of \\(d\\) times *per item.*
 So, the cost of a `(N,d)*(d,M)` matrix product
@@ -221,7 +221,7 @@ Let's take the NVIDIA B200 as our leading example for the remainder of this. Fro
 
 
 1. Memory bandwidth: 8 TB/s (Or \\(8*10^{12} \\) bytes accessed per second).
-2. Compute intensity: 4500 TFLOP/s (Or  \\(4500 * 10^{12}\\) bytes crunched per second).[^1]
+2. Compute intensity: 4500 TFLOP/s (Or  \\(4500 * 10^{12}\\) bytes crunched per second).[^2]
 
 See that?
 A Blackwell class GPU can crunch bytes **562 times faster** than it can load them.
@@ -279,40 +279,39 @@ So about six chat's going parallely. That seems… low.
 
 ## Optimizing for hundreds of users on a GPU.
 
-Most contexts will never reach the 200k token limit,
-even if that is the context window you advertise to customers.
+Most contexts will never reach the 200k length.
 Depending on your product, the median LLM-conversation can be anywhere between 4-40k tokens.
 
-We can split the KV-cache into chunks, and then allocate those chunks to different users as their token use increases.
+To account for variable-length conversations,
+we can split the KV-cache into chunks,
+and incrementally allocate those chunks to different users as their token use grows.
 Conversation threads that are abandoned/cold can be flushed out of the cache.
 This is what vLLM does with [PagedAttention](https://hamzaelshafie.bearblog.dev/paged-attention-from-first-principles-a-view-inside-vllm/).
 Depending on the median user activity,
-you can serve anywhere between **40-60 users per Blackwell chip**,
-depending on what you assume for the conversation length.
-
+you can serve anywhere between **40-60 users per Blackwell chip**.
 
 Remember that the nature of your product matters too.
 In most ChatGPT-style apps the user spends more time reading than prompting. 
 For a median chat session, a user will likely have 80% idle time.
 Here, the GPU has a duty cycle of 20% (!). 
 
-So realistically, one chip can serve \~300-800 users comfortably depending on the style of app.
-Of course, this won't hold if you're using some harness to feed the agent with data in a loop.
+Realistically, one chip can serve \~300-800 users comfortably depending on the style your app.
+For non-chat apps, measuring duty-cycles is not optional. 
 
 ## Tokens Per Second 
 
 Earlier, we saw that we can comfortably support 6 users at 100% duty cycle. 
-But what would be the speed observed by them?
+But would their experience be snappy? 
 
 Again, this is a direct consequence of our memory-to-compute ratio.
-For a single forward pass, we'll move all the model weights + KV-cache from
+For a single forward pass we move all the model weights + KV-cache from
 VRAM to registers *once*.
-Then, we'll do 2*B operations for every byte loaded.
+Then, we do 2*B operations for every byte loaded.
 
 So the total time spent is:
 
 ```
-time spent moving data (in seconds)
+time spent moving data
     = memory in GB  / bandwidth in GBps 
     = 190GB / (8*10**3) GBps 
     = 0.02375 seconds
@@ -344,8 +343,8 @@ Realistically, serving 300 users per GPU  you'll spend a lifetime
 cost of about $133 per user, plus the datacenter/upkeep bill.
 
 If you rent the GPU, the cost is more straightforward.
-At an hourly rate of $4[^2], your hourly cost per user is `4/num_users`.
-for `num_users=300` you get a cost of about $0.013 per user per hour,
+At an hourly rate of $4[^3], your hourly cost per user is `4/num_users`.
+For `num_users=300` you get an hourly rate of about $0.013 per user,
 or `$9.36` per month.
 
 <details>
@@ -353,17 +352,18 @@ or `$9.36` per month.
 For a 32B model on a B200, this is a rather conservative estimate.
 
 I've left some headroom for workflows with high duty cycles, like
-an agent that runs in a loop and runs queries.
+an agent loops over tool-calls and runs queries.
 </details>
 
 As an AI company, you'll have more than one GPU (I pray).
-If you're serving models that span multiple GPUs, 
-the use of napkins to calculate cost is ill-advised :)
+For model-sizes that span multiple GPUs, our math is still directionally valid,
+but the use of napkins is ill-advised.
 
 ## Backmatter
 
-[^1]: This is the *dense* compute throughput of the B200. For sparse matrices, it goes upto 9000 TFLOPs. 
-[^2]: At the time of writing, you'll only find this price on bulk rentals with time commitments.
+[^1]: Or two napkins, realistically. This is how I worked it out over coffee with a friend, which is how this post came to be. 
+[^2]: This is the *dense* compute throughput of the B200. For sparse matrices, it goes upto 9000 TFLOPs. 
+[^3]: At the time of writing, you'll only find this price on bulk rentals with time commitments.
 
 
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">

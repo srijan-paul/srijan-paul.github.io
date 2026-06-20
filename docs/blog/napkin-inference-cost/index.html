@@ -52,13 +52,12 @@
             <a class="tag" href="/tags/math.html">math</a>
         </div>
       </div>
-      <p>If you serve AI models as in your product&#39;s stack (hard not to in 2026),
-you&#39;ve likely done the math on how much juice you can get out of a single GPU.
-For monthly subscription products, this metric directly affects pricing.</p>
+      <p>If you serve AI models as a part of your product stack,
+you&#39;ve likely wondered what kind of scale your GPU cluster tops out at.</p>
 <p>With some rudimentary knowledge about your hardware and model architecture,
-you can do a ballpark estimation of how much each user costs in dollars.</p>
-<p>If you&#39;re comfortable/familiar with the architecture of LLMs,
-use this legend to skip to sections of interest:</p>
+we can work out the dollar cost-per-user on the back of a napkin<sup class="footnote-ref"><a href="#fn-1" id="fnref-1">1</a></sup>.</p>
+<p>If you&#39;re comfortable reasoning about GPUs and/or LLMs,
+use this legend to skip to sections of relevance:</p>
 <ul>
 <li><a href="#resources-on-a-single-gpu">Resources on a single GPU</a>
 </li>
@@ -85,7 +84,7 @@ use this legend to skip to sections of interest:</p>
 <p>On any GPU&#39;s spec-sheet you can find these metrics:</p>
 <ul>
 <li><strong>Peak throughput:</strong> Number of floating-point operations per second. Usually in TeraFLOPs
-(1 TFLOP/s = \(10^12\) ops/sec).
+(1 TFLOP/s = \(10^{12}\) ops/sec).
 </li>
 <li><strong>Memory bandwidth</strong>: Amount of data that can be moved from global memory (VRAM) to registers (SRAM).Usually in TB/sec.
 </li>
@@ -109,11 +108,11 @@ For each \( O^{i,k}\), we need to start with an initial value of 0 and:</p>
 <ol>
 <li>Load \(A^{i,j}\) from memory.
 </li>
-<li>Load (B^{j,k}) from memory.
+<li>Load \(B^{j,k}\) from memory.
 </li>
-<li>Multiply them together.
+<li>Multiply them.
 </li>
-<li>Add the result of #3 to the cumulative sum so far.
+<li>Add result of #3 to the cumulative sum.
 </li>
 </ol>
 <p>And this is done a total of \(d\) times <em>per item.</em>
@@ -230,7 +229,7 @@ This is fantastic! Now, let&#39;s pull out the spec-sheet for the fastest GPU av
 <ol>
 <li>Memory bandwidth: 8 TB/s (Or \(8*10^{12} \) bytes accessed per second).
 </li>
-<li>Compute intensity: 4500 TFLOP/s (Or  \(4500 * 10^{12}\) bytes crunched per second).<sup class="footnote-ref"><a href="#fn-1" id="fnref-1">1</a></sup>
+<li>Compute intensity: 4500 TFLOP/s (Or  \(4500 * 10^{12}\) bytes crunched per second).<sup class="footnote-ref"><a href="#fn-2" id="fnref-2">2</a></sup>
 </li>
 </ol>
 <p>See that?
@@ -270,30 +269,30 @@ so how many concurrent chat contexts can we store in the KV-cache in the remaini
 That&#39;s 160/26 = 6.</p>
 <p>So about six chat&#39;s going parallely. That seems… low.</p>
 <h2 id="optimizing-for-hundreds-of-users-on-a-gpu">Optimizing for hundreds of users on a GPU.</h2>
-<p>Most contexts will never reach the 200k token limit,
-even if that is the context window you advertise to customers.
+<p>Most contexts will never reach the 200k length.
 Depending on your product, the median LLM-conversation can be anywhere between 4-40k tokens.</p>
-<p>We can split the KV-cache into chunks, and then allocate those chunks to different users as their token use increases.
+<p>To account for variable-length conversations,
+we can split the KV-cache into chunks,
+and incrementally allocate those chunks to different users as their token use grows.
 Conversation threads that are abandoned/cold can be flushed out of the cache.
 This is what vLLM does with <a href="https://hamzaelshafie.bearblog.dev/paged-attention-from-first-principles-a-view-inside-vllm/">PagedAttention</a>.
 Depending on the median user activity,
-you can serve anywhere between <strong>40-60 users per Blackwell chip</strong>,
-depending on what you assume for the conversation length.</p>
+you can serve anywhere between <strong>40-60 users per Blackwell chip</strong>.</p>
 <p>Remember that the nature of your product matters too.
 In most ChatGPT-style apps the user spends more time reading than prompting.
 For a median chat session, a user will likely have 80% idle time.
 Here, the GPU has a duty cycle of 20% (!).</p>
-<p>So realistically, one chip can serve ~300-800 users comfortably depending on the style of app.
-Of course, this won&#39;t hold if you&#39;re using some harness to feed the agent with data in a loop.</p>
+<p>Realistically, one chip can serve ~300-800 users comfortably depending on the style your app.
+For non-chat apps, measuring duty-cycles is not optional.</p>
 <h2 id="tokens-per-second">Tokens Per Second</h2>
 <p>Earlier, we saw that we can comfortably support 6 users at 100% duty cycle.
-But what would be the speed observed by them?</p>
+But would their experience be snappy?</p>
 <p>Again, this is a direct consequence of our memory-to-compute ratio.
-For a single forward pass, we&#39;ll move all the model weights + KV-cache from
+For a single forward pass we move all the model weights + KV-cache from
 VRAM to registers <em>once</em>.
-Then, we&#39;ll do 2*B operations for every byte loaded.</p>
+Then, we do 2*B operations for every byte loaded.</p>
 <p>So the total time spent is:</p>
-<code><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>time spent moving data (in seconds)</span>
+<code><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span id="1"><a href="#1" aria-hidden="true" tabindex="-1"></a>time spent moving data</span>
 <span id="2"><a href="#2" aria-hidden="true" tabindex="-1"></a>    = memory in GB  / bandwidth in GBps </span>
 <span id="3"><a href="#3" aria-hidden="true" tabindex="-1"></a>    = 190GB / (8*10**3) GBps </span>
 <span id="4"><a href="#4" aria-hidden="true" tabindex="-1"></a>    = 0.02375 seconds</span>
@@ -317,18 +316,18 @@ At $40,000 per B200, your lifetime cost per user is <code>40_000/num_users</code
 Realistically, serving 300 users per GPU  you&#39;ll spend a lifetime
 cost of about $133 per user, plus the datacenter/upkeep bill.</p>
 <p>If you rent the GPU, the cost is more straightforward.
-At an hourly rate of $4<sup class="footnote-ref"><a href="#fn-2" id="fnref-2">2</a></sup>, your hourly cost per user is <code>4/num_users</code>.
-for <code>num_users=300</code> you get a cost of about $0.013 per user per hour,
+At an hourly rate of $4<sup class="footnote-ref"><a href="#fn-3" id="fnref-3">3</a></sup>, your hourly cost per user is <code>4/num_users</code>.
+For <code>num_users=300</code> you get an hourly rate of about $0.013 per user,
 or <code>$9.36</code> per month.</p>
 <details>
 <summary>Ballpark accuracy of our estimate</summary>
 For a 32B model on a B200, this is a rather conservative estimate.
 <p>I&#39;ve left some headroom for workflows with high duty cycles, like
-an agent that runs in a loop and runs queries.</p>
+an agent loops over tool-calls and runs queries.</p>
 </details>
 <p>As an AI company, you&#39;ll have more than one GPU (I pray).
-If you&#39;re serving models that span multiple GPUs,
-the use of napkins to calculate cost is ill-advised :)</p>
+For model-sizes that span multiple GPUs, our math is still directionally valid,
+but the use of napkins is ill-advised.</p>
 <h2 id="backmatter">Backmatter</h2>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
 </script>
@@ -338,12 +337,20 @@ the use of napkins to calculate cost is ill-advised :)</p>
 <a href="#fnref-1">1</a>
 </div>
 <div class="footnote-contents">
-<p>This is the <em>dense</em> compute throughput of the B200. For sparse matrices, it goes upto 9000 TFLOPs.</p>
+<p>Or two napkins, realistically. This is how I worked it out over coffee with a friend, which is how this post came to be.</p>
 </div>
 </div>
 <div class="footnote" id="fn-2">
 <div class="footnote-number">
 <a href="#fnref-2">2</a>
+</div>
+<div class="footnote-contents">
+<p>This is the <em>dense</em> compute throughput of the B200. For sparse matrices, it goes upto 9000 TFLOPs.</p>
+</div>
+</div>
+<div class="footnote" id="fn-3">
+<div class="footnote-number">
+<a href="#fnref-3">3</a>
 </div>
 <div class="footnote-contents">
 <p>At the time of writing, you&#39;ll only find this price on bulk rentals with time commitments.</p>
