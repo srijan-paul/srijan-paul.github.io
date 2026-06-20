@@ -15,12 +15,6 @@ For a monthly subscription product, this metric directly affects pricing.
 
 With some rudimentary knowledge about your hardware and model architecture, 
 you can do a ballpark estimation of how much each user costs you in dollars.
-I'll assume knowledge of the following:
-
-1. **GPU hardware specs**: Memory bandwidth and peak throughput (explained below).
-2. **Context length:** assumed 200k tokens.
-3. **Active parameter count of the model:** Assumed 32B to keep things simple on a single GPU.
-4. **Some idea about your product**: Whether it's driven by user prompts or programmed loops, duty cycle of your user profile (explained at the end), etc.
 
 If you're comfortable/familiar with the architecture of LLMs, use this legend to skip to the sections that interest you:
 
@@ -346,8 +340,8 @@ or `$4.32` per month.
 
 So as long as you charge them more than $4.32, your operating costs are covered.
 
-As an AI company, you'll have more than one GPU (I hope).
-So you'll be load balancing users across a cluster of GPUs where our equations change somewhat.
+As an AI company, you'll have more than one GPU (I hope),
+and will likely be running models larger than 32B.
 Sadly, we're out of space on our napki- 
 
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">

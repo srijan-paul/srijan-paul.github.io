@@ -56,18 +56,7 @@
 you&#39;ve likely done the math on how much juice you can get out of a single GPU.
 For a monthly subscription product, this metric directly affects pricing.</p>
 <p>With some rudimentary knowledge about your hardware and model architecture,
-you can do a ballpark estimation of how much each user costs you in dollars.
-I&#39;ll assume knowledge of the following:</p>
-<ol>
-<li><strong>GPU hardware specs</strong>: Memory bandwidth and peak throughput (explained below).
-</li>
-<li><strong>Context length:</strong> assumed 200k tokens.
-</li>
-<li><strong>Active parameter count of the model:</strong> Assumed 32B to keep things simple on a single GPU.
-</li>
-<li><strong>Some idea about your product</strong>: Whether it&#39;s driven by user prompts or programmed loops, duty cycle of your user profile (explained at the end), etc.
-</li>
-</ol>
+you can do a ballpark estimation of how much each user costs you in dollars.</p>
 <p>If you&#39;re comfortable/familiar with the architecture of LLMs, use this legend to skip to the sections that interest you:</p>
 <ul>
 <li><a href="#resources-on-a-single-gpu">Resources on a single GPU</a>
@@ -324,8 +313,8 @@ At $3 per hour for a B200, your cost per user per hour is <code>3/num_users</cod
 for <code>num_users=500</code> you get a cost of about $0.006 per user per hour,
 or <code>$4.32</code> per month.</p>
 <p>So as long as you charge them more than $4.32, your operating costs are covered.</p>
-<p>As an AI company, you&#39;ll have more than one GPU (I hope).
-So you&#39;ll be load balancing users across a cluster of GPUs where our equations change somewhat.
+<p>As an AI company, you&#39;ll have more than one GPU (I hope),
+and will likely be running models larger than 32B.
 Sadly, we&#39;re out of space on our napki-</p>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
 </script>
