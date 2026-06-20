@@ -11,11 +11,11 @@ title: "Inference cost at scale with napkin math"
 
 If you serve AI models as in your product's stack (hard not to in 2026),
 you've likely done the math on how much juice you can get out of a single GPU.
-For monthly subscription products, this metric directly affects the pricing.
+For a monthly subscription product, this metric directly affects pricing.
 
-With some rudimentary knowledge about the hardware you're operating,
+With some rudimentary knowledge about your hardware and model architecture, 
 you can do a ballpark estimation of how much each user costs you in dollars.
-For this article, we'll assume knowledge of the following:
+I'll assume knowledge of the following:
 
 1. **GPU hardware specs**: Memory bandwidth and peak throughput (explained below).
 2. **Context length:** assumed 200k tokens.
@@ -38,7 +38,7 @@ If you're comfortable/familiar with the architecture of LLMs, use this legend to
 
 ## Resources on a single GPU
 
-For any GPU on the market, you can find on its spec sheet:
+On a GPU's spec-sheet you can find.
 
 - **Peak throughput:** Number of floating-point operations executed per second. Usually in TeraFLOPs
    (1 TFLOP/s = \\(10^12\\) ops/sec). 
